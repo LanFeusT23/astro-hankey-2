@@ -26,8 +26,9 @@ export class FirebaseImageRepository implements ImageRepository {
   }
 
   async getById(id: string): Promise<AstroImage | null> {
-    // TODO: const doc = await getDoc(doc(db, 'images', id))
-    // TODO: return doc.exists() ? { id: doc.id, ...doc.data() } as AstroImage : null
+    // TODO: const docRef = doc(db, 'images', id)
+    // TODO: const docSnapshot = await getDoc(docRef)
+    // TODO: return docSnapshot.exists() ? { id: docSnapshot.id, ...docSnapshot.data() } as AstroImage : null
     throw new Error('FirebaseImageRepository not yet implemented')
   }
 

@@ -1,75 +1,50 @@
-# Nuxt Minimal Starter
+# Jonathan Hankey Astrophotography Portfolio
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+A NuxtJS 3 + Vue 3 + Tailwind CSS 4 astrophotography portfolio website featuring a landing page, image gallery with lightbox, and admin dashboard.
+
+## Features
+
+- **Home** — Animated star field, hero section with shimmer title
+- **Gallery** — Responsive image grid with hover overlays and lightbox modal
+- **Admin** — Protected CRUD dashboard with image upload, edit, and delete
+- **Auth** — Google Sign-In via Firebase (stub fallback for local dev)
+- **Repository pattern** — Swap between Stub, Firebase, or AWS backends via env var
 
 ## Setup
 
-Make sure to install dependencies:
-
 ```bash
-# npm
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
+cp .env.example .env
 npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
+## Environment Variables
 
-Build the application for production:
+See `.env.example` for all variables. Key ones:
+
+| Variable | Description |
+|---|---|
+| `NUXT_IMAGE_REPOSITORY` | Backend: `stub` \| `firebase` \| `aws` |
+| `NUXT_APP_BASE_URL` | Base URL (e.g. `/astro-hankey-2/` for GitHub Pages) |
+| `NUXT_PUBLIC_FIREBASE_*` | Firebase config (required for `firebase` backend + Google Auth) |
+
+## Architecture
+
+```
+app/
+├── pages/          # index, gallery, admin/index, admin/login
+├── components/     # AppNav, ImageCard, ImageModal, AdminImageList
+├── composables/    # useImages, useAuth
+├── middleware/     # auth (protects /admin)
+├── repositories/   # ImageRepository interface + Stub/Firebase/AWS impls
+└── types/          # AstroImage type
+```
+
+## Deployment
+
+GitHub Actions workflows deploy to GitHub Pages on push to `main` (production) or `develop` (staging). See `.github/workflows/`.
 
 ```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+npm run generate   # Static site output → .output/public
 ```
 
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
