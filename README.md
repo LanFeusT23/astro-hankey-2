@@ -40,6 +40,17 @@ app/
 └── types/          # AstroImage type
 ```
 
+## Firebase Security Rules
+
+The `firestore.rules` and `storage.rules` files define security rules that allow public reads of the gallery while requiring authentication for any writes. If you see `FirebaseError: Missing or insufficient permissions` when fetching images, deploy these rules to your Firebase project:
+
+```bash
+npm install -g firebase-tools
+firebase login
+firebase use <your-project-id>
+firebase deploy --only firestore:rules,storage:rules
+```
+
 ## Deployment
 
 GitHub Actions workflows deploy to GitHub Pages on push to `main` (production) or `develop` (staging). See `.github/workflows/`.
