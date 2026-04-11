@@ -1,60 +1,105 @@
+import type { FirebaseApp } from 'firebase/app'
+import type { Firestore } from 'firebase/firestore'
+import type { FirebaseStorage } from 'firebase/storage'
 import type { ImageRepository } from './imageRepository'
 import type { AstroImage } from '~/types/image'
 
-// TODO: Implement Firebase Firestore + Storage backend
-// Required packages: firebase
-// Required env vars:
-//   NUXT_PUBLIC_FIREBASE_API_KEY
-//   NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-//   NUXT_PUBLIC_FIREBASE_PROJECT_ID
-//   NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-//   NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-//   NUXT_PUBLIC_FIREBASE_APP_ID
-//
-// Implementation outline:
-//   - Use Firestore collection 'images' for metadata
-//   - Use Firebase Storage bucket 'images/' for files
-//   - Upload creates a Firestore doc + uploads to Storage
-//   - getAll() reads from Firestore with ordering by dateTaken desc
+const GALLERY_COLLECTION = 'gallery'
+const GALLERY_STORAGE_PATH = 'gallery'
+const THUMBNAILS_STORAGE_PATH = 'gallery/thumbnails'
+
+let _app: FirebaseApp | null = null
+let _db: Firestore | null = null
+let _storage: FirebaseStorage | null = null
+
+async function getFirebaseApp(): Promise<FirebaseApp | null> {
+  if (_app) return _app
+
+  const config = useRuntimeConfig()
+  const firebase = config.public.firebase as Record<string, string>
+
+  if (!firebase.apiKey) return null
+
+  const { initializeApp, getApps } = await import('firebase/app')
+  _app = getApps().length === 0 ? initializeApp(firebase) : getApps()[0]
+  return _app
+}
+
+async function getDb(): Promise<Firestore> {
+  if (_db) return _db
+  const app = await getFirebaseApp()
+  if (!app) throw new Error('Firebase is not configured')
+  const { getFirestore } = await import('firebase/firestore')
+  _db = getFirestore(app)
+  return _db
+}
+
+async function getStorage(): Promise<FirebaseStorage> {
+  if (_storage) return _storage
+  const app = await getFirebaseApp()
+  if (!app) throw new Error('Firebase is not configured')
+  const { getStorage: initStorage } = await import('firebase/storage')
+  _storage = initStorage(app)
+  return _storage
+}
 
 export class FirebaseImageRepository implements ImageRepository {
   async getAll(): Promise<AstroImage[]> {
-    // TODO: const q = query(collection(db, 'images'), orderBy('dateTaken', 'desc'))
-    // TODO: const snap = await getDocs(q)
-    // TODO: return snap.docs.map(d => ({ id: d.id, ...d.data() } as AstroImage))
-    throw new Error('FirebaseImageRepository not yet implemented')
+    const db = await getDb()
+    const { collection, query, orderBy, getDocs } = await import('firebase/firestore')
+    const q = query(collection(db, GALLERY_COLLECTION), orderBy('dateTaken', 'desc'))
+    const snap = await getDocs(q)
+    return snap.docs.map(d => ({ id: d.id, ...d.data() } as AstroImage))
   }
 
   async getById(id: string): Promise<AstroImage | null> {
-    // TODO: const docRef = doc(db, 'images', id)
-    // TODO: const docSnapshot = await getDoc(docRef)
-    // TODO: return docSnapshot.exists() ? { id: docSnapshot.id, ...docSnapshot.data() } as AstroImage : null
-    throw new Error('FirebaseImageRepository not yet implemented')
+    const db = await getDb()
+    const { doc, getDoc } = await import('firebase/firestore')
+    const docSnapshot = await getDoc(doc(db, GALLERY_COLLECTION, id))
+    return docSnapshot.exists() ? ({ id: docSnapshot.id, ...docSnapshot.data() } as AstroImage) : null
   }
 
   async create(image: Omit<AstroImage, 'id'>): Promise<AstroImage> {
-    // TODO: const ref = await addDoc(collection(db, 'images'), image)
-    // TODO: return { id: ref.id, ...image }
-    throw new Error('FirebaseImageRepository not yet implemented')
+    const db = await getDb()
+    const { collection, addDoc } = await import('firebase/firestore')
+    const ref = await addDoc(collection(db, GALLERY_COLLECTION), image)
+    return { id: ref.id, ...image }
   }
 
   async update(id: string, updates: Partial<Omit<AstroImage, 'id'>>): Promise<AstroImage> {
-    // TODO: await updateDoc(doc(db, 'images', id), updates)
-    // TODO: return { id, ...(await this.getById(id))! }
-    throw new Error('FirebaseImageRepository not yet implemented')
+    const db = await getDb()
+    const { doc, updateDoc } = await import('firebase/firestore')
+    await updateDoc(doc(db, GALLERY_COLLECTION, id), updates)
+    const updated = await this.getById(id)
+    if (!updated) throw new Error(`Image ${id} not found after update`)
+    return updated
   }
 
   async delete(id: string): Promise<void> {
-    // TODO: await deleteDoc(doc(db, 'images', id))
-    throw new Error('FirebaseImageRepository not yet implemented')
+    const db = await getDb()
+    const { doc, deleteDoc } = await import('firebase/firestore')
+    await deleteDoc(doc(db, GALLERY_COLLECTION, id))
   }
 
   async uploadImage(file: File, imageId?: string): Promise<{ thumbnailUrl: string; fullUrl: string }> {
-    // TODO: const path = `images/${imageId ?? Date.now()}_${file.name}`
-    // TODO: const storageRef = ref(storage, path)
-    // TODO: await uploadBytes(storageRef, file)
-    // TODO: const url = await getDownloadURL(storageRef)
-    // TODO: return { thumbnailUrl: url, fullUrl: url }
-    throw new Error('FirebaseImageRepository not yet implemented')
+    const storage = await getStorage()
+    const { ref, uploadBytes, getDownloadURL } = await import('firebase/storage')
+
+    const filename = `${imageId ?? Date.now()}_${file.name}`
+    const fullRef = ref(storage, `${GALLERY_STORAGE_PATH}/${filename}`)
+    await uploadBytes(fullRef, file)
+    const fullUrl = await getDownloadURL(fullRef)
+
+    // Thumbnail is generated by a Cloud Function at gallery/thumbnails/{filename}.
+    // Try to fetch it; fall back to the full image URL if not yet available.
+    let thumbnailUrl = fullUrl
+    try {
+      const thumbRef = ref(storage, `${THUMBNAILS_STORAGE_PATH}/${filename}`)
+      thumbnailUrl = await getDownloadURL(thumbRef)
+    } catch {
+      // Thumbnail not yet generated; use full image URL as placeholder
+    }
+
+    return { thumbnailUrl, fullUrl }
   }
 }
