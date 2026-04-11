@@ -22,10 +22,10 @@ npm run dev
 
 See `.env.example` for all variables. Key ones:
 
-| Variable | Description |
-|---|---|
-| `NUXT_IMAGE_REPOSITORY` | Backend: `stub` \| `firebase` \| `aws` |
-| `NUXT_APP_BASE_URL` | Base URL (e.g. `/astro-hankey-2/` for GitHub Pages) |
+| Variable                 | Description                                                     |
+| ------------------------ | --------------------------------------------------------------- |
+| `NUXT_IMAGE_REPOSITORY`  | Backend: `stub` \| `firebase` \| `aws`                          |
+| `NUXT_APP_BASE_URL`      | Base URL (e.g. `/astro-hankey-2/` for GitHub Pages)             |
 | `NUXT_PUBLIC_FIREBASE_*` | Firebase config (required for `firebase` backend + Google Auth) |
 
 ## Architecture
@@ -58,4 +58,3 @@ GitHub Actions workflows deploy to GitHub Pages on push to `main` (production) o
 ```bash
 npm run generate   # Static site output → .output/public
 ```
-

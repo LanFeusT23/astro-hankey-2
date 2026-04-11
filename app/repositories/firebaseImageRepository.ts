@@ -1,106 +1,118 @@
-import type { FirebaseApp } from 'firebase/app'
-import type { Firestore } from 'firebase/firestore'
-import type { FirebaseStorage } from 'firebase/storage'
-import type { ImageRepository } from './imageRepository'
-import { AstroImageSchema } from '~/types/image'
-import type { AstroImage } from '~/types/image'
+import type { FirebaseApp } from "firebase/app";
+import type { Firestore } from "firebase/firestore";
+import type { FirebaseStorage } from "firebase/storage";
+import type { ImageRepository } from "./imageRepository";
+import { AstroImageSchema } from "~/types/image";
+import type { AstroImage } from "~/types/image";
 
-const GALLERY_COLLECTION = 'gallery'
-const GALLERY_STORAGE_PATH = 'gallery'
-const THUMBNAILS_STORAGE_PATH = 'gallery/thumbnails'
+const GALLERY_COLLECTION = "images";
+const GALLERY_STORAGE_PATH = "gallery";
+const THUMBNAILS_STORAGE_PATH = "gallery/thumbnails";
 
-let _app: FirebaseApp | null = null
-let _db: Firestore | null = null
-let _storage: FirebaseStorage | null = null
+let _app: FirebaseApp | null = null;
+let _db: Firestore | null = null;
+let _storage: FirebaseStorage | null = null;
 
 async function getFirebaseApp(): Promise<FirebaseApp | null> {
-  if (_app) return _app
+  if (_app) return _app;
 
-  const config = useRuntimeConfig()
-  const firebase = config.public.firebase as Record<string, string>
+  const config = useRuntimeConfig();
+  const firebase = config.public.firebase as Record<string, string>;
 
-  if (!firebase.apiKey) return null
+  if (!firebase.apiKey) return null;
 
-  const { initializeApp, getApps } = await import('firebase/app')
-  _app = getApps().length === 0 ? initializeApp(firebase) : getApps()[0]
-  return _app
+  const { initializeApp, getApps } = await import("firebase/app");
+  _app = getApps().length === 0 ? initializeApp(firebase) : getApps()[0];
+  return _app;
 }
 
 async function getDb(): Promise<Firestore> {
-  if (_db) return _db
-  const app = await getFirebaseApp()
-  if (!app) throw new Error('Firebase is not configured')
-  const { getFirestore } = await import('firebase/firestore')
-  _db = getFirestore(app)
-  return _db
+  if (_db) return _db;
+  const app = await getFirebaseApp();
+  if (!app) throw new Error("Firebase is not configured");
+  const { getFirestore } = await import("firebase/firestore");
+  _db = getFirestore(app);
+  return _db;
 }
 
 async function getStorage(): Promise<FirebaseStorage> {
-  if (_storage) return _storage
-  const app = await getFirebaseApp()
-  if (!app) throw new Error('Firebase is not configured')
-  const { getStorage: initStorage } = await import('firebase/storage')
-  _storage = initStorage(app)
-  return _storage
+  if (_storage) return _storage;
+  const app = await getFirebaseApp();
+  if (!app) throw new Error("Firebase is not configured");
+  const { getStorage: initStorage } = await import("firebase/storage");
+  _storage = initStorage(app);
+  return _storage;
 }
 
 export class FirebaseImageRepository implements ImageRepository {
   async getAll(): Promise<AstroImage[]> {
-    const db = await getDb()
-    const { collection, query, orderBy, getDocs } = await import('firebase/firestore')
-    const q = query(collection(db, GALLERY_COLLECTION), orderBy('dateTaken', 'desc'))
-    const snap = await getDocs(q)
-    return snap.docs.map(d => AstroImageSchema.parse({ id: d.id, ...d.data() }))
+    const db = await getDb();
+    const { collection, query, orderBy, getDocs } = await import("firebase/firestore");
+
+    const q = query(collection(db, GALLERY_COLLECTION), orderBy("dateTaken", "desc"));
+    const snap = await getDocs(q);
+
+    console.log(snap);
+
+    return snap.docs.map((d) => AstroImageSchema.parse({ id: d.id, ...d.data() }));
   }
 
   async getById(id: string): Promise<AstroImage | null> {
-    const db = await getDb()
-    const { doc, getDoc } = await import('firebase/firestore')
-    const docSnapshot = await getDoc(doc(db, GALLERY_COLLECTION, id))
-    return docSnapshot.exists() ? AstroImageSchema.parse({ id: docSnapshot.id, ...docSnapshot.data() }) : null
+    const db = await getDb();
+    const { doc, getDoc } = await import("firebase/firestore");
+    const docSnapshot = await getDoc(doc(db, GALLERY_COLLECTION, id));
+    return docSnapshot.exists()
+      ? AstroImageSchema.parse({
+          id: docSnapshot.id,
+          ...docSnapshot.data(),
+        })
+      : null;
   }
 
-  async create(image: Omit<AstroImage, 'id'>): Promise<AstroImage> {
-    const db = await getDb()
-    const { collection, addDoc } = await import('firebase/firestore')
-    const ref = await addDoc(collection(db, GALLERY_COLLECTION), image)
-    return { id: ref.id, ...image }
+  async create(image: Omit<AstroImage, "id">): Promise<AstroImage> {
+    const db = await getDb();
+    const { collection, addDoc } = await import("firebase/firestore");
+    const ref = await addDoc(collection(db, GALLERY_COLLECTION), image);
+    return { id: ref.id, ...image };
   }
 
-  async update(id: string, updates: Partial<Omit<AstroImage, 'id'>>): Promise<AstroImage> {
-    const db = await getDb()
-    const { doc, updateDoc } = await import('firebase/firestore')
-    await updateDoc(doc(db, GALLERY_COLLECTION, id), updates)
-    const updated = await this.getById(id)
-    if (!updated) throw new Error(`Image ${id} not found after update`)
-    return updated
+  async update(id: string, updates: Partial<Omit<AstroImage, "id">>): Promise<AstroImage> {
+    const db = await getDb();
+    const { doc, updateDoc } = await import("firebase/firestore");
+    await updateDoc(doc(db, GALLERY_COLLECTION, id), updates);
+    const updated = await this.getById(id);
+    if (!updated) throw new Error(`Image ${id} not found after update`);
+    return updated;
   }
 
   async delete(id: string): Promise<void> {
-    const db = await getDb()
-    const { doc, deleteDoc } = await import('firebase/firestore')
-    await deleteDoc(doc(db, GALLERY_COLLECTION, id))
+    const db = await getDb();
+    const { doc, deleteDoc } = await import("firebase/firestore");
+    await deleteDoc(doc(db, GALLERY_COLLECTION, id));
   }
 
-  async uploadImage(file: File, imageId?: string): Promise<{ thumbnailUrl: string; fullUrl: string }> {
-    const storage = await getStorage()
-    const { ref, uploadBytes, getDownloadURL } = await import('firebase/storage')
+  async uploadImage(
+    file: File,
+    imageId?: string,
+  ): Promise<{ thumbnailUrl: string; fullUrl: string }> {
+    const storage = await getStorage();
+    const { ref, uploadBytes, getDownloadURL } = await import("firebase/storage");
 
-    const filename = `${imageId ?? Date.now()}_${file.name}`
-    const fullRef = ref(storage, `${GALLERY_STORAGE_PATH}/${filename}`)
-    await uploadBytes(fullRef, file)
-    const fullUrl = await getDownloadURL(fullRef)
+    const filename = `${imageId ?? Date.now()}_${file.name}`;
+    const fullRef = ref(storage, `${GALLERY_STORAGE_PATH}/${filename}`);
+    await uploadBytes(fullRef, file);
+    const fullUrl = await getDownloadURL(fullRef);
 
     // Thumbnail is generated by a Cloud Function at gallery/thumbnails/{filename}.
     // Try to fetch it; fall back to the full image URL if not yet available.
-    let thumbnailUrl = fullUrl
+    let thumbnailUrl = fullUrl;
     try {
-      const thumbRef = ref(storage, `${THUMBNAILS_STORAGE_PATH}/${filename}`)
-      thumbnailUrl = await getDownloadURL(thumbRef)
+      const thumbRef = ref(storage, `${THUMBNAILS_STORAGE_PATH}/${filename}`);
+      thumbnailUrl = await getDownloadURL(thumbRef);
     } catch {
       // Thumbnail not yet generated; use full image URL as placeholder
     }
 
-    return { thumbnailUrl, fullUrl }
+    return { thumbnailUrl, fullUrl };
   }
 }

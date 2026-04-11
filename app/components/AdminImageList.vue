@@ -2,7 +2,12 @@
   <div class="bg-space-800/40 border border-space-700/40 rounded-2xl p-6 backdrop-blur-sm">
     <h2 class="text-xl font-semibold text-white mb-6 flex items-center gap-2">
       <svg class="w-5 h-5 text-nebula-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4 6h16M4 10h16M4 14h16M4 18h16"
+        />
       </svg>
       Current Images ({{ images.length }})
     </h2>
@@ -89,43 +94,43 @@
 </template>
 
 <script setup lang="ts">
-import type { AstroImage } from '~/types/image'
+import type { AstroImage } from "~/types/image";
 
-const props = defineProps<{ images: AstroImage[] }>()
-const emit = defineEmits<{ updated: []; deleted: [] }>()
+const props = defineProps<{ images: AstroImage[] }>();
+const emit = defineEmits<{ updated: []; deleted: [] }>();
 
-const { updateImage, deleteImage } = useImages()
+const { updateImage, deleteImage } = useImages();
 
-const editingId = ref<string | null>(null)
-const editForm = reactive({ title: '', description: '', dateTaken: '' })
+const editingId = ref<string | null>(null);
+const editForm = reactive({ title: "", description: "", dateTaken: "" });
 
 const formatDate = (date: string) =>
-  new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+  new Date(date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 
 const startEdit = (image: AstroImage) => {
-  editingId.value = image.id
-  editForm.title = image.title
-  editForm.description = image.description
-  editForm.dateTaken = image.dateTaken
-}
+  editingId.value = image.id;
+  editForm.title = image.title;
+  editForm.description = image.description;
+  editForm.dateTaken = image.dateTaken;
+};
 
 const cancelEdit = () => {
-  editingId.value = null
-}
+  editingId.value = null;
+};
 
 const saveEdit = async (id: string) => {
   await updateImage(id, {
     title: editForm.title,
     description: editForm.description,
     dateTaken: editForm.dateTaken,
-  })
-  editingId.value = null
-  emit('updated')
-}
+  });
+  editingId.value = null;
+  emit("updated");
+};
 
 const handleDelete = async (id: string) => {
-  if (!confirm('Delete this image?')) return
-  await deleteImage(id)
-  emit('deleted')
-}
+  if (!confirm("Delete this image?")) return;
+  await deleteImage(id);
+  emit("deleted");
+};
 </script>
