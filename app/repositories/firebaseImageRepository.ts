@@ -2,6 +2,7 @@ import type { FirebaseApp } from 'firebase/app'
 import type { Firestore } from 'firebase/firestore'
 import type { FirebaseStorage } from 'firebase/storage'
 import type { ImageRepository } from './imageRepository'
+import { AstroImageSchema } from '~/types/image'
 import type { AstroImage } from '~/types/image'
 
 const GALLERY_COLLECTION = 'gallery'
@@ -49,14 +50,14 @@ export class FirebaseImageRepository implements ImageRepository {
     const { collection, query, orderBy, getDocs } = await import('firebase/firestore')
     const q = query(collection(db, GALLERY_COLLECTION), orderBy('dateTaken', 'desc'))
     const snap = await getDocs(q)
-    return snap.docs.map(d => ({ id: d.id, ...d.data() } as AstroImage))
+    return snap.docs.map(d => AstroImageSchema.parse({ id: d.id, ...d.data() }))
   }
 
   async getById(id: string): Promise<AstroImage | null> {
     const db = await getDb()
     const { doc, getDoc } = await import('firebase/firestore')
     const docSnapshot = await getDoc(doc(db, GALLERY_COLLECTION, id))
-    return docSnapshot.exists() ? ({ id: docSnapshot.id, ...docSnapshot.data() } as AstroImage) : null
+    return docSnapshot.exists() ? AstroImageSchema.parse({ id: docSnapshot.id, ...docSnapshot.data() }) : null
   }
 
   async create(image: Omit<AstroImage, 'id'>): Promise<AstroImage> {
