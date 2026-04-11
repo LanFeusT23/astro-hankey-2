@@ -22,23 +22,25 @@
         <!-- Loading state -->
         <div v-if="loading" class="flex justify-center items-center py-24">
           <div class="relative">
-            <div class="w-16 h-16 border-4 border-space-700 rounded-full animate-spin border-t-nebula-500"></div>
+            <div
+              class="w-16 h-16 border-4 border-space-700 rounded-full animate-spin border-t-nebula-500"
+            ></div>
           </div>
         </div>
 
         <!-- Error state -->
         <div v-else-if="error" class="text-center py-24 text-red-400">
           <p>{{ error }}</p>
-          <button @click="fetchImages" class="mt-4 px-4 py-2 bg-nebula-600 rounded-lg text-white hover:bg-nebula-500 transition-colors">
+          <button
+            @click="fetchImages"
+            class="mt-4 px-4 py-2 bg-nebula-600 rounded-lg text-white hover:bg-nebula-500 transition-colors"
+          >
             Retry
           </button>
         </div>
 
         <!-- Image grid -->
-        <div
-          v-else
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
+        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <ImageCard
             v-for="image in images"
             :key="image.id"
@@ -50,30 +52,27 @@
     </main>
 
     <!-- Modal -->
-    <ImageModal
-      v-if="selectedImage"
-      :image="selectedImage"
-      @close="selectedImage = null"
-    />
+    <ImageModal v-if="selectedImage" :image="selectedImage" @close="selectedImage = null" />
   </div>
 </template>
 
 <script setup lang="ts">
-import type { AstroImage } from '~/types/image'
+import type { AstroImage } from "~/types/image";
 
 useSeoMeta({
-  title: 'Gallery — Jonathan Hankey Astrophotography',
-  description: 'Browse the astrophotography gallery featuring nebulae, galaxies, and star clusters.',
-})
+  title: "Gallery — Jonathan Hankey Astrophotography",
+  description:
+    "Browse the astrophotography gallery featuring nebulae, galaxies, and star clusters.",
+});
 
-const { images, loading, error, fetchImages } = useImages()
-const selectedImage = ref<AstroImage | null>(null)
+const { images, loading, error, fetchImages } = useImages();
+const selectedImage = ref<AstroImage | null>(null);
 
 const openModal = (image: AstroImage) => {
-  selectedImage.value = image
-}
+  selectedImage.value = image;
+};
 
 onMounted(() => {
-  fetchImages()
-})
+  fetchImages();
+});
 </script>

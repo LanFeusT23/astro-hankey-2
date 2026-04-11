@@ -1,13 +1,14 @@
 {
   "name": "astro-hankey-2",
-  "type": "module",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "format": "oxfmt"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.2",

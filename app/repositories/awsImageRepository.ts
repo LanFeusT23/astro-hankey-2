@@ -1,5 +1,5 @@
-import type { ImageRepository } from './imageRepository'
-import type { AstroImage } from '~/types/image'
+import type { ImageRepository } from "./imageRepository";
+import type { AstroImage } from "~/types/image";
 
 // TODO: Implement AWS S3 + DynamoDB backend
 // Required packages: @aws-sdk/client-s3, @aws-sdk/client-dynamodb, @aws-sdk/lib-dynamodb
@@ -21,37 +21,40 @@ export class AwsImageRepository implements ImageRepository {
   async getAll(): Promise<AstroImage[]> {
     // TODO: const result = await dynamodb.send(new ScanCommand({ TableName: process.env.AWS_DYNAMODB_TABLE }))
     // TODO: return (result.Items ?? []) as AstroImage[]
-    throw new Error('AwsImageRepository not yet implemented')
+    throw new Error("AwsImageRepository not yet implemented");
   }
 
   async getById(id: string): Promise<AstroImage | null> {
     // TODO: const result = await dynamodb.send(new GetCommand({ TableName: process.env.AWS_DYNAMODB_TABLE, Key: { id } }))
     // TODO: return (result.Item as AstroImage) ?? null
-    throw new Error('AwsImageRepository not yet implemented')
+    throw new Error("AwsImageRepository not yet implemented");
   }
 
-  async create(image: Omit<AstroImage, 'id'>): Promise<AstroImage> {
+  async create(image: Omit<AstroImage, "id">): Promise<AstroImage> {
     // TODO: const id = crypto.randomUUID()
     // TODO: await dynamodb.send(new PutCommand({ TableName: process.env.AWS_DYNAMODB_TABLE, Item: { id, ...image } }))
     // TODO: return { id, ...image }
-    throw new Error('AwsImageRepository not yet implemented')
+    throw new Error("AwsImageRepository not yet implemented");
   }
 
-  async update(id: string, updates: Partial<Omit<AstroImage, 'id'>>): Promise<AstroImage> {
+  async update(id: string, updates: Partial<Omit<AstroImage, "id">>): Promise<AstroImage> {
     // TODO: Build UpdateExpression from updates keys
     // TODO: await dynamodb.send(new UpdateCommand({ ... }))
-    throw new Error('AwsImageRepository not yet implemented')
+    throw new Error("AwsImageRepository not yet implemented");
   }
 
   async delete(id: string): Promise<void> {
     // TODO: await dynamodb.send(new DeleteCommand({ TableName: process.env.AWS_DYNAMODB_TABLE, Key: { id } }))
-    throw new Error('AwsImageRepository not yet implemented')
+    throw new Error("AwsImageRepository not yet implemented");
   }
 
-  async uploadImage(file: File, imageId?: string): Promise<{ thumbnailUrl: string; fullUrl: string }> {
+  async uploadImage(
+    file: File,
+    imageId?: string,
+  ): Promise<{ thumbnailUrl: string; fullUrl: string }> {
     // TODO: Generate pre-signed S3 PUT URL
     // TODO: Upload file to S3
     // TODO: Return public CDN URLs
-    throw new Error('AwsImageRepository not yet implemented')
+    throw new Error("AwsImageRepository not yet implemented");
   }
 }
