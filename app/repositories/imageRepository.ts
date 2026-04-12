@@ -1,6 +1,6 @@
 import type { AstroImage } from "~/types/image";
 
-export interface ImageRepository {
+export interface `ImageRepository {
   getAll(): Promise<AstroImage[]>;
   getById(id: string): Promise<AstroImage | null>;
   create(image: Omit<AstroImage, "id">): Promise<AstroImage>;
