@@ -11,7 +11,7 @@ const STUB_IMAGES: AstroImage[] = [
     dateCreated: new Date("2024-09-15"),
     imageTakenDate: new Date("2024-09-15"),
     dontContainImage: false,
-    thumbnailUrl: "https://picsum.photos/seed/andromeda/600/400",
+    thumbnail: "https://picsum.photos/seed/andromeda/600/400",
     images: [{ cloudLocation: "https://picsum.photos/seed/andromeda/1920/1280", isMain: true }],
   },
   {
@@ -23,7 +23,7 @@ const STUB_IMAGES: AstroImage[] = [
     dateCreated: new Date("2024-11-20"),
     imageTakenDate: new Date("2024-11-20"),
     dontContainImage: false,
-    thumbnailUrl: "https://picsum.photos/seed/orion/600/400",
+    thumbnail: "https://picsum.photos/seed/orion/600/400",
     images: [{ cloudLocation: "https://picsum.photos/seed/orion/1920/1280", isMain: true }],
   },
   {
@@ -34,7 +34,7 @@ const STUB_IMAGES: AstroImage[] = [
     dateCreated: new Date("2024-07-04"),
     imageTakenDate: new Date("2024-07-04"),
     dontContainImage: false,
-    thumbnailUrl: "https://picsum.photos/seed/milkyway/600/400",
+    thumbnail: "https://picsum.photos/seed/milkyway/600/400",
     images: [{ cloudLocation: "https://picsum.photos/seed/milkyway/1920/1280", isMain: true }],
   },
   {
@@ -45,7 +45,7 @@ const STUB_IMAGES: AstroImage[] = [
     dateCreated: new Date("2024-12-03"),
     imageTakenDate: new Date("2024-12-03"),
     dontContainImage: false,
-    thumbnailUrl: "https://picsum.photos/seed/crab/600/400",
+    thumbnail: "https://picsum.photos/seed/crab/600/400",
     images: [{ cloudLocation: "https://picsum.photos/seed/crab/1920/1280", isMain: true }],
   },
   {
@@ -56,7 +56,7 @@ const STUB_IMAGES: AstroImage[] = [
     dateCreated: new Date("2024-10-28"),
     imageTakenDate: new Date("2024-10-28"),
     dontContainImage: false,
-    thumbnailUrl: "https://picsum.photos/seed/pleiades/600/400",
+    thumbnail: "https://picsum.photos/seed/pleiades/600/400",
     images: [{ cloudLocation: "https://picsum.photos/seed/pleiades/1920/1280", isMain: true }],
   },
   {
@@ -67,7 +67,7 @@ const STUB_IMAGES: AstroImage[] = [
     dateCreated: new Date("2024-11-08"),
     imageTakenDate: new Date("2024-11-08"),
     dontContainImage: false,
-    thumbnailUrl: "https://picsum.photos/seed/horsehead/600/400",
+    thumbnail: "https://picsum.photos/seed/horsehead/600/400",
     images: [{ cloudLocation: "https://picsum.photos/seed/horsehead/1920/1280", isMain: true }],
   },
 ];
