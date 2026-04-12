@@ -198,11 +198,13 @@ const handleUpload = async () => {
     const { getImageRepository } = await import("~/repositories/index");
     const repo = getImageRepository();
     let cloudLocation = `https://picsum.photos/seed/${Date.now()}/1920/1280`;
-    let thumbnailUrl: string | undefined = `https://picsum.photos/seed/${Date.now()}/600/400`;
+    let thumbnailUrl: string | undefined;
     if (uploadForm.file) {
       const urls = await repo.uploadImage(uploadForm.file);
       cloudLocation = urls.cloudLocation;
       thumbnailUrl = urls.thumbnailUrl;
+    } else {
+      thumbnailUrl = `https://picsum.photos/seed/${Date.now()}/600/400`;
     }
     await createImage({
       title: uploadForm.title,
