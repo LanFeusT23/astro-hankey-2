@@ -6,7 +6,7 @@
     <!-- Image -->
     <div class="aspect-[3/2] overflow-hidden">
       <img
-        :src="resolveUrl(image.thumbnailUrl ?? image.images.find((i) => i.isMain)?.cloudLocation)"
+        :src="thumbnailSrc"
         :alt="image.title"
         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         loading="lazy"
@@ -48,10 +48,12 @@
 <script setup lang="ts">
 import type { AstroImage } from "~/types/image";
 
-defineProps<{ image: AstroImage }>();
+const props = defineProps<{ image: AstroImage }>();
 defineEmits<{ click: [] }>();
 
 const { resolveUrl } = useImageUrl();
+
+const thumbnailSrc = computed(() => resolveUrl(props.image.thumbnailUrl));
 
 const formatDate = (date: Date) => {
   return date.toLocaleDateString("en-US", {
