@@ -6,7 +6,7 @@
     <!-- Image -->
     <div class="aspect-[3/2] overflow-hidden">
       <img
-        :src="image.thumbnailUrl"
+        :src="image.thumbnailUrl ?? image.images.find((i) => i.isMain)?.cloudLocation"
         :alt="image.title"
         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         loading="lazy"
@@ -25,7 +25,7 @@
       <p
         class="text-slate-400 text-sm mt-1 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-75"
       >
-        {{ formatDate(image.dateTaken) }}
+        {{ formatDate(image.imageTakenDate) }}
       </p>
     </div>
 
@@ -51,8 +51,8 @@ import type { AstroImage } from "~/types/image";
 defineProps<{ image: AstroImage }>();
 defineEmits<{ click: [] }>();
 
-const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString("en-US", {
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",

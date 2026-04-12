@@ -6,5 +6,8 @@ export interface ImageRepository {
   create(image: Omit<AstroImage, "id">): Promise<AstroImage>;
   update(id: string, updates: Partial<Omit<AstroImage, "id">>): Promise<AstroImage>;
   delete(id: string): Promise<void>;
-  uploadImage(file: File, imageId?: string): Promise<{ thumbnailUrl: string; fullUrl: string }>;
+  uploadImage(
+    file: File,
+    imageId?: string,
+  ): Promise<{ cloudLocation: string; thumbnailUrl?: string }>;
 }

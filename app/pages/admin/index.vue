@@ -95,20 +95,31 @@
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-slate-300 mb-2">Date Taken</label>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Location</label>
               <input
-                v-model="uploadForm.dateTaken"
+                v-model="uploadForm.location"
+                type="text"
+                required
+                placeholder="e.g. Rural Colorado"
+                class="w-full bg-space-900/80 border border-space-600/60 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-nebula-500 transition-colors"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Image Taken Date</label>
+              <input
+                v-model="uploadForm.imageTakenDate"
                 type="date"
                 required
                 class="w-full bg-space-900/80 border border-space-600/60 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-nebula-500 transition-colors"
               />
             </div>
             <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-slate-300 mb-2">Description</label>
+              <label class="block text-sm font-medium text-slate-300 mb-2"
+                >Subtitle <span class="text-slate-500">(optional)</span></label
+              >
               <textarea
-                v-model="uploadForm.description"
+                v-model="uploadForm.subtitle"
                 rows="3"
-                required
                 placeholder="Describe this image..."
                 class="w-full bg-space-900/80 border border-space-600/60 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-nebula-500 transition-colors resize-none"
               />
@@ -160,8 +171,9 @@ const uploading = ref(false);
 
 const uploadForm = reactive({
   title: "",
-  description: "",
-  dateTaken: "",
+  subtitle: "",
+  location: "",
+  imageTakenDate: "",
   file: null as File | null,
 });
 
@@ -180,28 +192,32 @@ const handleDrop = (e: DragEvent) => {
 };
 
 const handleUpload = async () => {
-  if (!uploadForm.title || !uploadForm.description || !uploadForm.dateTaken) return;
+  if (!uploadForm.title || !uploadForm.location || !uploadForm.imageTakenDate) return;
   uploading.value = true;
   try {
     const { getImageRepository } = await import("~/repositories/index");
     const repo = getImageRepository();
-    let thumbnailUrl = `https://picsum.photos/seed/${Date.now()}/600/400`;
-    let fullUrl = `https://picsum.photos/seed/${Date.now()}/1920/1280`;
+    let cloudLocation = `https://picsum.photos/seed/${Date.now()}/1920/1280`;
+    let thumbnailUrl: string | undefined = `https://picsum.photos/seed/${Date.now()}/600/400`;
     if (uploadForm.file) {
       const urls = await repo.uploadImage(uploadForm.file);
+      cloudLocation = urls.cloudLocation;
       thumbnailUrl = urls.thumbnailUrl;
-      fullUrl = urls.fullUrl;
     }
     await createImage({
       title: uploadForm.title,
-      description: uploadForm.description,
-      dateTaken: uploadForm.dateTaken,
+      subtitle: uploadForm.subtitle || undefined,
+      location: uploadForm.location,
+      imageTakenDate: new Date(uploadForm.imageTakenDate),
+      dateCreated: new Date(),
+      dontContainImage: false,
       thumbnailUrl,
-      fullUrl,
+      images: [{ cloudLocation, isMain: true }],
     });
     uploadForm.title = "";
-    uploadForm.description = "";
-    uploadForm.dateTaken = "";
+    uploadForm.subtitle = "";
+    uploadForm.location = "";
+    uploadForm.imageTakenDate = "";
     uploadForm.file = null;
     if (fileInput.value) fileInput.value.value = "";
   } finally {
