@@ -89,7 +89,11 @@ import type { AstroImage } from "~/types/image";
 const props = defineProps<{ image: AstroImage }>();
 defineEmits<{ close: [] }>();
 
-const mainCloudLocation = computed(() => props.image.images.find((i) => i.isMain)?.cloudLocation);
+const { resolveUrl } = useImageUrl();
+
+const mainCloudLocation = computed(() =>
+  resolveUrl(props.image.images.find((i) => i.isMain)?.cloudLocation),
+);
 
 const formatDate = (date: Date) => {
   return date.toLocaleDateString("en-US", {

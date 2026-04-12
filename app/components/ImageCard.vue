@@ -6,7 +6,7 @@
     <!-- Image -->
     <div class="aspect-[3/2] overflow-hidden">
       <img
-        :src="image.thumbnailUrl ?? image.images.find((i) => i.isMain)?.cloudLocation"
+        :src="resolveUrl(image.thumbnailUrl ?? image.images.find((i) => i.isMain)?.cloudLocation)"
         :alt="image.title"
         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         loading="lazy"
@@ -50,6 +50,8 @@ import type { AstroImage } from "~/types/image";
 
 defineProps<{ image: AstroImage }>();
 defineEmits<{ click: [] }>();
+
+const { resolveUrl } = useImageUrl();
 
 const formatDate = (date: Date) => {
   return date.toLocaleDateString("en-US", {
