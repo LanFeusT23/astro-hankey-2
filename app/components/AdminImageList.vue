@@ -33,8 +33,8 @@
         <div class="flex-1 min-w-0">
           <div v-if="editingId !== image.id">
             <h3 class="font-medium text-white truncate">{{ image.title }}</h3>
-            <p class="text-slate-400 text-sm mt-0.5">{{ formatDate(image.dateTaken) }}</p>
-            <p class="text-slate-500 text-xs mt-1 line-clamp-1">{{ image.description }}</p>
+            <p class="text-slate-400 text-sm mt-0.5">{{ formatDate(image.imageTakenDate) }}</p>
+            <p class="text-slate-500 text-xs mt-1 line-clamp-1">{{ image.subtitle }}</p>
           </div>
           <div v-else class="space-y-2">
             <input
@@ -44,15 +44,16 @@
               placeholder="Title"
             />
             <input
-              v-model="editForm.dateTaken"
-              type="date"
+              v-model="editForm.location"
+              type="text"
               class="w-full bg-space-800 border border-space-600 rounded px-3 py-1.5 text-white text-sm focus:outline-none focus:border-nebula-500"
+              placeholder="Location"
             />
             <textarea
-              v-model="editForm.description"
+              v-model="editForm.subtitle"
               rows="2"
               class="w-full bg-space-800 border border-space-600 rounded px-3 py-1.5 text-white text-sm focus:outline-none focus:border-nebula-500 resize-none"
-              placeholder="Description"
+              placeholder="Subtitle"
             />
           </div>
         </div>
@@ -102,16 +103,16 @@ const emit = defineEmits<{ updated: []; deleted: [] }>();
 const { updateImage, deleteImage } = useImages();
 
 const editingId = ref<string | null>(null);
-const editForm = reactive({ title: "", description: "", dateTaken: "" });
+const editForm = reactive({ title: "", subtitle: "", location: "" });
 
-const formatDate = (date: string) =>
-  new Date(date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+const formatDate = (date: Date) =>
+  date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 
 const startEdit = (image: AstroImage) => {
   editingId.value = image.id;
   editForm.title = image.title;
-  editForm.description = image.description;
-  editForm.dateTaken = image.dateTaken;
+  editForm.subtitle = image.subtitle ?? "";
+  editForm.location = image.location;
 };
 
 const cancelEdit = () => {
@@ -121,8 +122,8 @@ const cancelEdit = () => {
 const saveEdit = async (id: string) => {
   await updateImage(id, {
     title: editForm.title,
-    description: editForm.description,
-    dateTaken: editForm.dateTaken,
+    subtitle: editForm.subtitle || undefined,
+    location: editForm.location,
   });
   editingId.value = null;
   emit("updated");

@@ -51,7 +51,7 @@ export class AwsImageRepository implements ImageRepository {
   async uploadImage(
     file: File,
     imageId?: string,
-  ): Promise<{ thumbnailUrl: string; fullUrl: string }> {
+  ): Promise<{ cloudLocation: string; thumbnailUrl?: string }> {
     // TODO: Generate pre-signed S3 PUT URL
     // TODO: Upload file to S3
     // TODO: Return public CDN URLs

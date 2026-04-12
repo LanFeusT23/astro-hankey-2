@@ -5,56 +5,70 @@ const STUB_IMAGES: AstroImage[] = [
   {
     id: "1",
     title: "Andromeda Galaxy (M31)",
-    description:
-      "The Andromeda Galaxy, our nearest spiral galaxy neighbor, captured over 4 hours of integration time. Shot from dark skies in rural Colorado.",
-    dateTaken: "2024-09-15",
+    subtitle:
+      "The Andromeda Galaxy, our nearest spiral galaxy neighbor, captured over 4 hours of integration time.",
+    location: "Rural Colorado",
+    dateCreated: new Date("2024-09-15"),
+    imageTakenDate: new Date("2024-09-15"),
+    dontContainImage: false,
     thumbnailUrl: "https://picsum.photos/seed/andromeda/600/400",
-    fullUrl: "https://picsum.photos/seed/andromeda/1920/1280",
+    images: [{ cloudLocation: "https://picsum.photos/seed/andromeda/1920/1280", isMain: true }],
   },
   {
     id: "2",
     title: "Orion Nebula (M42)",
-    description:
-      "The Great Orion Nebula, a stellar nursery 1,344 light-years away. This image reveals intricate dust lanes and the Trapezium cluster at its core.",
-    dateTaken: "2024-11-20",
+    subtitle:
+      "The Great Orion Nebula, a stellar nursery 1,344 light-years away. Reveals intricate dust lanes and the Trapezium cluster.",
+    location: "Dark Sky Site, Arizona",
+    dateCreated: new Date("2024-11-20"),
+    imageTakenDate: new Date("2024-11-20"),
+    dontContainImage: false,
     thumbnailUrl: "https://picsum.photos/seed/orion/600/400",
-    fullUrl: "https://picsum.photos/seed/orion/1920/1280",
+    images: [{ cloudLocation: "https://picsum.photos/seed/orion/1920/1280", isMain: true }],
   },
   {
     id: "3",
     title: "Milky Way Core",
-    description:
-      "The galactic center of our Milky Way, rising above the Sierra Nevada mountains. A 2-panel mosaic captured during new moon in July.",
-    dateTaken: "2024-07-04",
+    subtitle: "The galactic center rising above the Sierra Nevada mountains. A 2-panel mosaic.",
+    location: "Sierra Nevada, California",
+    dateCreated: new Date("2024-07-04"),
+    imageTakenDate: new Date("2024-07-04"),
+    dontContainImage: false,
     thumbnailUrl: "https://picsum.photos/seed/milkyway/600/400",
-    fullUrl: "https://picsum.photos/seed/milkyway/1920/1280",
+    images: [{ cloudLocation: "https://picsum.photos/seed/milkyway/1920/1280", isMain: true }],
   },
   {
     id: "4",
     title: "Crab Nebula (M1)",
-    description:
-      "The remnant of a supernova explosion observed in 1054 AD. This cosmic wreckage is powered by a pulsar spinning 30 times per second.",
-    dateTaken: "2024-12-03",
+    subtitle: "The remnant of a supernova explosion observed in 1054 AD, powered by a pulsar.",
+    location: "Backyard Observatory",
+    dateCreated: new Date("2024-12-03"),
+    imageTakenDate: new Date("2024-12-03"),
+    dontContainImage: false,
     thumbnailUrl: "https://picsum.photos/seed/crab/600/400",
-    fullUrl: "https://picsum.photos/seed/crab/1920/1280",
+    images: [{ cloudLocation: "https://picsum.photos/seed/crab/1920/1280", isMain: true }],
   },
   {
     id: "5",
     title: "Pleiades Star Cluster (M45)",
-    description:
-      "The Seven Sisters, an open star cluster surrounded by wispy blue reflection nebulae. One of the most recognizable objects in the winter sky.",
-    dateTaken: "2024-10-28",
+    subtitle: "The Seven Sisters surrounded by wispy blue reflection nebulae.",
+    location: "Rural Utah",
+    dateCreated: new Date("2024-10-28"),
+    imageTakenDate: new Date("2024-10-28"),
+    dontContainImage: false,
     thumbnailUrl: "https://picsum.photos/seed/pleiades/600/400",
-    fullUrl: "https://picsum.photos/seed/pleiades/1920/1280",
+    images: [{ cloudLocation: "https://picsum.photos/seed/pleiades/1920/1280", isMain: true }],
   },
   {
     id: "6",
     title: "Horsehead Nebula (IC 434)",
-    description:
-      "The iconic Horsehead Nebula in Orion, a dark nebula silhouetted against the glowing emission nebula IC 434. Captured in narrowband Halpha.",
-    dateTaken: "2024-11-08",
+    subtitle: "The iconic Horsehead Nebula in Orion, captured in narrowband Hα.",
+    location: "Dark Sky Site, New Mexico",
+    dateCreated: new Date("2024-11-08"),
+    imageTakenDate: new Date("2024-11-08"),
+    dontContainImage: false,
     thumbnailUrl: "https://picsum.photos/seed/horsehead/600/400",
-    fullUrl: "https://picsum.photos/seed/horsehead/1920/1280",
+    images: [{ cloudLocation: "https://picsum.photos/seed/horsehead/1920/1280", isMain: true }],
   },
 ];
 
@@ -90,11 +104,11 @@ export class StubImageRepository implements ImageRepository {
   async uploadImage(
     _file: File,
     imageId?: string,
-  ): Promise<{ thumbnailUrl: string; fullUrl: string }> {
+  ): Promise<{ cloudLocation: string; thumbnailUrl?: string }> {
     const seed = imageId ?? String(Math.random());
     return {
+      cloudLocation: `https://picsum.photos/seed/${seed}/1920/1280`,
       thumbnailUrl: `https://picsum.photos/seed/${seed}/600/400`,
-      fullUrl: `https://picsum.photos/seed/${seed}/1920/1280`,
     };
   }
 }

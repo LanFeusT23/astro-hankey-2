@@ -32,7 +32,7 @@
             class="flex-1 bg-black flex items-center justify-center min-h-[300px] md:min-h-[500px]"
           >
             <img
-              :src="image.fullUrl"
+              :src="mainCloudLocation"
               :alt="image.title"
               class="max-w-full max-h-[70vh] object-contain"
             />
@@ -53,14 +53,14 @@
                     d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                   />
                 </svg>
-                {{ formatDate(image.dateTaken) }}
+                {{ formatDate(image.imageTakenDate) }}
               </div>
-              <p class="text-slate-400 text-sm leading-relaxed">{{ image.description }}</p>
+              <p class="text-slate-400 text-sm leading-relaxed">{{ image.subtitle }}</p>
             </div>
 
             <div class="mt-6 pt-6 border-t border-space-700/50">
               <a
-                :href="image.fullUrl"
+                :href="mainCloudLocation"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-nebula-600/20 hover:bg-nebula-600/40 border border-nebula-500/30 hover:border-nebula-400/60 text-nebula-300 rounded-lg text-sm transition-all"
@@ -86,11 +86,13 @@
 <script setup lang="ts">
 import type { AstroImage } from "~/types/image";
 
-defineProps<{ image: AstroImage }>();
+const props = defineProps<{ image: AstroImage }>();
 defineEmits<{ close: [] }>();
 
-const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString("en-US", {
+const mainCloudLocation = computed(() => props.image.images.find((i) => i.isMain)?.cloudLocation);
+
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
