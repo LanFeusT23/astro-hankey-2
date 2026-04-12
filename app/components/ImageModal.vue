@@ -32,7 +32,7 @@
             class="flex-1 bg-black flex items-center justify-center min-h-[300px] md:min-h-[500px]"
           >
             <img
-              :src="image.images.find((i) => i.isMain)?.cloudLocation ?? image.thumbnailUrl"
+              :src="mainCloudLocation"
               :alt="image.title"
               class="max-w-full max-h-[70vh] object-contain"
             />
@@ -60,7 +60,7 @@
 
             <div class="mt-6 pt-6 border-t border-space-700/50">
               <a
-                :href="image.images.find((i) => i.isMain)?.cloudLocation ?? image.thumbnailUrl"
+                :href="mainCloudLocation"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-nebula-600/20 hover:bg-nebula-600/40 border border-nebula-500/30 hover:border-nebula-400/60 text-nebula-300 rounded-lg text-sm transition-all"
@@ -86,8 +86,10 @@
 <script setup lang="ts">
 import type { AstroImage } from "~/types/image";
 
-defineProps<{ image: AstroImage }>();
+const props = defineProps<{ image: AstroImage }>();
 defineEmits<{ close: [] }>();
+
+const mainCloudLocation = computed(() => props.image.images.find((i) => i.isMain)?.cloudLocation);
 
 const formatDate = (date: Date) => {
   return date.toLocaleDateString("en-US", {

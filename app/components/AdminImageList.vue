@@ -24,7 +24,7 @@
       >
         <!-- Thumbnail -->
         <img
-          :src="image.thumbnailUrl ?? image.images.find((i) => i.isMain)?.cloudLocation"
+          :src="image.thumbnailUrl"
           :alt="image.title"
           class="w-20 h-14 object-cover rounded-lg flex-shrink-0"
         />
