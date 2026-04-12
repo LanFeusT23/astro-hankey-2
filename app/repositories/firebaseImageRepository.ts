@@ -2,7 +2,7 @@ import type { FirebaseApp } from "firebase/app";
 import type { Firestore } from "firebase/firestore";
 import type { FirebaseStorage } from "firebase/storage";
 import type { ImageRepository } from "./imageRepository";
-import { AstroImageSchema } from "~/types/image";
+import { astroImageSchema } from "~/types/image";
 import type { AstroImage } from "~/types/image";
 
 const GALLERY_COLLECTION = "images";
@@ -49,12 +49,12 @@ export class FirebaseImageRepository implements ImageRepository {
     const db = await getDb();
     const { collection, query, orderBy, getDocs } = await import("firebase/firestore");
 
-    const q = query(collection(db, GALLERY_COLLECTION), orderBy("dateTaken", "desc"));
+    const q = query(collection(db, GALLERY_COLLECTION), orderBy("imageTakenDate", "desc"));
     const snap = await getDocs(q);
 
-    console.log(snap);
-
-    return snap.docs.map((d) => AstroImageSchema.parse({ id: d.id, ...d.data() }));
+    return snap.docs.map((d) => {
+      return astroImageSchema.parse({ id: d.id, ...d.data() });
+    });
   }
 
   async getById(id: string): Promise<AstroImage | null> {
@@ -62,7 +62,7 @@ export class FirebaseImageRepository implements ImageRepository {
     const { doc, getDoc } = await import("firebase/firestore");
     const docSnapshot = await getDoc(doc(db, GALLERY_COLLECTION, id));
     return docSnapshot.exists()
-      ? AstroImageSchema.parse({
+      ? astroImageSchema.parse({
           id: docSnapshot.id,
           ...docSnapshot.data(),
         })

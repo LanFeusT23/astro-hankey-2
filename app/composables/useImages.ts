@@ -12,7 +12,6 @@ export const useImages = () => {
       const { getImageRepository } = await import("~/repositories/index");
       const repo = getImageRepository();
       images.value = await repo.getAll();
-      console.log(images.value);
     } catch (e) {
       error.value = e instanceof Error ? e.message : "Failed to load images";
     } finally {
