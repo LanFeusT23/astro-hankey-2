@@ -62,7 +62,10 @@ function normalizeFilename(filename: string, date: Date): string {
   const ext = lastDot !== -1 ? filename.slice(lastDot).toLowerCase() : "";
   const name = lastDot !== -1 ? filename.slice(0, lastDot) : filename;
   const dateStr = date.toISOString().slice(0, 10);
-  const normalized = name.toLowerCase().replace(/\s+/g, "_");
+  const normalized = name
+    .toLowerCase()
+    .replace(/\s+/g, "_")
+    .replace(/[^a-z0-9_-]/g, "_");
   return `${normalized}-${dateStr}${ext}`;
 }
 
