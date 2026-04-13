@@ -8,6 +8,7 @@ export interface `ImageRepository {
   delete(id: string): Promise<void>;
   uploadImage(
     file: File,
+    imageTakenDate: Date,
     imageId?: string,
   ): Promise<{ cloudLocation: string; thumbnailUrl?: string }>;
 }

@@ -103,6 +103,7 @@ export class StubImageRepository implements ImageRepository {
 
   async uploadImage(
     _file: File,
+    _imageTakenDate: Date,
     imageId?: string,
   ): Promise<{ cloudLocation: string; thumbnailUrl?: string }> {
     const seed = imageId ?? String(Math.random());

@@ -200,7 +200,7 @@ const handleUpload = async () => {
     let cloudLocation = `https://picsum.photos/seed/${Date.now()}/1920/1280`;
     let thumbnailUrl: string;
     if (uploadForm.file) {
-      const urls = await repo.uploadImage(uploadForm.file);
+      const urls = await repo.uploadImage(uploadForm.file, new Date(uploadForm.imageTakenDate));
       cloudLocation = urls.cloudLocation;
       thumbnailUrl = urls.thumbnailUrl;
     } else {

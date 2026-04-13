@@ -54,7 +54,7 @@ defineEmits<{ click: [] }>();
 const { resolveUrl } = useImageUrl();
 
 const thumbnailSrc = computed(() => {
-  return resolveUrl(props.image.thumbnail)
+  return resolveUrl(props.image.thumbnail);
 });
 
 const formatDate = (date: Date) => {
