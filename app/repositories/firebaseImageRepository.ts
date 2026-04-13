@@ -117,6 +117,21 @@ export class FirebaseImageRepository implements ImageRepository {
   }
 
   async delete(id: string): Promise<void> {
+    const image = await this.getById(id);
+
+    if (image) {
+      const storage = await getStorage();
+      const { ref, deleteObject } = await import("firebase/storage");
+
+      const deletePromises: Promise<void>[] = image.images.map((img) =>
+        deleteObject(ref(storage, img.cloudLocation)),
+      );
+      if (image.thumbnail) {
+        deletePromises.push(deleteObject(ref(storage, image.thumbnail)));
+      }
+      await Promise.allSettled(deletePromises);
+    }
+
     const db = await getDb();
     const { doc, deleteDoc } = await import("firebase/firestore");
     await deleteDoc(doc(db, getPaths().collection, id));
