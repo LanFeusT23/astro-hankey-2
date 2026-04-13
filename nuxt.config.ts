@@ -12,6 +12,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       imageRepository: process.env.NUXT_IMAGE_REPOSITORY || "stub",
+      appEnv: process.env.NUXT_PUBLIC_APP_ENV || "production",
       firebase: {
         apiKey: process.env.NUXT_PUBLIC_FIREBASE_API_KEY || "",
         authDomain: process.env.NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "",
