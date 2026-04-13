@@ -1,0 +1,21 @@
+name: Enforce Branch Strategy
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  check-target-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Block direct PRs to main (must come from develop)
+        if: github.base_ref == 'main' && github.head_ref != 'develop'
+        run: |
+          echo "::error::PRs to 'main' are only allowed from the 'develop' branch."
+          echo "::error::Please target 'develop' with your changes. Once verified on staging, 'develop' will be merged into 'main'."
+          exit 1
+
+      - name: Branch strategy check passed
+        run: echo "Branch strategy check passed."
