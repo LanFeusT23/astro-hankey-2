@@ -7,5 +7,12 @@ service cloud.firestore {
       // Only authenticated users can create, update, or delete
       allow write: if request.auth.uid == "VEzDSrjBHITxbGpX9zUEHooIIJQ2"
     }
+    
+    match /testImages/{document=**} {
+      // Anyone can read images images (public portfolio)
+      allow read: if true;
+      // Only authenticated users can create, update, or delete
+      allow write: if request.auth.uid == "VEzDSrjBHITxbGpX9zUEHooIIJQ2"
+    }
   }
 }

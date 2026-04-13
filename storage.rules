@@ -7,5 +7,12 @@ service firebase.storage {
       // Only authenticated users can upload or delete
       allow write: if request.auth.uid == "VEzDSrjBHITxbGpX9zUEHooIIJQ2";
     }
+    
+    match /testGallery/{allPaths=**} {
+      // Anyone can read gallery images (public portfolio)
+      allow read: if true;
+      // Only authenticated users can upload or delete
+      allow write: if request.auth.uid == "VEzDSrjBHITxbGpX9zUEHooIIJQ2";
+    }
   }
 }
