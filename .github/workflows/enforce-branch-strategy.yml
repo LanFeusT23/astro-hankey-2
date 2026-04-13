@@ -9,6 +9,7 @@ on:
 jobs:
   check-target-branch:
     runs-on: ubuntu-latest
+    permissions: {}
     steps:
       - name: Block direct PRs to main (must come from develop)
         if: github.base_ref == 'main' && github.head_ref != 'develop'
@@ -18,4 +19,5 @@ jobs:
           exit 1
 
       - name: Branch strategy check passed
+        if: github.base_ref != 'main' || github.head_ref == 'develop'
         run: echo "Branch strategy check passed."
