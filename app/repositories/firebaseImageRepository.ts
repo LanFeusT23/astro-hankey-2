@@ -129,7 +129,12 @@ export class FirebaseImageRepository implements ImageRepository {
       if (image.thumbnail) {
         deletePromises.push(deleteObject(ref(storage, image.thumbnail)));
       }
-      await Promise.allSettled(deletePromises);
+      const results = await Promise.allSettled(deletePromises);
+      results.forEach((result) => {
+        if (result.status === "rejected") {
+          console.warn("Failed to delete storage file:", result.reason);
+        }
+      });
     }
 
     const db = await getDb();
