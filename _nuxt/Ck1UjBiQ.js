@@ -1,0 +1,1 @@
+import{Z as e,n as o}from"./CbQL_s-u.js";import{u as a}from"./BSegdZDR.js";import"./u2SdjyJM.js";const m=e((i,r)=>{const{isAuthenticated:t}=a();if(!t.value)return o("/admin/login")});export{m as default};
