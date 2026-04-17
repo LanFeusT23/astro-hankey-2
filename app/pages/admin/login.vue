@@ -1,3 +1,34 @@
+<script setup lang="ts">
+useSeoMeta({ title: "Admin Login — Jonathan Hankey Astrophotography" });
+
+const { signInWithGoogle, loading, error, isAuthenticated } = useAuth();
+
+const stars = Array.from({ length: 80 }, (_, i) => ({
+  id: i,
+  x: Math.random() * 100,
+  y: Math.random() * 100,
+  size: Math.random() * 2 + 0.5,
+  opacity: Math.random() * 0.6 + 0.2,
+  delay: Math.random() * 4,
+}));
+
+const handleSignIn = async () => {
+  try {
+    await signInWithGoogle();
+    await navigateTo("/admin");
+  } catch {
+    // error is set in composable
+  }
+};
+
+// Redirect if already logged in
+watchEffect(() => {
+  if (isAuthenticated.value) {
+    navigateTo("/admin");
+  }
+});
+</script>
+
 <template>
   <div class="min-h-screen bg-space-950 flex items-center justify-center relative overflow-hidden">
     <!-- Stars -->
@@ -107,33 +138,3 @@
   </div>
 </template>
 
-<script setup lang="ts">
-useSeoMeta({ title: "Admin Login — Jonathan Hankey Astrophotography" });
-
-const { signInWithGoogle, loading, error, isAuthenticated } = useAuth();
-
-const stars = Array.from({ length: 80 }, (_, i) => ({
-  id: i,
-  x: Math.random() * 100,
-  y: Math.random() * 100,
-  size: Math.random() * 2 + 0.5,
-  opacity: Math.random() * 0.6 + 0.2,
-  delay: Math.random() * 4,
-}));
-
-const handleSignIn = async () => {
-  try {
-    await signInWithGoogle();
-    await navigateTo("/admin");
-  } catch {
-    // error is set in composable
-  }
-};
-
-// Redirect if already logged in
-watchEffect(() => {
-  if (isAuthenticated.value) {
-    navigateTo("/admin");
-  }
-});
-</script>

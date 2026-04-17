@@ -1,3 +1,24 @@
+<script setup lang="ts">
+import type { AstroImage } from "~/types/image";
+
+useSeoMeta({
+  title: "Gallery — Jonathan Hankey Astrophotography",
+  description:
+    "Browse the astrophotography gallery featuring nebulae, galaxies, and star clusters.",
+});
+
+const { images, loading, error, fetchImages } = useImages();
+const selectedImage = ref<AstroImage | null>(null);
+
+const openModal = (image: AstroImage) => {
+  selectedImage.value = image;
+};
+
+onMounted(() => {
+  fetchImages();
+});
+</script>
+
 <template>
   <div class="min-h-screen bg-space-950">
     <AppNav />
@@ -56,23 +77,3 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import type { AstroImage } from "~/types/image";
-
-useSeoMeta({
-  title: "Gallery — Jonathan Hankey Astrophotography",
-  description:
-    "Browse the astrophotography gallery featuring nebulae, galaxies, and star clusters.",
-});
-
-const { images, loading, error, fetchImages } = useImages();
-const selectedImage = ref<AstroImage | null>(null);
-
-const openModal = (image: AstroImage) => {
-  selectedImage.value = image;
-};
-
-onMounted(() => {
-  fetchImages();
-});
-</script>

@@ -1,3 +1,31 @@
+<script setup lang="ts">
+import type { AstroImage } from "~/types/image";
+
+const props = defineProps<{ image: AstroImage }>();
+defineEmits<{ close: [] }>();
+
+const { resolveUrl } = useImageUrl();
+
+const mainCloudLocation = computed(() =>
+  resolveUrl(props.image.images.find((i) => i.isMain)?.cloudLocation),
+);
+
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
+
+onMounted(() => {
+  document.body.style.overflow = "hidden";
+});
+onUnmounted(() => {
+  document.body.style.overflow = "";
+});
+</script>
+
 <template>
   <Teleport to="body">
     <div
@@ -83,30 +111,3 @@
   </Teleport>
 </template>
 
-<script setup lang="ts">
-import type { AstroImage } from "~/types/image";
-
-const props = defineProps<{ image: AstroImage }>();
-defineEmits<{ close: [] }>();
-
-const { resolveUrl } = useImageUrl();
-
-const mainCloudLocation = computed(() =>
-  resolveUrl(props.image.images.find((i) => i.isMain)?.cloudLocation),
-);
-
-const formatDate = (date: Date) => {
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-};
-
-onMounted(() => {
-  document.body.style.overflow = "hidden";
-});
-onUnmounted(() => {
-  document.body.style.overflow = "";
-});
-</script>
