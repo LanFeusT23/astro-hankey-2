@@ -1,3 +1,28 @@
+<script setup lang="ts">
+useSeoMeta({
+  title: "Jonathan Hankey — Astrophotography",
+  description:
+    "Deep sky astrophotography by Jonathan Hankey. Nebulae, galaxies, and star clusters captured from dark skies.",
+});
+
+const stats = [
+  { value: "200+", label: "Hours of Integration" },
+  { value: "50+", label: "Deep Sky Objects" },
+  { value: "10+", label: "Years Experience" },
+  { value: "6", label: "Featured Images" },
+];
+
+const stars = Array.from({ length: 150 }, (_, i) => ({
+  id: i,
+  x: Math.random() * 100,
+  y: Math.random() * 100,
+  size: Math.random() * 2.5 + 0.5,
+  opacity: Math.random() * 0.7 + 0.3,
+  delay: Math.random() * 4,
+  duration: Math.random() * 3 + 2,
+}));
+</script>
+
 <template>
   <div class="relative min-h-screen bg-space-950 overflow-hidden">
     <!-- Star field background -->
@@ -168,27 +193,3 @@
   </div>
 </template>
 
-<script setup lang="ts">
-useSeoMeta({
-  title: "Jonathan Hankey — Astrophotography",
-  description:
-    "Deep sky astrophotography by Jonathan Hankey. Nebulae, galaxies, and star clusters captured from dark skies.",
-});
-
-const stats = [
-  { value: "200+", label: "Hours of Integration" },
-  { value: "50+", label: "Deep Sky Objects" },
-  { value: "10+", label: "Years Experience" },
-  { value: "6", label: "Featured Images" },
-];
-
-const stars = Array.from({ length: 150 }, (_, i) => ({
-  id: i,
-  x: Math.random() * 100,
-  y: Math.random() * 100,
-  size: Math.random() * 2.5 + 0.5,
-  opacity: Math.random() * 0.7 + 0.3,
-  delay: Math.random() * 4,
-  duration: Math.random() * 3 + 2,
-}));
-</script>

@@ -1,3 +1,82 @@
+<script setup lang="ts">
+definePageMeta({ middleware: "auth" });
+
+useSeoMeta({ title: "Admin — Jonathan Hankey Astrophotography" });
+
+const { user, signOut } = useAuth();
+const { images, fetchImages, createImage } = useImages();
+
+const fileInput = ref<HTMLInputElement | null>(null);
+const uploading = ref(false);
+
+const uploadForm = reactive({
+  title: "",
+  subtitle: "",
+  location: "",
+  imageTakenDate: "",
+  file: null as File | null,
+});
+
+const userInitial = computed(() => {
+  const name = user.value?.displayName || user.value?.email || "A";
+  return name.charAt(0).toUpperCase();
+});
+
+const handleFileChange = (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  uploadForm.file = target.files?.[0] ?? null;
+};
+
+const handleDrop = (e: DragEvent) => {
+  uploadForm.file = e.dataTransfer?.files?.[0] ?? null;
+};
+
+const handleUpload = async () => {
+  if (!uploadForm.title || !uploadForm.location || !uploadForm.imageTakenDate) return;
+  uploading.value = true;
+  try {
+    const { getImageRepository } = await import("~/repositories/index");
+    const repo = getImageRepository();
+    let cloudLocation = `https://picsum.photos/seed/${Date.now()}/1920/1280`;
+    let thumbnailUrl: string;
+    if (uploadForm.file) {
+      const urls = await repo.uploadImage(uploadForm.file, new Date(uploadForm.imageTakenDate));
+      cloudLocation = urls.cloudLocation;
+      thumbnailUrl = urls.thumbnailUrl;
+    } else {
+      thumbnailUrl = `https://picsum.photos/seed/${Date.now()}/600/400`;
+    }
+    await createImage({
+      title: uploadForm.title,
+      subtitle: uploadForm.subtitle || undefined,
+      location: uploadForm.location,
+      imageTakenDate: new Date(uploadForm.imageTakenDate),
+      dateCreated: new Date(),
+      dontContainImage: false,
+      thumbnail: thumbnailUrl,
+      images: [{ cloudLocation, isMain: true }],
+    });
+    uploadForm.title = "";
+    uploadForm.subtitle = "";
+    uploadForm.location = "";
+    uploadForm.imageTakenDate = "";
+    uploadForm.file = null;
+    if (fileInput.value) fileInput.value.value = "";
+  } finally {
+    uploading.value = false;
+  }
+};
+
+const handleSignOut = async () => {
+  await signOut();
+  await navigateTo("/");
+};
+
+onMounted(() => {
+  fetchImages();
+});
+</script>
+
 <template>
   <div class="min-h-screen bg-space-950">
     <AppNav />
@@ -158,81 +237,3 @@
   </div>
 </template>
 
-<script setup lang="ts">
-definePageMeta({ middleware: "auth" });
-
-useSeoMeta({ title: "Admin — Jonathan Hankey Astrophotography" });
-
-const { user, signOut } = useAuth();
-const { images, fetchImages, createImage } = useImages();
-
-const fileInput = ref<HTMLInputElement | null>(null);
-const uploading = ref(false);
-
-const uploadForm = reactive({
-  title: "",
-  subtitle: "",
-  location: "",
-  imageTakenDate: "",
-  file: null as File | null,
-});
-
-const userInitial = computed(() => {
-  const name = user.value?.displayName || user.value?.email || "A";
-  return name.charAt(0).toUpperCase();
-});
-
-const handleFileChange = (e: Event) => {
-  const target = e.target as HTMLInputElement;
-  uploadForm.file = target.files?.[0] ?? null;
-};
-
-const handleDrop = (e: DragEvent) => {
-  uploadForm.file = e.dataTransfer?.files?.[0] ?? null;
-};
-
-const handleUpload = async () => {
-  if (!uploadForm.title || !uploadForm.location || !uploadForm.imageTakenDate) return;
-  uploading.value = true;
-  try {
-    const { getImageRepository } = await import("~/repositories/index");
-    const repo = getImageRepository();
-    let cloudLocation = `https://picsum.photos/seed/${Date.now()}/1920/1280`;
-    let thumbnailUrl: string;
-    if (uploadForm.file) {
-      const urls = await repo.uploadImage(uploadForm.file, new Date(uploadForm.imageTakenDate));
-      cloudLocation = urls.cloudLocation;
-      thumbnailUrl = urls.thumbnailUrl;
-    } else {
-      thumbnailUrl = `https://picsum.photos/seed/${Date.now()}/600/400`;
-    }
-    await createImage({
-      title: uploadForm.title,
-      subtitle: uploadForm.subtitle || undefined,
-      location: uploadForm.location,
-      imageTakenDate: new Date(uploadForm.imageTakenDate),
-      dateCreated: new Date(),
-      dontContainImage: false,
-      thumbnail: thumbnailUrl,
-      images: [{ cloudLocation, isMain: true }],
-    });
-    uploadForm.title = "";
-    uploadForm.subtitle = "";
-    uploadForm.location = "";
-    uploadForm.imageTakenDate = "";
-    uploadForm.file = null;
-    if (fileInput.value) fileInput.value.value = "";
-  } finally {
-    uploading.value = false;
-  }
-};
-
-const handleSignOut = async () => {
-  await signOut();
-  await navigateTo("/");
-};
-
-onMounted(() => {
-  fetchImages();
-});
-</script>

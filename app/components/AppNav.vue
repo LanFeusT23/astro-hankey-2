@@ -1,3 +1,11 @@
+<script setup lang="ts">
+const links = [
+  { to: "/", label: "Home" },
+  { to: "/gallery", label: "Gallery" },
+  { to: "/admin", label: "Admin" },
+];
+</script>
+
 <template>
   <nav class="fixed top-0 left-0 right-0 z-50 px-4 py-4">
     <div class="max-w-7xl mx-auto">
@@ -37,10 +45,3 @@
   </nav>
 </template>
 
-<script setup lang="ts">
-const links = [
-  { to: "/", label: "Home" },
-  { to: "/gallery", label: "Gallery" },
-  { to: "/admin", label: "Admin" },
-];
-</script>
