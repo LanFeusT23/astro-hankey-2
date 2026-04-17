@@ -7,15 +7,20 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 concurrency:
-  group: pages-production
+  group: pages
   cancel-in-progress: false
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -24,6 +29,8 @@ jobs:
           cache: "npm"
       - name: Install dependencies
         run: npm ci
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
       - name: Generate static site
         run: npm run generate
         env:
@@ -35,11 +42,32 @@ jobs:
           NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
           NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
           NUXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NUXT_PUBLIC_FIREBASE_APP_ID }}
-      - name: Prepare production deployment directory
-        run: touch .output/public/.nojekyll
-      - name: Deploy to gh-pages (root)
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Check for gh-pages branch
+        id: check-gh-pages
+        run: |
+          if git ls-remote --exit-code origin gh-pages > /dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Get staging content from gh-pages
+        if: steps.check-gh-pages.outputs.exists == 'true'
+        uses: actions/checkout@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .output/public
-          keep_files: true
+          ref: gh-pages
+          path: .gh-pages-content
+      - name: Include staging content in artifact
+        run: |
+          if [ -d .gh-pages-content/staging ]; then
+            cp -r .gh-pages-content/staging .output/public/staging
+            echo "Staging content included in deployment"
+          else
+            echo "No staging content found, skipping"
+          fi
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .output/public
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
