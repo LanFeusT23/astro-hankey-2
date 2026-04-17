@@ -1,3 +1,45 @@
+<script setup lang="ts">
+import type { AstroImage } from "~/types/image";
+
+const props = defineProps<{ images: AstroImage[] }>();
+const emit = defineEmits<{ updated: []; deleted: [] }>();
+
+const { updateImage, deleteImage } = useImages();
+
+const editingId = ref<string | null>(null);
+const editForm = reactive({ title: "", subtitle: "", location: "" });
+
+const formatDate = (date: Date) =>
+  date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+
+const startEdit = (image: AstroImage) => {
+  editingId.value = image.id;
+  editForm.title = image.title;
+  editForm.subtitle = image.subtitle ?? "";
+  editForm.location = image.location;
+};
+
+const cancelEdit = () => {
+  editingId.value = null;
+};
+
+const saveEdit = async (id: string) => {
+  await updateImage(id, {
+    title: editForm.title,
+    subtitle: editForm.subtitle || undefined,
+    location: editForm.location,
+  });
+  editingId.value = null;
+  emit("updated");
+};
+
+const handleDelete = async (id: string) => {
+  if (!confirm("Delete this image?")) return;
+  await deleteImage(id);
+  emit("deleted");
+};
+</script>
+
 <template>
   <div class="bg-space-800/40 border border-space-700/40 rounded-2xl p-6 backdrop-blur-sm">
     <h2 class="text-xl font-semibold text-white mb-6 flex items-center gap-2">
@@ -94,44 +136,3 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import type { AstroImage } from "~/types/image";
-
-const props = defineProps<{ images: AstroImage[] }>();
-const emit = defineEmits<{ updated: []; deleted: [] }>();
-
-const { updateImage, deleteImage } = useImages();
-
-const editingId = ref<string | null>(null);
-const editForm = reactive({ title: "", subtitle: "", location: "" });
-
-const formatDate = (date: Date) =>
-  date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-
-const startEdit = (image: AstroImage) => {
-  editingId.value = image.id;
-  editForm.title = image.title;
-  editForm.subtitle = image.subtitle ?? "";
-  editForm.location = image.location;
-};
-
-const cancelEdit = () => {
-  editingId.value = null;
-};
-
-const saveEdit = async (id: string) => {
-  await updateImage(id, {
-    title: editForm.title,
-    subtitle: editForm.subtitle || undefined,
-    location: editForm.location,
-  });
-  editingId.value = null;
-  emit("updated");
-};
-
-const handleDelete = async (id: string) => {
-  if (!confirm("Delete this image?")) return;
-  await deleteImage(id);
-  emit("deleted");
-};
-</script>

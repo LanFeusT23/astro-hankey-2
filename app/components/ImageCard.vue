@@ -1,3 +1,24 @@
+<script setup lang="ts">
+import type { AstroImage } from "~/types/image";
+
+const props = defineProps<{ image: AstroImage }>();
+defineEmits<{ click: [] }>();
+
+const { resolveUrl } = useImageUrl();
+
+const thumbnailSrc = computed(() => {
+  return resolveUrl(props.image.thumbnail);
+});
+
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
+</script>
+
 <template>
   <div
     class="group relative overflow-hidden rounded-2xl cursor-pointer bg-space-800 border border-space-700/50 hover:border-nebula-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-nebula-900/30"
@@ -45,23 +66,3 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import type { AstroImage } from "~/types/image";
-
-const props = defineProps<{ image: AstroImage }>();
-defineEmits<{ click: [] }>();
-
-const { resolveUrl } = useImageUrl();
-
-const thumbnailSrc = computed(() => {
-  return resolveUrl(props.image.thumbnail);
-});
-
-const formatDate = (date: Date) => {
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-};
-</script>
