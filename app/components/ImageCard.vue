@@ -25,7 +25,7 @@ const formatDate = (date: Date) => {
     @click="$emit('click')"
   >
     <!-- Image -->
-    <div class="aspect-[3/2] overflow-hidden">
+    <div class="aspect-3/2 overflow-hidden">
       <img
         :src="thumbnailSrc"
         :alt="image.title"
@@ -36,7 +36,7 @@ const formatDate = (date: Date) => {
 
     <!-- Hover overlay -->
     <div
-      class="absolute inset-0 bg-gradient-to-t from-space-950 via-space-950/60 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-5"
+      class="absolute inset-0 bg-linear-to-t from-space-950 via-space-950/60 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-5"
     >
       <h3
         class="text-white font-semibold text-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300"
