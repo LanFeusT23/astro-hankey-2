@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages (Staging)
+name: Deploy to Firebase Hosting (Staging)
 
 on:
   push:
@@ -7,10 +7,10 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: pages-staging
+  group: firebase-staging
   cancel-in-progress: true
 
 jobs:
@@ -27,7 +27,6 @@ jobs:
       - name: Generate static site (staging)
         run: npm run generate
         env:
-          NUXT_APP_BASE_URL: /astro-hankey-2/staging/
           NUXT_IMAGE_REPOSITORY: firebase
           NUXT_PUBLIC_APP_ENV: staging
           NUXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NUXT_PUBLIC_FIREBASE_API_KEY }}
@@ -36,14 +35,10 @@ jobs:
           NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
           NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
           NUXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NUXT_PUBLIC_FIREBASE_APP_ID }}
-      - name: Prepare staging deployment directory
-        run: |
-          mkdir -p .output/staging-deploy/staging
-          cp -r .output/public/. .output/staging-deploy/staging/
-          touch .output/staging-deploy/.nojekyll
-      - name: Deploy to gh-pages (staging subfolder)
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Deploy to Firebase Hosting preview channel (staging)
+        uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .output/staging-deploy
-          keep_files: true
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          channelId: staging
+          projectId: ${{ secrets.NUXT_PUBLIC_FIREBASE_PROJECT_ID }}
