@@ -1,16 +1,13 @@
-name: Deploy to GitHub Pages (Production)
+name: Deploy to Firebase Hosting (Production)
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: pages-production
+  group: firebase-production
   cancel-in-progress: false
 
 jobs:
@@ -27,7 +24,6 @@ jobs:
       - name: Generate static site
         run: npm run generate
         env:
-          NUXT_APP_BASE_URL: /astro-hankey-2/
           NUXT_IMAGE_REPOSITORY: firebase
           NUXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NUXT_PUBLIC_FIREBASE_API_KEY }}
           NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
@@ -35,10 +31,9 @@ jobs:
           NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
           NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
           NUXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NUXT_PUBLIC_FIREBASE_APP_ID }}
-      - name: Deploy to gh-pages (root)
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Deploy to Firebase Hosting live channel
+        uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .output/public
-          destination_dir: .
-          keep_files: true
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: ${{ secrets.NUXT_PUBLIC_FIREBASE_PROJECT_ID }}
