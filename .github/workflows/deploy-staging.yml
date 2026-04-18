@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages (Staging)
+name: Deploy to Firebase Hosting (Staging)
 
 on:
   push:
@@ -7,11 +7,10 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  actions: write
+  contents: read
 
 concurrency:
-  group: pages-staging
+  group: firebase-staging
   cancel-in-progress: true
 
 jobs:
@@ -28,7 +27,6 @@ jobs:
       - name: Generate static site (staging)
         run: npm run generate
         env:
-          NUXT_APP_BASE_URL: /astro-hankey-2/staging/
           NUXT_IMAGE_REPOSITORY: firebase
           NUXT_PUBLIC_APP_ENV: staging
           NUXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NUXT_PUBLIC_FIREBASE_API_KEY }}
@@ -37,25 +35,10 @@ jobs:
           NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
           NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
           NUXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NUXT_PUBLIC_FIREBASE_APP_ID }}
-      - name: Deploy staging to gh-pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Deploy to Firebase Hosting preview channel (staging)
+        uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .output/public
-          destination_dir: staging
-          keep_files: true
-      - name: Trigger production redeploy to include staging
-        uses: actions/github-script@v7
-        with:
-          script: |
-            try {
-              await github.rest.actions.createWorkflowDispatch({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                workflow_id: 'deploy.yml',
-                ref: 'main'
-              })
-              console.log('Production redeploy triggered successfully')
-            } catch (error) {
-              core.warning(`Failed to trigger production redeploy: ${error.message}. Staging changes will be visible after the next production deployment.`)
-            }
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          channelId: staging
+          projectId: ${{ secrets.NUXT_PUBLIC_FIREBASE_PROJECT_ID }}
