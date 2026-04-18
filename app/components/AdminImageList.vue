@@ -38,6 +38,9 @@ const handleDelete = async (id: string) => {
   await deleteImage(id);
   emit("deleted");
 };
+
+
+const { resolveUrl } = useImageUrl();
 </script>
 
 <template>
@@ -66,9 +69,9 @@ const handleDelete = async (id: string) => {
       >
         <!-- Thumbnail -->
         <img
-          :src="image.thumbnail"
+          :src="resolveUrl(image.thumbnail)"
           :alt="image.title"
-          class="w-20 h-14 object-cover rounded-lg flex-shrink-0"
+          class="w-20 h-14 object-cover rounded-lg shrink-0"
         />
 
         <!-- Info / Edit -->
