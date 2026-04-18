@@ -35,10 +35,9 @@ jobs:
           NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
           NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
           NUXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NUXT_PUBLIC_FIREBASE_APP_ID }}
-      - name: Deploy to Firebase Hosting preview channel (staging)
-        uses: FirebaseExtended/action-hosting-deploy@v0
+      - name: Authenticate with Google
+        uses: google-github-actions/auth@v2
         with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          channelId: staging
-          projectId: ${{ secrets.NUXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+      - name: Deploy to Firebase Hosting staging site
+        run: npx firebase-tools deploy --only hosting --config firebase.staging.json --project ${{ secrets.NUXT_PUBLIC_FIREBASE_PROJECT_ID }}
