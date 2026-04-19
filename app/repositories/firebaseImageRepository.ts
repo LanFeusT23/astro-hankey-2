@@ -27,12 +27,16 @@ let _db: Firestore | null = null;
 let _storage: FirebaseStorage | null = null;
 
 async function getFirebaseApp(): Promise<FirebaseApp | null> {
-    if (_app) return _app;
+    if (_app) {
+        return _app;
+    }
 
     const config = useRuntimeConfig();
     const firebase = config.public.firebase as Record<string, string>;
 
-    if (!firebase.apiKey) return null;
+    if (!firebase.apiKey) {
+        return null;
+    }
 
     const { initializeApp, getApps } = await import("firebase/app");
     _app = getApps().length === 0 ? initializeApp(firebase) : getApps()[0];
@@ -40,18 +44,26 @@ async function getFirebaseApp(): Promise<FirebaseApp | null> {
 }
 
 async function getDb(): Promise<Firestore> {
-    if (_db) return _db;
+    if (_db) {
+        return _db;
+    }
     const app = await getFirebaseApp();
-    if (!app) throw new Error("Firebase is not configured");
+    if (!app) {
+        throw new Error("Firebase is not configured");
+    }
     const { getFirestore } = await import("firebase/firestore");
     _db = getFirestore(app);
     return _db;
 }
 
 async function getStorage(): Promise<FirebaseStorage> {
-    if (_storage) return _storage;
+    if (_storage) {
+        return _storage;
+    }
     const app = await getFirebaseApp();
-    if (!app) throw new Error("Firebase is not configured");
+    if (!app) {
+        throw new Error("Firebase is not configured");
+    }
     const { getStorage: initStorage } = await import("firebase/storage");
     _storage = initStorage(app);
     return _storage;
@@ -71,7 +83,9 @@ function normalizeFilename(filename: string, date: Date): string {
 
 function addSizeSuffix(filename: string, suffix: string): string {
     const lastDot = filename.lastIndexOf(".");
-    if (lastDot === -1) return `${filename}${suffix}`;
+    if (lastDot === -1) {
+        return `${filename}${suffix}`;
+    }
     return `${filename.slice(0, lastDot)}${suffix}${filename.slice(lastDot)}`;
 }
 
@@ -112,7 +126,9 @@ export class FirebaseImageRepository implements ImageRepository {
         const { doc, updateDoc } = await import("firebase/firestore");
         await updateDoc(doc(db, getPaths().collection, id), updates);
         const updated = await this.getById(id);
-        if (!updated) throw new Error(`Image ${id} not found after update`);
+        if (!updated) {
+            throw new Error(`Image ${id} not found after update`);
+        }
         return updated;
     }
 

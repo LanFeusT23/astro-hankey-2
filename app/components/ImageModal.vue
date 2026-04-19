@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import type { AstroImage } from "~/types/image";
 
-const props = defineProps<{ image: AstroImage }>();
-defineEmits<{ close: [] }>();
+const props = defineProps<{
+    image: AstroImage;
+    hasPrev?: boolean;
+    hasNext?: boolean;
+}>();
+const emit = defineEmits<{ close: []; prev: []; next: [] }>();
 
 const { resolveUrl } = useImageUrl();
 
@@ -18,11 +22,42 @@ const formatDate = (date: Date) => {
     });
 };
 
+// Keyboard navigation
+const onKeydown = (e: KeyboardEvent) => {
+    if (e.key === "ArrowLeft" && props.hasPrev) {
+        emit("prev");
+    } else if (e.key === "ArrowRight" && props.hasNext) {
+        emit("next");
+    } else if (e.key === "Escape") {
+        emit("close");
+    }
+};
+
+// Touch swipe navigation
+let touchStartX = 0;
+const onTouchStart = (e: TouchEvent) => {
+    touchStartX = e.touches[0]?.clientX ?? 0;
+};
+const onTouchEnd = (e: TouchEvent) => {
+    const endX = e.changedTouches[0]?.clientX ?? touchStartX;
+    const delta = touchStartX - endX;
+    if (Math.abs(delta) < 50) {
+        return;
+    }
+    if (delta > 0 && props.hasNext) {
+        emit("next");
+    } else if (delta < 0 && props.hasPrev) {
+        emit("prev");
+    }
+};
+
 onMounted(() => {
     document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeydown);
 });
 onUnmounted(() => {
     document.body.style.overflow = "";
+    window.removeEventListener("keydown", onKeydown);
 });
 </script>
 
@@ -31,6 +66,8 @@ onUnmounted(() => {
         <div
             class="fixed inset-0 z-100 flex items-center justify-center p-4"
             @click.self="$emit('close')"
+            @touchstart="onTouchStart"
+            @touchend="onTouchEnd"
         >
             <!-- Backdrop -->
             <div
@@ -38,29 +75,42 @@ onUnmounted(() => {
                 @click="$emit('close')"
             />
 
+            <!-- Prev arrow -->
+            <button
+                v-if="hasPrev"
+                class="absolute left-4 z-20 flex items-center justify-center text-slate-400 hover:text-white transition-all opacity-50"
+                @click.stop="$emit('prev')"
+                aria-label="Previous image"
+            >
+                <material-symbols:arrow-back-ios-new-rounded class="text-3xl"></material-symbols:arrow-back-ios-new-rounded>
+            </button>
+
+            <!-- Next arrow -->
+            <button
+                v-if="hasNext"
+                class="absolute right-4 z-20 flex items-center justify-center text-slate-400 hover:text-white transition-all opacity-50"
+                @click.stop="$emit('next')"
+                aria-label="Next image"
+            >
+                <material-symbols:arrow-forward-ios-rounded class="text-3xl"></material-symbols:arrow-forward-ios-rounded>
+            </button>
+
             <!-- Modal -->
             <div
                 class="relative z-10 max-w-5xl w-full bg-space-800/80 border border-space-700/50 rounded-2xl overflow-hidden shadow-2xl"
             >
                 <!-- Close button -->
                 <button
-                    class="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-space-900/80 border border-space-600/50 flex items-center justify-center text-slate-400 hover:text-white hover:border-space-500 transition-all"
+                    class="absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white hover:border-space-500 transition-all"
                     @click="$emit('close')"
                 >
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12"
-                        />
-                    </svg>
+                   <material-symbols:close-rounded></material-symbols:close-rounded>
                 </button>
 
                 <div class="flex flex-col md:flex-row">
                     <!-- Image -->
                     <div
-                        class="flex-1 bg-black flex items-center justify-center min-h-75 md:min-h-[500px]"
+                        class="flex-1 bg-black flex items-center justify-center min-h-75 md:min-h-125"
                     >
                         <img
                             :src="mainCloudLocation"

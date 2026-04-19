@@ -1,23 +1,32 @@
 {
-    "name": "astro-hankey-2",
-    "private": true,
-    "type": "module",
-    "scripts": {
-        "build": "nuxt build",
-        "dev": "nuxt dev",
-        "generate": "nuxt generate",
-        "preview": "nuxt preview",
-        "postinstall": "nuxt prepare",
-        "format": "oxfmt"
-    },
-    "dependencies": {
-        "@tailwindcss/vite": "^4.2.2",
-        "firebase": "^12.12.0",
-        "nuxt": "^4.4.2",
-        "oxfmt": "^0.44.0",
-        "tailwindcss": "^4.2.2",
-        "vue": "^3.5.32",
-        "vue-router": "^5.0.4",
-        "zod": "^4.3.6"
-    }
+  "name": "astro-hankey-2",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "format": "oxfmt",
+    "lint": "oxlint --vue-plugin app",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.2.2",
+    "firebase": "^12.12.0",
+    "nuxt": "^4.4.2",
+    "tailwindcss": "^4.2.2",
+    "vue": "^3.5.32",
+    "vue-router": "^5.0.4",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@iconify-json/material-symbols": "^1.2.67",
+    "husky": "^9.1.7",
+    "oxfmt": "^0.45.0",
+    "oxlint": "^1.60.0",
+    "unplugin-icons": "^23.0.1",
+    "unplugin-vue-components": "^32.0.0"
+  }
 }

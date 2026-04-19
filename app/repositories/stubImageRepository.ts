@@ -92,7 +92,9 @@ export class StubImageRepository implements ImageRepository {
 
     async update(id: string, updates: Partial<Omit<AstroImage, "id">>): Promise<AstroImage> {
         const idx = images.findIndex((img) => img.id === id);
-        if (idx === -1) throw new Error(`Image ${id} not found`);
+        if (idx === -1) {
+            throw new Error(`Image ${id} not found`);
+        }
         images[idx] = { ...images[idx], ...updates };
         return images[idx];
     }

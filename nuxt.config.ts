@@ -1,10 +1,25 @@
+import IconsResolver from 'unplugin-icons/resolver'
+import ViteComponents from 'unplugin-vue-components/vite'
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineNuxtConfig({
+     modules: [
+    'unplugin-icons/nuxt',
+  ],
     devtools: { enabled: true },
     css: ["~/assets/css/main.css"],
     vite: {
-        plugins: [tailwindcss()],
+        plugins: [tailwindcss(),
+            ViteComponents({
+                resolvers: [
+                    IconsResolver({
+                        prefix: '',
+                        strict: true,
+                    }),
+                ],
+                dts: true,
+            }),
+        ],
     },
     app: {
         baseURL: process.env.NUXT_APP_BASE_URL || "/",

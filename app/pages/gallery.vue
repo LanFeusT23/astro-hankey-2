@@ -10,8 +10,24 @@ useSeoMeta({
 const { images, loading, error, fetchImages } = useImages();
 const selectedImage = ref<AstroImage | null>(null);
 
+const selectedIndex = computed(() =>
+    selectedImage.value ? images.value.indexOf(selectedImage.value) : -1,
+);
+
 const openModal = (image: AstroImage) => {
     selectedImage.value = image;
+};
+
+const navigatePrev = () => {
+    if (selectedIndex.value > 0) {
+        selectedImage.value = images.value[selectedIndex.value - 1] ?? null;
+    }
+};
+
+const navigateNext = () => {
+    if (selectedIndex.value < images.value.length - 1) {
+        selectedImage.value = images.value[selectedIndex.value + 1] ?? null;
+    }
 };
 
 onMounted(() => {
@@ -78,6 +94,14 @@ onMounted(() => {
         </main>
 
         <!-- Modal -->
-        <ImageModal v-if="selectedImage" :image="selectedImage" @close="selectedImage = null" />
+        <ImageModal
+            v-if="selectedImage"
+            :image="selectedImage"
+            :has-prev="selectedIndex > 0"
+            :has-next="selectedIndex < images.length - 1"
+            @close="selectedImage = null"
+            @prev="navigatePrev"
+            @next="navigateNext"
+        />
     </div>
 </template>

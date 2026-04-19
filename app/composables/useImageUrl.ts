@@ -7,10 +7,15 @@ export function useImageUrl() {
     const storageBucket = (config.public.firebase as Record<string, string>).storageBucket;
 
     function resolveUrl(cloudLocation: string | undefined): string | undefined {
-        if (!cloudLocation) return undefined;
-        if (cloudLocation.startsWith("https://") || cloudLocation.startsWith("http://"))
+        if (!cloudLocation) {
+            return undefined;
+        }
+        if (cloudLocation.startsWith("https://") || cloudLocation.startsWith("http://")) {
             return cloudLocation;
-        if (!storageBucket) return undefined;
+        }
+        if (!storageBucket) {
+            return undefined;
+        }
         return buildStorageUrl(storageBucket, cloudLocation);
     }
 

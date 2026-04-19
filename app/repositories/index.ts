@@ -6,7 +6,9 @@ import { AwsImageRepository } from "./awsImageRepository";
 let _repository: ImageRepository | null = null;
 
 export function getImageRepository(): ImageRepository {
-    if (_repository) return _repository;
+    if (_repository) {
+        return _repository;
+    }
 
     const repoType =
         (typeof useRuntimeConfig !== "undefined"

@@ -25,7 +25,9 @@ export const useImages = () => {
         const repo = getImageRepository();
         const updated = await repo.update(id, updates);
         const idx = images.value.findIndex((img) => img.id === id);
-        if (idx !== -1) images.value[idx] = updated;
+        if (idx !== -1) {
+            images.value[idx] = updated;
+        }
         return updated;
     };
 

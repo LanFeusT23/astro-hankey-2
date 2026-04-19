@@ -34,7 +34,9 @@ const saveEdit = async (id: string) => {
 };
 
 const handleDelete = async (id: string) => {
-    if (!confirm("Delete this image?")) return;
+    if (!confirm("Delete this image?")) {
+        return;
+    }
     await deleteImage(id);
     emit("deleted");
 };

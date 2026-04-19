@@ -83,7 +83,9 @@ export const useAuth = () => {
 
     const initAuth = async () => {
         const app = await getFirebaseApp();
-        if (!app) return;
+        if (!app) {
+            return;
+        }
 
         const { getAuth } = await import("firebase/auth");
         const auth = getAuth(app);

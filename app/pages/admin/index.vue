@@ -32,7 +32,9 @@ const handleDrop = (e: DragEvent) => {
 };
 
 const handleUpload = async () => {
-    if (!uploadForm.title || !uploadForm.location || !uploadForm.imageTakenDate) return;
+    if (!uploadForm.title || !uploadForm.location || !uploadForm.imageTakenDate) {
+        return;
+    }
     uploading.value = true;
     try {
         const { getImageRepository } = await import("~/repositories/index");
@@ -64,7 +66,9 @@ const handleUpload = async () => {
         uploadForm.location = "";
         uploadForm.imageTakenDate = "";
         uploadForm.file = null;
-        if (fileInput.value) fileInput.value.value = "";
+        if (fileInput.value) {
+            fileInput.value.value = "";
+        }
     } finally {
         uploading.value = false;
     }
