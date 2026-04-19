@@ -131,7 +131,7 @@ onUnmounted(() => {
                                 {{ formatDate(image.imageTakenDate) }}
                             </div>
                             <p class="text-slate-400 text-sm leading-relaxed">
-                                {{ image.subtitle }}
+                                {{ image.subTitle }}
                             </p>
                         </div>
 

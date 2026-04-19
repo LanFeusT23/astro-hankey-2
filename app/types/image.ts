@@ -19,7 +19,7 @@ export const astroImageSchema = z.object({
         }),
     ),
     location: z.string(),
-    subtitle: z.string().optional(),
+    subTitle: z.string().optional(),
     thumbnail: z.string(),
     title: z.string(),
 });

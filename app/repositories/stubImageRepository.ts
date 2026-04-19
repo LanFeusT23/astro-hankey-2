@@ -5,7 +5,7 @@ const STUB_IMAGES: AstroImage[] = [
     {
         id: "1",
         title: "Andromeda Galaxy (M31)",
-        subtitle:
+        subTitle:
             "The Andromeda Galaxy, our nearest spiral galaxy neighbor, captured over 4 hours of integration time.",
         location: "Rural Colorado",
         dateCreated: new Date("2024-09-15"),
@@ -17,7 +17,7 @@ const STUB_IMAGES: AstroImage[] = [
     {
         id: "2",
         title: "Orion Nebula (M42)",
-        subtitle:
+        subTitle:
             "The Great Orion Nebula, a stellar nursery 1,344 light-years away. Reveals intricate dust lanes and the Trapezium cluster.",
         location: "Dark Sky Site, Arizona",
         dateCreated: new Date("2024-11-20"),
@@ -29,7 +29,7 @@ const STUB_IMAGES: AstroImage[] = [
     {
         id: "3",
         title: "Milky Way Core",
-        subtitle: "The galactic center rising above the Sierra Nevada mountains. A 2-panel mosaic.",
+        subTitle: "The galactic center rising above the Sierra Nevada mountains. A 2-panel mosaic.",
         location: "Sierra Nevada, California",
         dateCreated: new Date("2024-07-04"),
         imageTakenDate: new Date("2024-07-04"),
@@ -40,7 +40,7 @@ const STUB_IMAGES: AstroImage[] = [
     {
         id: "4",
         title: "Crab Nebula (M1)",
-        subtitle: "The remnant of a supernova explosion observed in 1054 AD, powered by a pulsar.",
+        subTitle: "The remnant of a supernova explosion observed in 1054 AD, powered by a pulsar.",
         location: "Backyard Observatory",
         dateCreated: new Date("2024-12-03"),
         imageTakenDate: new Date("2024-12-03"),
@@ -51,7 +51,7 @@ const STUB_IMAGES: AstroImage[] = [
     {
         id: "5",
         title: "Pleiades Star Cluster (M45)",
-        subtitle: "The Seven Sisters surrounded by wispy blue reflection nebulae.",
+        subTitle: "The Seven Sisters surrounded by wispy blue reflection nebulae.",
         location: "Rural Utah",
         dateCreated: new Date("2024-10-28"),
         imageTakenDate: new Date("2024-10-28"),
@@ -62,7 +62,7 @@ const STUB_IMAGES: AstroImage[] = [
     {
         id: "6",
         title: "Horsehead Nebula (IC 434)",
-        subtitle: "The iconic Horsehead Nebula in Orion, captured in narrowband Hα.",
+        subTitle: "The iconic Horsehead Nebula in Orion, captured in narrowband Hα.",
         location: "Dark Sky Site, New Mexico",
         dateCreated: new Date("2024-11-08"),
         imageTakenDate: new Date("2024-11-08"),
