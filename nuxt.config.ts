@@ -1,30 +1,29 @@
-import IconsResolver from 'unplugin-icons/resolver'
-import ViteComponents from 'unplugin-vue-components/vite'
+import IconsResolver from "unplugin-icons/resolver";
+import ViteComponents from "unplugin-vue-components/vite";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineNuxtConfig({
-     modules: [
-    'unplugin-icons/nuxt',
-  ],
+    modules: ["unplugin-icons/nuxt"],
     devtools: { enabled: true },
     css: ["~/assets/css/main.css"],
     vite: {
         optimizeDeps: {
-        include: [
-                '@vue/devtools-core',
-                '@vue/devtools-kit',
-                'firebase/app',
-                'firebase/auth',
-                'firebase/firestore',
-                'firebase/storage',
-                'zod',
-            ]
+            include: [
+                "@vue/devtools-core",
+                "@vue/devtools-kit",
+                "firebase/app",
+                "firebase/auth",
+                "firebase/firestore",
+                "firebase/storage",
+                "zod",
+            ],
         },
-        plugins: [tailwindcss(),
+        plugins: [
+            tailwindcss(),
             ViteComponents({
                 resolvers: [
                     IconsResolver({
-                        prefix: '',
+                        prefix: "",
                         strict: true,
                     }),
                 ],

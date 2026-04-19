@@ -25,6 +25,10 @@
     body {
         font-family: var(--font-family-sans);
     }
+
+    button {
+        cursor: pointer;
+    }
 }
 
 /* Star field animation */

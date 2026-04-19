@@ -72,8 +72,7 @@ onUnmounted(() => {
             <!-- Backdrop -->
             <div
                 class="absolute inset-0 bg-space-950/95 backdrop-blur-md"
-                @click="$emit('close')"
-            />
+            ></div>
 
             <!-- Prev arrow -->
             <button
@@ -101,7 +100,7 @@ onUnmounted(() => {
             >
                 <!-- Close button -->
                 <button
-                    class="absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white hover:border-space-500 transition-all"
+                    class="absolute top-1 right-1 z-20 w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white hover:border-space-500 transition-all"
                     @click="$emit('close')"
                 >
                     <MdiClose class="w-5 h-5" />

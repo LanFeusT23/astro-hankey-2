@@ -49,12 +49,5 @@ const formatDate = (date: Date) => {
                 {{ formatDate(image.imageTakenDate) }}
             </p>
         </div>
-
-        <!-- Expand icon -->
-        <div
-            class="absolute top-4 right-4 w-8 h-8 rounded-full bg-space-900/80 border border-space-600/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform -translate-y-1 group-hover:translate-y-0"
-        >
-            <MdiArrowExpandAll class="w-4 h-4 text-white" />
-        </div>
     </div>
 </template>
