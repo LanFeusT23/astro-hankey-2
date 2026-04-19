@@ -47,19 +47,7 @@ const { resolveUrl } = useImageUrl();
 <template>
     <div class="bg-space-800/40 border border-space-700/40 rounded-2xl p-6 backdrop-blur-sm">
         <h2 class="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-            <svg
-                class="w-5 h-5 text-nebula-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-            >
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M4 6h16M4 10h16M4 14h16M4 18h16"
-                />
-            </svg>
+            <MdiFormatListBulleted class="w-5 h-5 text-nebula-400" />
             Current Images ({{ images.length }})
         </h2>
 
@@ -112,7 +100,7 @@ const { resolveUrl } = useImageUrl();
                 </div>
 
                 <!-- Actions -->
-                <div class="flex flex-col gap-2 flex-shrink-0">
+                <div class="flex flex-col gap-2 shrink-0">
                     <template v-if="editingId !== image.id">
                         <button
                             @click="startEdit(image)"

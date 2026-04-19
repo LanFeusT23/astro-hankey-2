@@ -10,5 +10,5 @@ export interface ImageRepository {
         file: File,
         imageTakenDate: Date,
         imageId?: string,
-    ): Promise<{ cloudLocation: string; thumbnailUrl?: string }>;
+    ): Promise<{ cloudLocation: string; thumbnailUrl: string }>;
 }

@@ -18,15 +18,7 @@ const { isAuthenticated } = useAuth();
                     <div
                         class="w-8 h-8 rounded-full bg-nebula-600/20 border border-nebula-500/40 flex items-center justify-center group-hover:border-nebula-400/60 transition-colors"
                     >
-                        <svg
-                            class="w-4 h-4 text-nebula-400"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                        >
-                            <path
-                                d="M10 2a8 8 0 100 16A8 8 0 0010 2zm0 14a6 6 0 110-12 6 6 0 010 12zm0-9a3 3 0 100 6 3 3 0 000-6z"
-                            />
-                        </svg>
+                        <MdiOrbit class="w-4 h-4 text-nebula-400" />
                     </div>
                     <span class="font-display font-semibold text-white text-sm tracking-wide"
                         >Jonathan Hankey</span

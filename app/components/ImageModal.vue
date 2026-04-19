@@ -82,7 +82,7 @@ onUnmounted(() => {
                 @click.stop="$emit('prev')"
                 aria-label="Previous image"
             >
-                <material-symbols:arrow-back-ios-new-rounded class="text-3xl"></material-symbols:arrow-back-ios-new-rounded>
+                <MdiChevronLeft class="text-3xl" />
             </button>
 
             <!-- Next arrow -->
@@ -92,7 +92,7 @@ onUnmounted(() => {
                 @click.stop="$emit('next')"
                 aria-label="Next image"
             >
-                <material-symbols:arrow-forward-ios-rounded class="text-3xl"></material-symbols:arrow-forward-ios-rounded>
+                <MdiChevronRight class="text-3xl" />
             </button>
 
             <!-- Modal -->
@@ -104,7 +104,7 @@ onUnmounted(() => {
                     class="absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white hover:border-space-500 transition-all"
                     @click="$emit('close')"
                 >
-                   <material-symbols:close-rounded></material-symbols:close-rounded>
+                    <MdiClose class="w-5 h-5" />
                 </button>
 
                 <div class="flex flex-col md:flex-row">
@@ -128,19 +128,7 @@ onUnmounted(() => {
                                 {{ image.title }}
                             </h2>
                             <div class="flex items-center gap-2 text-nebula-400 text-sm mb-4">
-                                <svg
-                                    class="w-4 h-4"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                    />
-                                </svg>
+                                <MdiCalendarMonthOutline class="w-4 h-4" />
                                 {{ formatDate(image.imageTakenDate) }}
                             </div>
                             <p class="text-slate-400 text-sm leading-relaxed">
@@ -155,19 +143,7 @@ onUnmounted(() => {
                                 rel="noopener noreferrer"
                                 class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-nebula-600/20 hover:bg-nebula-600/40 border border-nebula-500/30 hover:border-nebula-400/60 text-nebula-300 rounded-lg text-sm transition-all"
                             >
-                                <svg
-                                    class="w-4 h-4"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                                    />
-                                </svg>
+                                <MdiOpenInNew class="w-4 h-4" />
                                 View Full Resolution
                             </a>
                         </div>

@@ -123,19 +123,7 @@ onMounted(() => {
                     class="bg-space-800/40 border border-space-700/40 rounded-2xl p-6 mb-8 backdrop-blur-sm"
                 >
                     <h2 class="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-                        <svg
-                            class="w-5 h-5 text-nebula-400"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M12 4v16m8-8H4"
-                            />
-                        </svg>
+                        <MdiPlus class="w-5 h-5 text-nebula-400" />
                         Upload New Image
                     </h2>
                     <form
@@ -159,19 +147,7 @@ onMounted(() => {
                                     class="hidden"
                                     @change="handleFileChange"
                                 />
-                                <svg
-                                    class="w-10 h-10 mx-auto text-slate-500 mb-3"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="1.5"
-                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                    />
-                                </svg>
+                                <MdiFileImageOutline class="w-10 h-10 mx-auto text-slate-500 mb-3" />
                                 <p class="text-slate-400 text-sm">
                                     {{
                                         uploadForm.file
@@ -233,26 +209,7 @@ onMounted(() => {
                                 :disabled="uploading"
                                 class="px-6 py-2.5 bg-nebula-600 hover:bg-nebula-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center gap-2"
                             >
-                                <svg
-                                    v-if="uploading"
-                                    class="w-4 h-4 animate-spin"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <circle
-                                        class="opacity-25"
-                                        cx="12"
-                                        cy="12"
-                                        r="10"
-                                        stroke="currentColor"
-                                        stroke-width="4"
-                                    ></circle>
-                                    <path
-                                        class="opacity-75"
-                                        fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                                    ></path>
-                                </svg>
+                                <MdiLoading v-if="uploading" class="w-4 h-4 animate-spin" />
                                 {{ uploading ? "Uploading..." : "Upload Image" }}
                             </button>
                         </div>

@@ -54,14 +54,7 @@ const formatDate = (date: Date) => {
         <div
             class="absolute top-4 right-4 w-8 h-8 rounded-full bg-space-900/80 border border-space-600/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform -translate-y-1 group-hover:translate-y-0"
         >
-            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
-                />
-            </svg>
+            <MdiArrowExpandAll class="w-4 h-4 text-white" />
         </div>
     </div>
 </template>

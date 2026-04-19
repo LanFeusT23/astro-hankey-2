@@ -9,6 +9,17 @@ export default defineNuxtConfig({
     devtools: { enabled: true },
     css: ["~/assets/css/main.css"],
     vite: {
+        optimizeDeps: {
+        include: [
+                '@vue/devtools-core',
+                '@vue/devtools-kit',
+                'firebase/app',
+                'firebase/auth',
+                'firebase/firestore',
+                'firebase/storage',
+                'zod',
+            ]
+        },
         plugins: [tailwindcss(),
             ViteComponents({
                 resolvers: [
