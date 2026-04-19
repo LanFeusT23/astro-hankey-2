@@ -21,21 +21,20 @@ jobs:
                   cache: "npm"
             - name: Install dependencies
               run: npm ci
-            - name: Generate static site
+            - name: Generate static site (production)
               run: npm run generate
               env:
-                  NUXT_APP_BASE_URL: /
                   NUXT_IMAGE_REPOSITORY: firebase
+                  NUXT_PUBLIC_APP_ENV: production
                   NUXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NUXT_PUBLIC_FIREBASE_API_KEY }}
                   NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
                   NUXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NUXT_PUBLIC_FIREBASE_PROJECT_ID }}
                   NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
                   NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
                   NUXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NUXT_PUBLIC_FIREBASE_APP_ID }}
-            - name: Deploy to Firebase Hosting (live)
-              uses: FirebaseExtended/action-hosting-deploy@v0
+            - name: Authenticate with Google
+              uses: google-github-actions/auth@v2
               with:
-                  repoToken: ${{ secrets.GITHUB_TOKEN }}
-                  firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-                  projectId: ${{ secrets.NUXT_PUBLIC_FIREBASE_PROJECT_ID }}
-                  channelId: live
+                  credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+            - name: Deploy to Firebase Hosting production site
+              run: npx firebase-tools deploy --only hosting --config firebase.json --project ${{ secrets.NUXT_PUBLIC_FIREBASE_PROJECT_ID }}
