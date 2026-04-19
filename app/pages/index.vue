@@ -70,7 +70,7 @@ const stars = Array.from({ length: 150 }, (_, i) => ({
                     Jonathan Hankey
                 </h1>
 
-                <!-- Subtitle -->
+                <!-- subTitle -->
                 <p
                     class="animate-fade-in-up-delay text-xl md:text-3xl lg:text-4xl font-light tracking-[0.2em] uppercase text-star-400"
                 >

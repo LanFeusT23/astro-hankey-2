@@ -11,7 +11,7 @@ const uploading = ref(false);
 
 const uploadForm = reactive({
     title: "",
-    subtitle: "",
+    subTitle: "",
     location: "",
     imageTakenDate: "",
     file: null as File | null,
@@ -53,7 +53,7 @@ const handleUpload = async () => {
         }
         await createImage({
             title: uploadForm.title,
-            subtitle: uploadForm.subtitle || undefined,
+            subTitle: uploadForm.subTitle || undefined,
             location: uploadForm.location,
             imageTakenDate: new Date(uploadForm.imageTakenDate),
             dateCreated: new Date(),
@@ -62,7 +62,7 @@ const handleUpload = async () => {
             images: [{ cloudLocation, isMain: true }],
         });
         uploadForm.title = "";
-        uploadForm.subtitle = "";
+        uploadForm.subTitle = "";
         uploadForm.location = "";
         uploadForm.imageTakenDate = "";
         uploadForm.file = null;
@@ -194,10 +194,10 @@ onMounted(() => {
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-slate-300 mb-2"
-                                >Subtitle <span class="text-slate-500">(optional)</span></label
+                                >subTitle <span class="text-slate-500">(optional)</span></label
                             >
                             <textarea
-                                v-model="uploadForm.subtitle"
+                                v-model="uploadForm.subTitle"
                                 rows="3"
                                 placeholder="Describe this image..."
                                 class="w-full bg-space-900/80 border border-space-600/60 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-nebula-500 transition-colors resize-none"

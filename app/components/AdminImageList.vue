@@ -7,7 +7,7 @@ const emit = defineEmits<{ updated: []; deleted: [] }>();
 const { updateImage, deleteImage } = useImages();
 
 const editingId = ref<string | null>(null);
-const editForm = reactive({ title: "", subtitle: "", location: "" });
+const editForm = reactive({ title: "", subTitle: "", location: "" });
 
 const formatDate = (date: Date) =>
     date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
@@ -15,7 +15,7 @@ const formatDate = (date: Date) =>
 const startEdit = (image: AstroImage) => {
     editingId.value = image.id;
     editForm.title = image.title;
-    editForm.subtitle = image.subtitle ?? "";
+    editForm.subTitle = image.subTitle ?? "";
     editForm.location = image.location;
 };
 
@@ -26,7 +26,7 @@ const cancelEdit = () => {
 const saveEdit = async (id: string) => {
     await updateImage(id, {
         title: editForm.title,
-        subtitle: editForm.subtitle || undefined,
+        subTitle: editForm.subTitle || undefined,
         location: editForm.location,
     });
     editingId.value = null;
@@ -75,7 +75,7 @@ const { resolveUrl } = useImageUrl();
                         <p class="text-slate-400 text-sm mt-0.5">
                             {{ formatDate(image.imageTakenDate) }}
                         </p>
-                        <p class="text-slate-500 text-xs mt-1 line-clamp-1">{{ image.subtitle }}</p>
+                        <p class="text-slate-500 text-xs mt-1 line-clamp-1">{{ image.subTitle }}</p>
                     </div>
                     <div v-else class="space-y-2">
                         <input
@@ -91,10 +91,10 @@ const { resolveUrl } = useImageUrl();
                             placeholder="Location"
                         />
                         <textarea
-                            v-model="editForm.subtitle"
+                            v-model="editForm.subTitle"
                             rows="2"
                             class="w-full bg-space-800 border border-space-600 rounded px-3 py-1.5 text-white text-sm focus:outline-none focus:border-nebula-500 resize-none"
-                            placeholder="Subtitle"
+                            placeholder="subTitle"
                         />
                     </div>
                 </div>
