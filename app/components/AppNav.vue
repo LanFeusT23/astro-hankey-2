@@ -1,9 +1,10 @@
 <script setup lang="ts">
-const links = [
+const publicLinks = [
     { to: "/", label: "Home" },
     { to: "/gallery", label: "Gallery" },
-    { to: "/admin", label: "Admin" },
 ];
+
+const { isAuthenticated } = useAuth();
 </script>
 
 <template>
@@ -35,13 +36,29 @@ const links = [
                 <!-- Links -->
                 <div class="flex items-center gap-1">
                     <NuxtLink
-                        v-for="link in links"
+                        v-for="link in publicLinks"
                         :key="link.to"
                         :to="link.to"
                         class="px-4 py-1.5 rounded-full text-sm text-slate-400 hover:text-white hover:bg-space-700/60 transition-all duration-200"
                         active-class="text-white bg-space-700/60"
                     >
                         {{ link.label }}
+                    </NuxtLink>
+                    <NuxtLink
+                        v-if="isAuthenticated"
+                        to="/admin"
+                        class="px-4 py-1.5 rounded-full text-sm text-slate-400 hover:text-white hover:bg-space-700/60 transition-all duration-200"
+                        active-class="text-white bg-space-700/60"
+                    >
+                        Admin
+                    </NuxtLink>
+                    <NuxtLink
+                        v-else
+                        to="/admin/login"
+                        class="px-4 py-1.5 rounded-full text-sm text-slate-400 hover:text-white hover:bg-space-700/60 transition-all duration-200"
+                        active-class="text-white bg-space-700/60"
+                    >
+                        Login
                     </NuxtLink>
                 </div>
             </div>
