@@ -1,114 +1,118 @@
 @import "tailwindcss";
 
 @theme {
-  --color-space-950: #030712;
-  --color-space-900: #0a0e1a;
-  --color-space-800: #0f1629;
-  --color-space-700: #1a2044;
-  --color-nebula-400: #a78bfa;
-  --color-nebula-500: #8b5cf6;
-  --color-nebula-600: #7c3aed;
-  --color-star-400: #93c5fd;
-  --color-star-500: #60a5fa;
-  --color-star-600: #3b82f6;
+    --color-space-950: #030712;
+    --color-space-900: #0a0e1a;
+    --color-space-800: #0f1629;
+    --color-space-700: #1a2044;
+    --color-nebula-400: #a78bfa;
+    --color-nebula-500: #8b5cf6;
+    --color-nebula-600: #7c3aed;
+    --color-star-400: #93c5fd;
+    --color-star-500: #60a5fa;
+    --color-star-600: #3b82f6;
 
-  --font-family-sans: "Inter", system-ui, sans-serif;
-  --font-family-display: "Playfair Display", Georgia, serif;
+    --font-family-sans: "Inter", system-ui, sans-serif;
+    --font-family-display: "Playfair Display", Georgia, serif;
 }
 
 @layer base {
-  html {
-    background-color: #030712;
-    color: #e2e8f0;
-  }
+    html {
+        background-color: #030712;
+        color: #e2e8f0;
+    }
 
-  body {
-    font-family: var(--font-family-sans);
-  }
+    body {
+        font-family: var(--font-family-sans);
+    }
+
+    button {
+        cursor: pointer;
+    }
 }
 
 /* Star field animation */
 @keyframes twinkle {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.3;
-  }
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.3;
+    }
 }
 
 @keyframes float-up {
-  0% {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
+    0% {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 @keyframes glow-pulse {
-  0%,
-  100% {
-    text-shadow:
-      0 0 20px rgba(139, 92, 246, 0.5),
-      0 0 40px rgba(139, 92, 246, 0.3);
-  }
-  50% {
-    text-shadow:
-      0 0 40px rgba(139, 92, 246, 0.8),
-      0 0 80px rgba(139, 92, 246, 0.5),
-      0 0 120px rgba(139, 92, 246, 0.3);
-  }
+    0%,
+    100% {
+        text-shadow:
+            0 0 20px rgba(139, 92, 246, 0.5),
+            0 0 40px rgba(139, 92, 246, 0.3);
+    }
+    50% {
+        text-shadow:
+            0 0 40px rgba(139, 92, 246, 0.8),
+            0 0 80px rgba(139, 92, 246, 0.5),
+            0 0 120px rgba(139, 92, 246, 0.3);
+    }
 }
 
 @keyframes fade-in-up {
-  0% {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes shimmer {
-  0% {
-    background-position: -200% center;
-  }
-  100% {
-    background-position: 200% center;
-  }
+    0% {
+        background-position: -200% center;
+    }
+    100% {
+        background-position: 200% center;
+    }
 }
 
 .animate-twinkle {
-  animation: twinkle 3s ease-in-out infinite;
+    animation: twinkle 3s ease-in-out infinite;
 }
 .animate-float-up {
-  animation: float-up 1s ease-out forwards;
+    animation: float-up 1s ease-out forwards;
 }
 .animate-glow-pulse {
-  animation: glow-pulse 3s ease-in-out infinite;
+    animation: glow-pulse 3s ease-in-out infinite;
 }
 .animate-fade-in-up {
-  animation: fade-in-up 1s ease-out forwards;
+    animation: fade-in-up 1s ease-out forwards;
 }
 .animate-fade-in-up-delay {
-  animation: fade-in-up 1s ease-out 0.4s forwards;
-  opacity: 0;
+    animation: fade-in-up 1s ease-out 0.4s forwards;
+    opacity: 0;
 }
 .animate-fade-in-up-delay-2 {
-  animation: fade-in-up 1s ease-out 0.8s forwards;
-  opacity: 0;
+    animation: fade-in-up 1s ease-out 0.8s forwards;
+    opacity: 0;
 }
 .animate-shimmer {
-  background: linear-gradient(90deg, #a78bfa 0%, #ffffff 50%, #a78bfa 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: shimmer 4s linear infinite;
+    background: linear-gradient(90deg, #a78bfa 0%, #ffffff 50%, #a78bfa 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 4s linear infinite;
 }

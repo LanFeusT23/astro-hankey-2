@@ -1,6 +1,6 @@
 {
     "hosting": {
-        "site": "astro-hankey-test",
+        "site": "astro-hankey-staging",
         "public": ".output/public",
         "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
         "cleanUrls": true

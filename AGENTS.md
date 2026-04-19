@@ -10,7 +10,7 @@ In all `.vue` files, the `<script>` block must come **before** the `<template>` 
 </script>
 
 <template>
-  <!-- ... -->
+    <!-- ... -->
 </template>
 ```
 
