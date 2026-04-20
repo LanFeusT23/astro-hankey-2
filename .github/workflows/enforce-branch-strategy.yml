@@ -3,7 +3,6 @@ name: Enforce Branch Strategy
 on:
     pull_request:
         branches:
-            - main
             - develop
 
 jobs:
@@ -11,13 +10,13 @@ jobs:
         runs-on: ubuntu-latest
         permissions: {}
         steps:
-            - name: Block direct PRs to main (must come from develop)
-              if: github.base_ref == 'main' && github.head_ref != 'develop'
+            - name: Block PRs from develop
+              if: github.head_ref == 'develop'
               run: |
-                  echo "::error::PRs to 'main' are only allowed from the 'develop' branch."
-                  echo "::error::Please target 'develop' with your changes. Once verified on staging, 'develop' will be merged into 'main'."
+                  echo "::error::Open PRs into 'develop' from short-lived feature branches only."
+                  echo "::error::Do not use 'develop' as the source branch for regular pull requests."
                   exit 1
 
             - name: Branch strategy check passed
-              if: github.base_ref != 'main' || github.head_ref == 'develop'
+              if: github.head_ref != 'develop'
               run: echo "Branch strategy check passed."
