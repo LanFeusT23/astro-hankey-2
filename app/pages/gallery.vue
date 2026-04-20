@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import gsap from "gsap";
 import type { AstroImage } from "~/types/image";
 
 useSeoMeta({
@@ -30,13 +31,39 @@ const navigateNext = () => {
     }
 };
 
+const onBeforeEnter = (el: Element) => {
+    gsap.set(el, {
+        scale: 0.2,
+        opacity: 0,
+        x: "10rem",
+        transformOrigin: "center center",
+    });
+};
+
+const DELAY_BETWEEN_IMAGES_IN_MS = 50;
+
+const onEnter = (el: Element, done: () => void) => {
+    const delayIndex = Number((el as HTMLElement).dataset.index ?? 0);
+    const delay = (delayIndex * DELAY_BETWEEN_IMAGES_IN_MS) / 1000;
+
+    gsap.to(el, {
+        scale: 1,
+        opacity: 1,
+        x: 0,
+        duration: 0.5,
+        delay: delay,
+        ease: "power3.in",
+        onComplete: done,
+    });
+};
+
 onMounted(() => {
     fetchImages();
 });
 </script>
 
 <template>
-    <div class="min-h-screen">
+    <div class="min-h-screen overflow-x-hidden">
         <AppNav />
 
         <main class="pt-24 pb-16 px-4">
@@ -78,14 +105,23 @@ onMounted(() => {
                 </div>
 
                 <!-- Image grid -->
-                <div v-else class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+                <TransitionGroup
+                    v-else
+                    tag="div"
+                    class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6"
+                    :css="false"
+                    appear
+                    @before-enter="onBeforeEnter"
+                    @enter="onEnter"
+                >
                     <ImageCard
-                        v-for="image in images"
+                        v-for="(image, index) in images"
                         :key="image.id"
+                        :data-index="index"
                         :image="image"
                         @click="openModal(image)"
                     />
-                </div>
+                </TransitionGroup>
             </div>
         </main>
 
