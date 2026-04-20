@@ -70,9 +70,7 @@ onUnmounted(() => {
             @touchend="onTouchEnd"
         >
             <!-- Backdrop -->
-            <div
-                class="absolute inset-0 bg-space-950/95 backdrop-blur-md"
-            ></div>
+            <div class="absolute inset-0 bg-space-950/95 backdrop-blur-md"></div>
 
             <!-- Prev arrow -->
             <button

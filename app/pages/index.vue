@@ -6,38 +6,10 @@ useSeoMeta({
     description:
         "Deep sky astrophotography by Jonathan Hankey. Nebulae, galaxies, and star clusters captured from dark skies.",
 });
-
-const stars = Array.from({ length: 150 }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: Math.random() * 2.5 + 0.5,
-    opacity: Math.random() * 0.7 + 0.3,
-    delay: Math.random() * 4,
-    duration: Math.random() * 3 + 2,
-}));
 </script>
 
 <template>
-    <div class="relative min-h-screen bg-space-950 overflow-hidden">
-        <!-- Star field background -->
-        <div class="absolute inset-0 overflow-hidden">
-            <div
-                v-for="star in stars"
-                :key="star.id"
-                class="absolute rounded-full bg-white animate-twinkle"
-                :style="{
-                    left: star.x + '%',
-                    top: star.y + '%',
-                    width: star.size + 'px',
-                    height: star.size + 'px',
-                    opacity: star.opacity,
-                    animationDelay: star.delay + 's',
-                    animationDuration: star.duration + 's',
-                }"
-            />
-        </div>
-
+    <div class="relative min-h-screen overflow-hidden">
         <!-- Hero image overlay -->
         <div
             class="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -45,15 +17,15 @@ const stars = Array.from({ length: 150 }, (_, i) => ({
                 backgroundImage: `url(${landingPageMilkywayImage})`,
                 opacity: 0.3,
             }"
-        />
+        ></div>
 
         <!-- Gradient overlays -->
         <div
-            class="absolute inset-0 bg-linear-to-b from-space-950/60 via-transparent to-space-950"
-        />
+            class="absolute inset-0 bg-linear-to-b from-space-950/30 via-transparent to-space-950"
+        ></div>
         <div
-            class="absolute inset-0 bg-linear-to-r from-space-950/40 via-transparent to-space-950/40"
-        />
+            class="absolute inset-0 bg-linear-to-r from-space-950/20 via-transparent to-space-950/20"
+        ></div>
 
         <!-- Navigation -->
         <AppNav />
@@ -97,7 +69,7 @@ const stars = Array.from({ length: 150 }, (_, i) => ({
                         </span>
                         <div
                             class="absolute inset-0 bg-linear-to-r from-nebula-600 to-star-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                        />
+                        ></div>
                     </NuxtLink>
                 </div>
             </div>

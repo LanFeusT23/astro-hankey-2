@@ -36,7 +36,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="min-h-screen bg-space-950">
+    <div class="min-h-screen">
         <AppNav />
 
         <main class="pt-24 pb-16 px-4">
@@ -51,13 +51,9 @@ onMounted(() => {
                         observation.
                     </p>
                     <div class="flex items-center justify-center gap-4 mt-6">
-                        <div
-                            class="h-px w-16 bg-gradient-to-r from-transparent to-nebula-500"
-                        ></div>
+                        <div class="h-px w-16 bg-linear-to-r from-transparent to-nebula-500"></div>
                         <div class="w-2 h-2 rounded-full bg-nebula-500"></div>
-                        <div
-                            class="h-px w-16 bg-gradient-to-l from-transparent to-nebula-500"
-                        ></div>
+                        <div class="h-px w-16 bg-linear-to-l from-transparent to-nebula-500"></div>
                     </div>
                 </div>
 
@@ -82,7 +78,7 @@ onMounted(() => {
                 </div>
 
                 <!-- Image grid -->
-                <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div v-else class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
                     <ImageCard
                         v-for="image in images"
                         :key="image.id"

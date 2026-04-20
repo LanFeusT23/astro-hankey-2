@@ -85,7 +85,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="min-h-screen bg-space-950">
+    <div class="min-h-screen">
         <AppNav />
 
         <main class="pt-24 pb-16 px-4">
@@ -147,7 +147,9 @@ onMounted(() => {
                                     class="hidden"
                                     @change="handleFileChange"
                                 />
-                                <MdiFileImageOutline class="w-10 h-10 mx-auto text-slate-500 mb-3" />
+                                <MdiFileImageOutline
+                                    class="w-10 h-10 mx-auto text-slate-500 mb-3"
+                                />
                                 <p class="text-slate-400 text-sm">
                                     {{
                                         uploadForm.file

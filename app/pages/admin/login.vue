@@ -3,15 +3,6 @@ useSeoMeta({ title: "Admin Login — Jonathan Hankey Astrophotography" });
 
 const { signInWithGoogle, loading, error, isAuthenticated } = useAuth();
 
-const stars = Array.from({ length: 80 }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: Math.random() * 2 + 0.5,
-    opacity: Math.random() * 0.6 + 0.2,
-    delay: Math.random() * 4,
-}));
-
 const handleSignIn = async () => {
     try {
         await signInWithGoogle();
@@ -30,26 +21,7 @@ watchEffect(() => {
 </script>
 
 <template>
-    <div
-        class="min-h-screen bg-space-950 flex items-center justify-center relative overflow-hidden"
-    >
-        <!-- Stars -->
-        <div class="absolute inset-0">
-            <div
-                v-for="star in stars"
-                :key="star.id"
-                class="absolute rounded-full bg-white animate-twinkle"
-                :style="{
-                    left: star.x + '%',
-                    top: star.y + '%',
-                    width: star.size + 'px',
-                    height: star.size + 'px',
-                    opacity: star.opacity,
-                    animationDelay: star.delay + 's',
-                }"
-            />
-        </div>
-
+    <div class="min-h-screen flex items-center justify-center relative overflow-hidden">
         <div class="relative z-10 w-full max-w-md px-4">
             <div
                 class="bg-space-800/60 border border-space-700/50 rounded-2xl p-8 backdrop-blur-sm text-center"

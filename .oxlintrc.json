@@ -1,7 +1,5 @@
 {
-    "ignorePatterns": [
-        "app/components.d.ts"
-    ],
+    "ignorePatterns": ["app/components.d.ts"],
     "rules": {
         "curly": "error"
     }

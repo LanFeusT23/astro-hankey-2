@@ -15,10 +15,17 @@ const { isAuthenticated } = useAuth();
             >
                 <!-- Logo -->
                 <NuxtLink to="/" class="flex items-center gap-3 group">
-                    <div class="w-8 h-8 rounded-full bg-nebula-600/20 border border-nebula-500/40 flex items-center justify-center group-hover:border-nebula-400/60 transition-colors">
-                        <MdiOrbit class="w-4 h-4 animate-spin text-nebula-400" style="--animate-spin: spin 8s linear infinite" />
+                    <div
+                        class="w-8 h-8 rounded-full bg-nebula-600/20 border border-nebula-500/40 flex items-center justify-center group-hover:border-nebula-400/60 transition-colors"
+                    >
+                        <MdiOrbit
+                            class="w-4 h-4 animate-spin text-nebula-400"
+                            style="--animate-spin: spin 8s linear infinite"
+                        />
                     </div>
-                    <span class="font-display font-semibold text-white text-sm tracking-wide">Jonathan Hankey</span>
+                    <span class="font-display font-semibold text-white text-sm tracking-wide"
+                        >Jonathan Hankey</span
+                    >
                 </NuxtLink>
 
                 <!-- Links -->
