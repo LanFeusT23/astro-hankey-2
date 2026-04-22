@@ -4,7 +4,7 @@ const publicLinks = [
     { to: "/gallery", label: "Gallery" },
 ];
 
-const { isAuthenticated } = useAuth();
+const { isAuthenticated, isAdmin } = useAuth();
 </script>
 
 <template>
@@ -39,8 +39,10 @@ const { isAuthenticated } = useAuth();
                     >
                         {{ link.label }}
                     </NuxtLink>
+                    <!-- Admin users see the Admin link; unauthenticated users see Login;
+                         authenticated non-Admin users see neither (intentional) -->
                     <NuxtLink
-                        v-if="isAuthenticated"
+                        v-if="isAdmin"
                         to="/admin"
                         class="px-4 py-1.5 rounded-full text-sm text-slate-400 hover:text-white hover:bg-space-700/60 transition-all duration-200"
                         active-class="text-white bg-space-700/60"
@@ -48,7 +50,7 @@ const { isAuthenticated } = useAuth();
                         Admin
                     </NuxtLink>
                     <NuxtLink
-                        v-else
+                        v-else-if="!isAuthenticated"
                         to="/admin/login"
                         class="px-4 py-1.5 rounded-full text-sm text-slate-400 hover:text-white hover:bg-space-700/60 transition-all duration-200"
                         active-class="text-white bg-space-700/60"
