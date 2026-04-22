@@ -39,6 +39,8 @@ const { isAuthenticated, isAdmin } = useAuth();
                     >
                         {{ link.label }}
                     </NuxtLink>
+                    <!-- Admin users see the Admin link; unauthenticated users see Login;
+                         authenticated non-Admin users see neither (intentional) -->
                     <NuxtLink
                         v-if="isAdmin"
                         to="/admin"
