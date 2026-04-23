@@ -38,6 +38,7 @@ export default defineNuxtConfig({
         public: {
             imageRepository: process.env.NUXT_IMAGE_REPOSITORY || "stub",
             appEnv: process.env.NUXT_PUBLIC_APP_ENV || "production",
+            adminUids: process.env.NUXT_PUBLIC_ADMIN_UIDS || "",
             firebase: {
                 apiKey: process.env.NUXT_PUBLIC_FIREBASE_API_KEY || "",
                 authDomain: process.env.NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "",

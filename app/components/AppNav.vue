@@ -50,7 +50,7 @@ const { isAuthenticated, isAdmin } = useAuth();
                         Admin
                     </NuxtLink>
                     <NuxtLink
-                        v-else-if="!isAuthenticated"
+                        v-if="!isAdmin && !isAuthenticated"
                         to="/admin/login"
                         class="px-4 py-1.5 rounded-full text-sm text-slate-400 hover:text-white hover:bg-space-700/60 transition-all duration-200"
                         active-class="text-white bg-space-700/60"
