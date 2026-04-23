@@ -14,5 +14,19 @@ service cloud.firestore {
       // Only authenticated users can create, update, or delete
       allow write: if request.auth.uid == "VEzDSrjBHITxbGpX9zUEHooIIJQ2"
     }
+
+    match /users/{document=**} {
+      // Needed for admin role lookup during sign in
+      allow read: if request.auth != null;
+      // Only repository owner can manage admin records
+      allow write: if request.auth.uid == "VEzDSrjBHITxbGpX9zUEHooIIJQ2";
+    }
+
+    match /testUsers/{document=**} {
+      // Needed for admin role lookup during sign in (staging)
+      allow read: if request.auth != null;
+      // Only repository owner can manage admin records
+      allow write: if request.auth.uid == "VEzDSrjBHITxbGpX9zUEHooIIJQ2";
+    }
   }
 }

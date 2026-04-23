@@ -3,7 +3,19 @@ const { count = 150 } = defineProps<{
     count?: number;
 }>();
 
-const stars = computed(() => {
+const stars = ref<
+    Array<{
+        id: number;
+        x: number;
+        y: number;
+        size: number;
+        opacity: number;
+        delay: number;
+        duration: number;
+    }>
+>([]);
+
+function generateStars() {
     const starArray = [];
     for (let i = 0; i < count; i++) {
         starArray.push({
@@ -16,7 +28,11 @@ const stars = computed(() => {
             duration: Math.random() * 3 + 2,
         });
     }
-    return starArray;
+    stars.value = starArray;
+}
+
+onMounted(() => {
+    generateStars();
 });
 </script>
 

@@ -10,6 +10,16 @@ export interface AuthUser {
 const USER_COLLECTION_PROD = "users";
 const USER_COLLECTION_STAGING = "testUsers";
 
+const parseAdminUids = (raw: string | undefined): string[] => {
+    if (!raw) {
+        return [];
+    }
+    return raw
+        .split(",")
+        .map((uid) => uid.trim())
+        .filter((uid) => uid.length > 0);
+};
+
 const mapUser = (u: User): AuthUser => ({
     uid: u.uid,
     email: u.email,
@@ -40,25 +50,43 @@ export const useAuth = () => {
         return getApps()[0];
     };
 
+    const getConfiguredAdminUids = (): string[] => {
+        const config = useRuntimeConfig();
+        return parseAdminUids(config.public.adminUids as string | undefined);
+    };
+
     const checkIsAdmin = async (uid: string): Promise<boolean> => {
+        const configuredAdmins = getConfiguredAdminUids();
+        if (configuredAdmins.includes(uid)) {
+            return true;
+        }
+
         const app = await getFirebaseApp();
         if (!app) {
             return false;
         }
-        const config = useRuntimeConfig();
-        const collectionName =
-            config.public.appEnv === "staging" ? USER_COLLECTION_STAGING : USER_COLLECTION_PROD;
-        const { getFirestore, collection, query, where, getDocs } = await import(
-            "firebase/firestore"
-        );
-        const db = getFirestore(app);
-        const q = query(collection(db, collectionName), where("uid", "==", uid));
-        const snap = await getDocs(q);
-        if (snap.empty) {
+        try {
+            const config = useRuntimeConfig();
+            const collectionName =
+                config.public.appEnv === "staging" ? USER_COLLECTION_STAGING : USER_COLLECTION_PROD;
+            const { getFirestore, collection, query, where, getDocs } =
+                await import("firebase/firestore");
+            const db = getFirestore(app);
+            const q = query(collection(db, collectionName), where("uid", "==", uid));
+            const snap = await getDocs(q);
+            if (snap.empty) {
+                return false;
+            }
+            const firstDoc = snap.docs[0];
+            if (!firstDoc) {
+                return false;
+            }
+            const userData = firstDoc.data();
+            return userData.type === "Admin";
+        } catch (e) {
+            console.warn("Admin check failed, falling back to non-admin:", e);
             return false;
         }
-        const userData = snap.docs[0].data();
-        return userData.type === "Admin";
     };
 
     const signInWithGoogle = async () => {
@@ -84,6 +112,7 @@ export const useAuth = () => {
             const provider = new GoogleAuthProvider();
             const result = await signInWithPopup(auth, provider);
             user.value = mapUser(result.user);
+
             isAdmin.value = await checkIsAdmin(result.user.uid);
         } catch (e) {
             error.value = e instanceof Error ? e.message : "Sign in failed";

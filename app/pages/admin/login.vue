@@ -1,12 +1,18 @@
 <script setup lang="ts">
 useSeoMeta({ title: "Admin Login — Jonathan Hankey Astrophotography" });
 
-const { signInWithGoogle, loading, error, isAuthenticated } = useAuth();
+const { signInWithGoogle, signOut, loading, error, isAuthenticated, isAdmin } = useAuth();
 
 const handleSignIn = async () => {
     try {
         await signInWithGoogle();
-        await navigateTo("/admin");
+        if (isAuthenticated.value && isAdmin.value) {
+            await navigateTo("/admin");
+            return;
+        }
+
+        await signOut();
+        error.value = "This account is not authorized for admin access.";
     } catch {
         // error is set in composable
     }
@@ -14,7 +20,7 @@ const handleSignIn = async () => {
 
 // Redirect if already logged in
 watchEffect(() => {
-    if (isAuthenticated.value) {
+    if (isAuthenticated.value && isAdmin.value) {
         navigateTo("/admin");
     }
 });
