@@ -7,7 +7,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="relative">
+    <div class="relative page-transition-shell">
         <StarField />
         <NuxtPage />
     </div>
