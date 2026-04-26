@@ -1,6 +1,5 @@
 <script setup lang="ts">
 const publicLinks = [
-    { to: "/", label: "Home" },
     { to: "/gallery", label: "Gallery" },
 ];
 
