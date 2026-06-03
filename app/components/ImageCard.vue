@@ -6,7 +6,6 @@ const props = defineProps<{ image: AstroImage }>();
 const { resolveUrl } = useImageUrl();
 
 const thumbnailSrc = computed(() => resolveUrl(props.image.thumbnail));
-const slug = computed(() => getImageSlug(props.image));
 
 const formatDate = (date: Date) => {
     return date.toLocaleDateString("en-US", {
@@ -19,7 +18,7 @@ const formatDate = (date: Date) => {
 
 <template>
     <NuxtLink
-        :to="`/gallery/${slug}`"
+        :to="`/gallery/${image.id}`"
         class="group relative overflow-hidden rounded-2xl bg-space-800 border border-space-700/50 hover:border-nebula-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-nebula-900/30"
     >
         <!-- Image -->

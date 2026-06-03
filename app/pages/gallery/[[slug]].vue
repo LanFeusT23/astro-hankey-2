@@ -7,10 +7,10 @@ const route = useRoute();
 const slug = computed(() => route.params.slug as string | undefined);
 
 const { images, loading, error, fetchImages } = useImages();
-const { resolveBySlug, navigatePrev, navigateNext, hasPrev, hasNext } =
+const { resolveById, navigatePrev, navigateNext, hasPrev, hasNext } =
     useGallerySelection(images);
 
-const image = computed(() => (slug.value ? resolveBySlug(slug.value) : undefined));
+const image = computed(() => (slug.value ? resolveById(slug.value) : undefined));
 
 useSeoMeta({
     title: computed(() =>
