@@ -6,7 +6,7 @@
         "rules": "storage.rules"
     },
     "hosting": {
-        "site": "astro-hankey-test",
+        "site": "astro-hankey",
         "public": ".output/public",
         "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
         "cleanUrls": true
