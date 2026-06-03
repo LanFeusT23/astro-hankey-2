@@ -10,7 +10,7 @@ const { isAuthenticated, isAdmin } = useAuth();
     <nav class="fixed top-0 left-0 right-0 z-50 px-4 py-4">
         <div class="max-w-7xl mx-auto">
             <div
-                class="bg-space-900/80 border border-space-700/40 rounded-full px-6 py-3 backdrop-blur-md flex items-center justify-between"
+                class="border border-space-700/40 rounded-full px-6 py-3 backdrop-blur-sm flex items-center justify-between"
             >
                 <!-- Logo -->
                 <NuxtLink to="/" class="flex items-center gap-3 group">
