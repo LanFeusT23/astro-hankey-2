@@ -73,10 +73,6 @@ onMounted(() => {
                     <h1 class="text-4xl md:text-6xl font-display font-bold text-white mb-4">
                         The <span class="text-nebula-400">Gallery</span>
                     </h1>
-                    <p class="text-slate-400 text-lg max-w-2xl mx-auto">
-                        A collection of deep sky objects captured through long nights of patient
-                        observation.
-                    </p>
                     <div class="flex items-center justify-center gap-4 mt-6">
                         <div class="h-px w-16 bg-linear-to-r from-transparent to-nebula-500"></div>
                         <div class="w-2 h-2 rounded-full bg-nebula-500"></div>

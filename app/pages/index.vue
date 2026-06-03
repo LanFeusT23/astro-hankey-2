@@ -53,8 +53,7 @@ useSeoMeta({
                 <p
                     class="animate-fade-in-up-delay-2 text-slate-400 text-base md:text-lg max-w-2xl mx-auto leading-relaxed mt-6"
                 >
-                    Capturing the universe, one photon at a time. Deep sky objects, nebulae, and
-                    galaxies from dark skies across the American West.
+                    Capturing the universe, one photon at a time.
                 </p>
 
                 <!-- CTA button -->
