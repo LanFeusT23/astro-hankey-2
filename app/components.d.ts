@@ -12,12 +12,6 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    'MaterialSymbols:arrowBackIosNewRounded': typeof import('~icons/material-symbols/arrow-back-ios-new-rounded')['default']
-    'MaterialSymbols:arrowForwardIosNewRounded': typeof import('~icons/material-symbols/arrow-forward-ios-new-rounded')['default']
-    'MaterialSymbols:arrowForwardIosRounded': typeof import('~icons/material-symbols/arrow-forward-ios-rounded')['default']
-    'MaterialSymbols:closeRounded': typeof import('~icons/material-symbols/close-rounded')['default']
-    MaterialSymbolsArrowBackIosNewRounded: typeof import('~icons/material-symbols/arrow-back-ios-new-rounded')['default']
-    MdiArrowExpandAll: typeof import('~icons/mdi/arrow-expand-all')['default']
     MdiCalendarMonthOutline: typeof import('~icons/mdi/calendar-month-outline')['default']
     MdiChevronLeft: typeof import('~icons/mdi/chevron-left')['default']
     MdiChevronRight: typeof import('~icons/mdi/chevron-right')['default']
@@ -38,12 +32,6 @@ declare module 'vue' {
 
 // For TSX support
 declare global {
-  const 'MaterialSymbols:arrowBackIosNewRounded': typeof import('~icons/material-symbols/arrow-back-ios-new-rounded')['default']
-  const 'MaterialSymbols:arrowForwardIosNewRounded': typeof import('~icons/material-symbols/arrow-forward-ios-new-rounded')['default']
-  const 'MaterialSymbols:arrowForwardIosRounded': typeof import('~icons/material-symbols/arrow-forward-ios-rounded')['default']
-  const 'MaterialSymbols:closeRounded': typeof import('~icons/material-symbols/close-rounded')['default']
-  const MaterialSymbolsArrowBackIosNewRounded: typeof import('~icons/material-symbols/arrow-back-ios-new-rounded')['default']
-  const MdiArrowExpandAll: typeof import('~icons/mdi/arrow-expand-all')['default']
   const MdiCalendarMonthOutline: typeof import('~icons/mdi/calendar-month-outline')['default']
   const MdiChevronLeft: typeof import('~icons/mdi/chevron-left')['default']
   const MdiChevronRight: typeof import('~icons/mdi/chevron-right')['default']

@@ -2,13 +2,11 @@
 import type { AstroImage } from "~/types/image";
 
 const props = defineProps<{ image: AstroImage }>();
-defineEmits<{ click: [] }>();
 
 const { resolveUrl } = useImageUrl();
 
-const thumbnailSrc = computed(() => {
-    return resolveUrl(props.image.thumbnail);
-});
+const thumbnailSrc = computed(() => resolveUrl(props.image.thumbnail));
+const slug = computed(() => getImageSlug(props.image));
 
 const formatDate = (date: Date) => {
     return date.toLocaleDateString("en-US", {
@@ -20,9 +18,9 @@ const formatDate = (date: Date) => {
 </script>
 
 <template>
-    <div
-        class="group relative overflow-hidden rounded-2xl cursor-pointer bg-space-800 border border-space-700/50 hover:border-nebula-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-nebula-900/30"
-        @click="$emit('click')"
+    <NuxtLink
+        :to="`/gallery/${slug}`"
+        class="group relative overflow-hidden rounded-2xl bg-space-800 border border-space-700/50 hover:border-nebula-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-nebula-900/30"
     >
         <!-- Image -->
         <div class="aspect-3/2 overflow-hidden">
@@ -49,5 +47,5 @@ const formatDate = (date: Date) => {
                 {{ formatDate(image.imageTakenDate) }}
             </p>
         </div>
-    </div>
+    </NuxtLink>
 </template>

@@ -1,35 +1,26 @@
 <script setup lang="ts">
 import gsap from "gsap";
-import type { AstroImage } from "~/types/image";
+
+definePageMeta({ pageTransition: false, key: "gallery" });
+
+const route = useRoute();
+const slug = computed(() => route.params.slug as string | undefined);
+
+const { images, loading, error, fetchImages } = useImages();
+const { resolveBySlug, navigatePrev, navigateNext, hasPrev, hasNext } =
+    useGallerySelection(images);
+
+const image = computed(() => (slug.value ? resolveBySlug(slug.value) : undefined));
 
 useSeoMeta({
-    title: "Gallery — Jonathan Hankey Astrophotography",
+    title: computed(() =>
+        image.value
+            ? `${image.value.title} — Jonathan Hankey Astrophotography`
+            : "Gallery — Jonathan Hankey Astrophotography",
+    ),
     description:
         "Browse the astrophotography gallery featuring nebulae, galaxies, and star clusters.",
 });
-
-const { images, loading, error, fetchImages } = useImages();
-const selectedImage = ref<AstroImage | null>(null);
-
-const selectedIndex = computed(() =>
-    selectedImage.value ? images.value.indexOf(selectedImage.value) : -1,
-);
-
-const openModal = (image: AstroImage) => {
-    selectedImage.value = image;
-};
-
-const navigatePrev = () => {
-    if (selectedIndex.value > 0) {
-        selectedImage.value = images.value[selectedIndex.value - 1] ?? null;
-    }
-};
-
-const navigateNext = () => {
-    if (selectedIndex.value < images.value.length - 1) {
-        selectedImage.value = images.value[selectedIndex.value + 1] ?? null;
-    }
-};
 
 const onBeforeEnter = (el: Element) => {
     gsap.set(el, {
@@ -58,7 +49,9 @@ const onEnter = (el: Element, done: () => void) => {
 };
 
 onMounted(() => {
-    fetchImages();
+    if (images.value.length === 0) {
+        fetchImages();
+    }
 });
 </script>
 
@@ -111,25 +104,24 @@ onMounted(() => {
                     @enter="onEnter"
                 >
                     <ImageCard
-                        v-for="(image, index) in images"
-                        :key="image.id"
+                        v-for="(img, index) in images"
+                        :key="img.id"
                         :data-index="index"
-                        :image="image"
-                        @click="openModal(image)"
+                        :image="img"
                     />
                 </TransitionGroup>
             </div>
         </main>
 
-        <!-- Modal -->
+        <!-- Modal — driven by URL slug; same component instance, no remount -->
         <ImageModal
-            v-if="selectedImage"
-            :image="selectedImage"
-            :has-prev="selectedIndex > 0"
-            :has-next="selectedIndex < images.length - 1"
-            @close="selectedImage = null"
-            @prev="navigatePrev"
-            @next="navigateNext"
+            v-if="image && slug"
+            :image="image"
+            :has-prev="hasPrev(slug)"
+            :has-next="hasNext(slug)"
+            @close="$router.push('/gallery')"
+            @prev="navigatePrev(slug)"
+            @next="navigateNext(slug)"
         />
     </div>
 </template>
