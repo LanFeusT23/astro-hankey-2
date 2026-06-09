@@ -65,13 +65,37 @@ jobs:
 
                   const input = fs.readFileSync(0, "utf8")
                   const payload = JSON.parse(input)
-                  const result = payload?.result
+                  const findUrl = (value) => {
+                      if (typeof value?.url === "string") {
+                          return value.url
+                      }
 
-                  const url = typeof result?.url === "string"
-                      ? result.url
-                      : Array.isArray(result)
-                          ? result.find((item) => typeof item?.url === "string")?.url
-                          : payload?.url
+                      if (Array.isArray(value)) {
+                          for (const item of value) {
+                              const nestedUrl = findUrl(item)
+
+                              if (nestedUrl) {
+                                  return nestedUrl
+                              }
+                          }
+
+                          return undefined
+                      }
+
+                      if (value && typeof value === "object") {
+                          for (const nestedValue of Object.values(value)) {
+                              const nestedUrl = findUrl(nestedValue)
+
+                              if (nestedUrl) {
+                                  return nestedUrl
+                              }
+                          }
+                      }
+
+                      return undefined
+                  }
+
+                  const url = findUrl(payload?.result) ?? findUrl(payload)
 
                   if (url) {
                       process.stdout.write(url)
