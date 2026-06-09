@@ -70,12 +70,12 @@ onUnmounted(() => {
             @touchend="onTouchEnd"
         >
             <!-- Backdrop -->
-            <div class="absolute inset-0 bg-space-950/80 backdrop-blur-md"></div>
+            <div class="absolute inset-0 bg-space-900/70 backdrop-blur-md"></div>
 
             <!-- Prev arrow -->
             <button
                 v-if="hasPrev"
-                class="absolute left-4 z-20 w-11 h-11 rounded-full border border-space-700/40 bg-space-900/40 backdrop-blur-sm flex items-center justify-center text-slate-400 hover:text-white hover:border-nebula-400/60 hover:bg-space-800/50 transition-all opacity-80"
+                class="absolute left-4 z-20 w-11 h-11 rounded-full border border-space-600/45 bg-space-800/45 backdrop-blur-sm flex items-center justify-center text-slate-300 hover:text-white hover:border-nebula-400/60 hover:bg-space-700/55 transition-all opacity-85"
                 @click.stop="$emit('prev')"
                 aria-label="Previous image"
             >
@@ -85,7 +85,7 @@ onUnmounted(() => {
             <!-- Next arrow -->
             <button
                 v-if="hasNext"
-                class="absolute right-4 z-20 w-11 h-11 rounded-full border border-space-700/40 bg-space-900/40 backdrop-blur-sm flex items-center justify-center text-slate-400 hover:text-white hover:border-nebula-400/60 hover:bg-space-800/50 transition-all opacity-80"
+                class="absolute right-4 z-20 w-11 h-11 rounded-full border border-space-600/45 bg-space-800/45 backdrop-blur-sm flex items-center justify-center text-slate-300 hover:text-white hover:border-nebula-400/60 hover:bg-space-700/55 transition-all opacity-85"
                 @click.stop="$emit('next')"
                 aria-label="Next image"
             >
@@ -94,11 +94,11 @@ onUnmounted(() => {
 
             <!-- Modal -->
             <div
-                class="relative z-10 max-w-7xl w-full bg-space-900/45 border border-space-700/40 rounded-2xl backdrop-blur-sm overflow-hidden shadow-2xl h-full max-h-[95%]"
+                class="relative z-10 max-w-7xl w-full bg-space-800/40 border border-space-600/45 rounded-2xl backdrop-blur-sm overflow-hidden shadow-2xl h-full max-h-[95%]"
             >
                 <!-- Close button -->
                 <button
-                    class="absolute top-2 right-2 z-20 w-10 h-10 rounded-full border border-space-700/40 bg-space-900/40 backdrop-blur-sm flex items-center justify-center text-slate-400 hover:text-white hover:border-nebula-400/60 hover:bg-space-800/50 transition-all"
+                    class="absolute top-2 right-2 z-20 w-10 h-10 rounded-full border border-space-600/45 bg-space-800/45 backdrop-blur-sm flex items-center justify-center text-slate-300 hover:text-white hover:border-nebula-400/60 hover:bg-space-700/55 transition-all"
                     @click="$emit('close')"
                 >
                     <MdiClose class="w-5 h-5" />
@@ -107,7 +107,7 @@ onUnmounted(() => {
                 <div class="flex flex-col md:flex-row h-full">
                     <!-- Image -->
                     <div
-                        class="flex-1 bg-black/65 backdrop-blur-sm flex items-center justify-center min-h-75 md:min-h-[65vh]"
+                        class="flex-1 bg-black/55 backdrop-blur-sm flex items-center justify-center min-h-75 md:min-h-[65vh]"
                     >
                         <img
                             :src="mainCloudLocation"
@@ -118,7 +118,7 @@ onUnmounted(() => {
 
                     <!-- Info panel -->
                     <div
-                        class="md:w-96 p-3 md:p-6 flex flex-col justify-between bg-space-900/25 border-t md:border-t-0 md:border-l border-space-700/40"
+                        class="md:w-96 p-3 md:p-6 flex flex-col justify-between bg-space-800/30 border-t md:border-t-0 md:border-l border-space-600/45"
                     >
                         <div>
                             <h2 class="text-xl font-display font-bold text-white mb-3">

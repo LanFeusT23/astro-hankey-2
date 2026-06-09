@@ -10,7 +10,7 @@ const { isAuthenticated, isAdmin } = useAuth();
     <nav class="fixed top-0 left-0 right-0 z-50 px-4 py-4">
         <div class="max-w-7xl mx-auto">
             <div
-                class="border border-space-700/40 rounded-full px-6 py-3 backdrop-blur-sm flex items-center justify-between"
+                class="bg-space-800/35 border border-space-600/45 rounded-full px-6 py-3 backdrop-blur-sm flex items-center justify-between"
             >
                 <!-- Logo -->
                 <NuxtLink to="/" class="flex items-center gap-3 group">
@@ -33,8 +33,8 @@ const { isAuthenticated, isAdmin } = useAuth();
                         v-for="link in publicLinks"
                         :key="link.to"
                         :to="link.to"
-                        class="px-4 py-1.5 rounded-full text-sm text-slate-400 hover:text-white hover:bg-space-700/60 transition-all duration-200"
-                        active-class="text-white bg-space-700/60"
+                        class="px-4 py-1.5 rounded-full text-sm text-slate-300 hover:text-white hover:bg-space-600/50 transition-all duration-200"
+                        active-class="text-white bg-space-600/50"
                     >
                         {{ link.label }}
                     </NuxtLink>
@@ -43,16 +43,16 @@ const { isAuthenticated, isAdmin } = useAuth();
                     <NuxtLink
                         v-if="isAdmin"
                         to="/admin"
-                        class="px-4 py-1.5 rounded-full text-sm text-slate-400 hover:text-white hover:bg-space-700/60 transition-all duration-200"
-                        active-class="text-white bg-space-700/60"
+                        class="px-4 py-1.5 rounded-full text-sm text-slate-300 hover:text-white hover:bg-space-600/50 transition-all duration-200"
+                        active-class="text-white bg-space-600/50"
                     >
                         Admin
                     </NuxtLink>
                     <NuxtLink
                         v-if="!isAdmin && !isAuthenticated"
                         to="/admin/login"
-                        class="px-4 py-1.5 rounded-full text-sm text-slate-400 hover:text-white hover:bg-space-700/60 transition-all duration-200"
-                        active-class="text-white bg-space-700/60"
+                        class="px-4 py-1.5 rounded-full text-sm text-slate-300 hover:text-white hover:bg-space-600/50 transition-all duration-200"
+                        active-class="text-white bg-space-600/50"
                     >
                         Login
                     </NuxtLink>
