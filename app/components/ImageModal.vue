@@ -94,55 +94,59 @@ onUnmounted(() => {
 
             <!-- Modal -->
             <div
-                class="relative z-10 max-w-7xl w-full bg-space-800/40 border border-space-600/45 rounded-2xl backdrop-blur-sm overflow-hidden shadow-2xl h-full max-h-[95%]"
+                class="relative z-10 max-w-7xl w-full rounded-2xl p-px bg-[linear-gradient(120deg,rgba(255,255,255,0.58)_0%,rgba(181,204,255,0.34)_40%,rgba(255,255,255,0.16)_100%)] shadow-2xl h-full max-h-[95%]"
             >
-                <!-- Close button -->
-                <button
-                    class="absolute top-2 right-2 z-20 w-10 h-10 rounded-full border border-space-600/45 bg-space-800/45 backdrop-blur-sm flex items-center justify-center text-slate-300 hover:text-white hover:border-nebula-400/60 hover:bg-space-700/55 transition-all"
-                    @click="$emit('close')"
+                <div
+                    class="relative rounded-2xl bg-space-700/45 backdrop-blur-md overflow-hidden h-full"
                 >
-                    <MdiClose class="w-5 h-5" />
-                </button>
-
-                <div class="flex flex-col md:flex-row h-full">
-                    <!-- Image -->
-                    <div
-                        class="flex-1 bg-black/55 backdrop-blur-sm flex items-center justify-center min-h-75 md:min-h-[65vh]"
+                    <!-- Close button -->
+                    <button
+                        class="absolute top-2 right-2 z-20 w-10 h-10 rounded-full border border-space-500/55 bg-space-700/50 backdrop-blur-sm flex items-center justify-center text-slate-200 hover:text-white hover:border-nebula-300/70 hover:bg-space-600/55 transition-all"
+                        @click="$emit('close')"
                     >
-                        <img
-                            :src="mainCloudLocation"
-                            :alt="image.title"
-                            class="max-w-full max-h-[85vh] object-contain h-full"
-                        />
-                    </div>
+                        <MdiClose class="w-5 h-5" />
+                    </button>
 
-                    <!-- Info panel -->
-                    <div
-                        class="md:w-96 p-3 md:p-6 flex flex-col justify-between bg-space-800/30 border-t md:border-t-0 md:border-l border-space-600/45"
-                    >
-                        <div>
-                            <h2 class="text-xl font-display font-bold text-white mb-3">
-                                {{ image.title }}
-                            </h2>
-                            <div class="flex items-center gap-2 text-nebula-400 text-sm mb-4">
-                                <MdiCalendarMonthOutline class="w-4 h-4" />
-                                {{ formatDate(image.imageTakenDate) }}
-                            </div>
-                            <p class="text-slate-400 text-sm leading-relaxed">
-                                {{ image.subTitle }}
-                            </p>
+                    <div class="flex flex-col md:flex-row h-full">
+                        <!-- Image -->
+                        <div
+                            class="flex-1 bg-black/45 backdrop-blur-sm flex items-center justify-center min-h-75 md:min-h-[65vh]"
+                        >
+                            <img
+                                :src="mainCloudLocation"
+                                :alt="image.title"
+                                class="max-w-full max-h-[85vh] object-contain h-full"
+                            />
                         </div>
 
-                        <div class="mt-6 pt-6 border-t border-space-700/50">
-                            <a
-                                :href="mainCloudLocation"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-nebula-600/20 hover:bg-nebula-600/40 border border-nebula-500/30 hover:border-nebula-400/60 text-nebula-300 rounded-lg text-sm transition-all"
-                            >
-                                <MdiOpenInNew class="w-4 h-4" />
-                                View Full Resolution
-                            </a>
+                        <!-- Info panel -->
+                        <div
+                            class="md:w-96 p-3 md:p-6 flex flex-col justify-between bg-space-700/35 border-t md:border-t-0 md:border-l border-space-500/55"
+                        >
+                            <div>
+                                <h2 class="text-xl font-display font-bold text-white mb-3">
+                                    {{ image.title }}
+                                </h2>
+                                <div class="flex items-center gap-2 text-nebula-300 text-sm mb-4">
+                                    <MdiCalendarMonthOutline class="w-4 h-4" />
+                                    {{ formatDate(image.imageTakenDate) }}
+                                </div>
+                                <p class="text-slate-300 text-sm leading-relaxed">
+                                    {{ image.subTitle }}
+                                </p>
+                            </div>
+
+                            <div class="mt-6 pt-6 border-t border-space-600/45">
+                                <a
+                                    :href="mainCloudLocation"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-nebula-500/25 hover:bg-nebula-500/40 border border-nebula-300/40 hover:border-nebula-200/70 text-nebula-200 rounded-lg text-sm transition-all"
+                                >
+                                    <MdiOpenInNew class="w-4 h-4" />
+                                    View Full Resolution
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
