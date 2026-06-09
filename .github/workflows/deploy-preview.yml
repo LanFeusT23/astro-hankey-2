@@ -20,6 +20,8 @@ jobs:
     deploy-preview:
         if: github.event.action != 'closed' && github.event.pull_request.head.repo.full_name == github.repository
         runs-on: ubuntu-latest
+        env:
+            PREVIEW_CHANNEL_TTL: 3d
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-node@v4
@@ -49,11 +51,32 @@ jobs:
                   set -euo pipefail
 
                   CHANNEL_ID="pr-${{ github.event.pull_request.number }}"
-                  DEPLOY_OUTPUT="$(npx firebase-tools hosting:channel:deploy "$CHANNEL_ID" --config firebase.staging.json --project "${{ secrets.NUXT_PUBLIC_FIREBASE_PROJECT_ID }}" --expires 7d --non-interactive 2>&1)"
+                  DEPLOY_OUTPUT="$(npx firebase-tools hosting:channel:deploy "$CHANNEL_ID" \
+                      --config firebase.staging.json \
+                      --project "${{ secrets.NUXT_PUBLIC_FIREBASE_PROJECT_ID }}" \
+                      --expires "$PREVIEW_CHANNEL_TTL" \
+                      --non-interactive \
+                      --json)"
 
                   echo "$DEPLOY_OUTPUT"
 
-                  PREVIEW_URL="$(printf '%s\n' "$DEPLOY_OUTPUT" | grep -Eo 'https://[^[:space:]]+' | grep 'web.app' | head -n 1 || true)"
+                  PREVIEW_URL="$(printf '%s' "$DEPLOY_OUTPUT" | node -e '
+                  const fs = require("fs")
+
+                  const input = fs.readFileSync(0, "utf8")
+                  const payload = JSON.parse(input)
+                  const result = payload?.result
+
+                  const url = typeof result?.url === "string"
+                      ? result.url
+                      : Array.isArray(result)
+                          ? result.find((item) => typeof item?.url === "string")?.url
+                          : payload?.url
+
+                  if (url) {
+                      process.stdout.write(url)
+                  }
+                  ')"
 
                   if [[ -z "$PREVIEW_URL" ]]; then
                       echo "::error::Failed to extract Firebase preview URL from deployment output."
@@ -102,6 +125,7 @@ jobs:
         if: github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository
         runs-on: ubuntu-latest
         steps:
+            - uses: actions/checkout@v4
             - name: Authenticate with Google
               uses: google-github-actions/auth@v2
               with:
@@ -111,5 +135,42 @@ jobs:
                   set -euo pipefail
 
                   CHANNEL_ID="pr-${{ github.event.pull_request.number }}"
-                  npx firebase-tools hosting:channel:delete "$CHANNEL_ID" --site astro-hankey-staging --project "${{ secrets.NUXT_PUBLIC_FIREBASE_PROJECT_ID }}" --force --non-interactive || \
-                      echo "Preview channel $CHANNEL_ID was already removed or does not exist."
+                  set +e
+                  DELETE_OUTPUT="$(npx firebase-tools hosting:channel:delete "$CHANNEL_ID" \
+                      --config firebase.staging.json \
+                      --project "${{ secrets.NUXT_PUBLIC_FIREBASE_PROJECT_ID }}" \
+                      --force \
+                      --non-interactive \
+                      --json 2>&1)"
+                  DELETE_STATUS=$?
+                  set -e
+
+                  if [[ $DELETE_STATUS -ne 0 ]]; then
+                      CHANNEL_EXISTS="$(CHANNEL_ID="$CHANNEL_ID" npx firebase-tools hosting:channel:list \
+                          --config firebase.staging.json \
+                          --project "${{ secrets.NUXT_PUBLIC_FIREBASE_PROJECT_ID }}" \
+                          --json | node -e '
+                          const fs = require("fs")
+
+                          const input = fs.readFileSync(0, "utf8")
+                          const payload = JSON.parse(input)
+                          const channels = payload?.result?.channels ?? []
+                          const channelId = process.env.CHANNEL_ID
+                          const exists = channels.some(
+                              (channel) =>
+                                  typeof channel?.name === "string" &&
+                                  channel.name.endsWith(`/channels/${channelId}`)
+                          )
+
+                          process.stdout.write(String(exists))
+                          ')"
+
+                      if [[ "$CHANNEL_EXISTS" == "false" ]]; then
+                          echo "Preview channel $CHANNEL_ID was already removed or does not exist."
+                      else
+                          echo "$DELETE_OUTPUT"
+                          exit $DELETE_STATUS
+                      fi
+                  else
+                      echo "$DELETE_OUTPUT"
+                  fi
