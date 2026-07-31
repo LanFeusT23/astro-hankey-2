@@ -12,13 +12,16 @@ const { resolveById, navigatePrev, navigateNext, hasPrev, hasNext } =
     useGallerySelection(images);
 const { resolveUrl } = useImageUrl();
 
+if (images.value.length === 0) {
+    await fetchImages();
+}
+
 const image = computed(() => (slug.value ? resolveById(slug.value) : undefined));
 const imageUrl = computed(() => {
     if (!image.value) {
         return undefined;
     }
-    const mainImage = image.value.images.find((img) => img.isMain);
-    return resolveUrl(mainImage?.cloudLocation ?? image.value.thumbnail);
+    return resolveUrl(image.value.thumbnail);
 });
 const description = computed(() =>
     image.value?.subTitle ??
@@ -67,10 +70,6 @@ const onEnter = (el: Element, done: () => void) => {
         onComplete: done,
     });
 };
-
-if (images.value.length === 0) {
-    await fetchImages();
-}
 </script>
 
 <template>
