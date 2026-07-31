@@ -4,13 +4,26 @@ import gsap from "gsap";
 definePageMeta({ pageTransition: false, key: "gallery" });
 
 const route = useRoute();
+const requestUrl = useRequestURL();
 const slug = computed(() => route.params.slug as string | undefined);
 
 const { images, loading, error, fetchImages } = useImages();
 const { resolveById, navigatePrev, navigateNext, hasPrev, hasNext } =
     useGallerySelection(images);
+const { resolveUrl } = useImageUrl();
 
 const image = computed(() => (slug.value ? resolveById(slug.value) : undefined));
+const imageUrl = computed(() => {
+    if (!image.value) {
+        return undefined;
+    }
+    const mainImage = image.value.images.find((img) => img.isMain);
+    return resolveUrl(mainImage?.cloudLocation ?? image.value.thumbnail);
+});
+const description = computed(() =>
+    image.value?.subTitle ??
+    "Browse the astrophotography gallery featuring nebulae, galaxies, and star clusters.",
+);
 
 useSeoMeta({
     title: computed(() =>
@@ -18,8 +31,23 @@ useSeoMeta({
             ? `${image.value.title} — Jonathan Hankey Astrophotography`
             : "Gallery — Jonathan Hankey Astrophotography",
     ),
-    description:
-        "Browse the astrophotography gallery featuring nebulae, galaxies, and star clusters.",
+    description,
+    ogTitle: computed(() =>
+        image.value
+            ? `${image.value.title} — Jonathan Hankey Astrophotography`
+            : "Gallery — Jonathan Hankey Astrophotography",
+    ),
+    ogDescription: description,
+    ogImage: imageUrl,
+    ogUrl: computed(() => requestUrl.href),
+    twitterCard: "summary_large_image",
+    twitterTitle: computed(() =>
+        image.value
+            ? `${image.value.title} — Jonathan Hankey Astrophotography`
+            : "Gallery — Jonathan Hankey Astrophotography",
+    ),
+    twitterDescription: description,
+    twitterImage: imageUrl,
 });
 
 const onBeforeEnter = (el: Element) => {
@@ -48,11 +76,9 @@ const onEnter = (el: Element, done: () => void) => {
     });
 };
 
-onMounted(() => {
-    if (images.value.length === 0) {
-        fetchImages();
-    }
-});
+if (images.value.length === 0) {
+    await fetchImages();
+}
 </script>
 
 <template>
