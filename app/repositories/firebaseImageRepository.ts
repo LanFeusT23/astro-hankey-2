@@ -5,68 +5,29 @@ import type { ImageRepository } from "./imageRepository";
 import { astroImageSchema } from "~/types/image";
 import type { AstroImage } from "~/types/image";
 
+type FirebasePublicConfig = {
+    apiKey: string;
+    authDomain: string;
+    projectId: string;
+    storageBucket: string;
+    messagingSenderId: string;
+    appId: string;
+};
+
 const GALLERY_COLLECTION_PROD = "images";
 const GALLERY_STORAGE_PATH_PROD = "gallery";
 
 const GALLERY_COLLECTION_TEST = "testImages";
 const GALLERY_STORAGE_PATH_TEST = "testGallery";
 
-function getPaths(): { collection: string; storagePath: string; thumbnailsPath: string } {
-    const config = useRuntimeConfig();
-    const isStaging = config.public.appEnv === "staging";
+function getPaths(appEnv: string): { collection: string; storagePath: string; thumbnailsPath: string } {
+    const isStaging = appEnv === "staging";
     const storagePath = isStaging ? GALLERY_STORAGE_PATH_TEST : GALLERY_STORAGE_PATH_PROD;
     return {
         collection: isStaging ? GALLERY_COLLECTION_TEST : GALLERY_COLLECTION_PROD,
         storagePath,
         thumbnailsPath: `${storagePath}/thumbnails`,
     };
-}
-
-let _app: FirebaseApp | null = null;
-let _db: Firestore | null = null;
-let _storage: FirebaseStorage | null = null;
-
-async function getFirebaseApp(): Promise<FirebaseApp | null> {
-    if (_app) {
-        return _app;
-    }
-
-    const config = useRuntimeConfig();
-    const firebase = config.public.firebase as Record<string, string>;
-
-    if (!firebase.apiKey) {
-        return null;
-    }
-
-    const { initializeApp, getApps } = await import("firebase/app");
-    _app = getApps().length === 0 ? initializeApp(firebase) : getApps()[0];
-    return _app;
-}
-
-async function getDb(): Promise<Firestore> {
-    if (_db) {
-        return _db;
-    }
-    const app = await getFirebaseApp();
-    if (!app) {
-        throw new Error("Firebase is not configured");
-    }
-    const { getFirestore } = await import("firebase/firestore");
-    _db = getFirestore(app);
-    return _db;
-}
-
-async function getStorage(): Promise<FirebaseStorage> {
-    if (_storage) {
-        return _storage;
-    }
-    const app = await getFirebaseApp();
-    if (!app) {
-        throw new Error("Firebase is not configured");
-    }
-    const { getStorage: initStorage } = await import("firebase/storage");
-    _storage = initStorage(app);
-    return _storage;
 }
 
 function normalizeFilename(filename: string, date: Date): string {
@@ -90,11 +51,59 @@ function addSizeSuffix(filename: string, suffix: string): string {
 }
 
 export class FirebaseImageRepository implements ImageRepository {
+    private app: FirebaseApp | null = null;
+    private db: Firestore | null = null;
+    private storage: FirebaseStorage | null = null;
+
+    constructor(
+        private readonly appEnv: string,
+        private readonly firebase: FirebasePublicConfig,
+    ) {}
+
+    private async getFirebaseApp(): Promise<FirebaseApp | null> {
+        if (this.app) {
+            return this.app;
+        }
+        if (!this.firebase.apiKey) {
+            return null;
+        }
+        const { initializeApp, getApps } = await import("firebase/app");
+        this.app = getApps().length === 0 ? initializeApp(this.firebase) : getApps()[0];
+        return this.app;
+    }
+
+    private async getDb(): Promise<Firestore> {
+        if (this.db) {
+            return this.db;
+        }
+        const app = await this.getFirebaseApp();
+        if (!app) {
+            throw new Error("Firebase is not configured");
+        }
+        const { getFirestore } = await import("firebase/firestore");
+        this.db = getFirestore(app);
+        return this.db;
+    }
+
+    private async getStorage(): Promise<FirebaseStorage> {
+        if (this.storage) {
+            return this.storage;
+        }
+        const app = await this.getFirebaseApp();
+        if (!app) {
+            throw new Error("Firebase is not configured");
+        }
+        const { getStorage: initStorage } = await import("firebase/storage");
+        this.storage = initStorage(app);
+        return this.storage;
+    }
+
     async getAll(): Promise<AstroImage[]> {
-        const db = await getDb();
+        const db = await this.getDb();
+        const paths = getPaths(this.appEnv);
         const { collection, query, orderBy, getDocs } = await import("firebase/firestore");
 
-        const q = query(collection(db, getPaths().collection), orderBy("imageTakenDate", "desc"));
+        const q = query(collection(db, paths.collection), orderBy("imageTakenDate", "desc"));
         const snap = await getDocs(q);
 
         return snap.docs.map((d) => {
@@ -103,9 +112,10 @@ export class FirebaseImageRepository implements ImageRepository {
     }
 
     async getById(id: string): Promise<AstroImage | null> {
-        const db = await getDb();
+        const db = await this.getDb();
+        const paths = getPaths(this.appEnv);
         const { doc, getDoc } = await import("firebase/firestore");
-        const docSnapshot = await getDoc(doc(db, getPaths().collection, id));
+        const docSnapshot = await getDoc(doc(db, paths.collection, id));
         return docSnapshot.exists()
             ? astroImageSchema.parse({
                   id: docSnapshot.id,
@@ -115,16 +125,18 @@ export class FirebaseImageRepository implements ImageRepository {
     }
 
     async create(image: Omit<AstroImage, "id">): Promise<AstroImage> {
-        const db = await getDb();
+        const db = await this.getDb();
+        const paths = getPaths(this.appEnv);
         const { collection, addDoc } = await import("firebase/firestore");
-        const ref = await addDoc(collection(db, getPaths().collection), image);
+        const ref = await addDoc(collection(db, paths.collection), image);
         return { id: ref.id, ...image };
     }
 
     async update(id: string, updates: Partial<Omit<AstroImage, "id">>): Promise<AstroImage> {
-        const db = await getDb();
+        const db = await this.getDb();
+        const paths = getPaths(this.appEnv);
         const { doc, updateDoc } = await import("firebase/firestore");
-        await updateDoc(doc(db, getPaths().collection, id), updates);
+        await updateDoc(doc(db, paths.collection, id), updates);
         const updated = await this.getById(id);
         if (!updated) {
             throw new Error(`Image ${id} not found after update`);
@@ -136,7 +148,7 @@ export class FirebaseImageRepository implements ImageRepository {
         const image = await this.getById(id);
 
         if (image) {
-            const storage = await getStorage();
+            const storage = await this.getStorage();
             const { ref, deleteObject } = await import("firebase/storage");
 
             const deletePromises: Promise<void>[] = image.images.map((img) =>
@@ -153,9 +165,10 @@ export class FirebaseImageRepository implements ImageRepository {
             });
         }
 
-        const db = await getDb();
+        const db = await this.getDb();
+        const paths = getPaths(this.appEnv);
         const { doc, deleteDoc } = await import("firebase/firestore");
-        await deleteDoc(doc(db, getPaths().collection, id));
+        await deleteDoc(doc(db, paths.collection, id));
     }
 
     async uploadImage(
@@ -163,12 +176,12 @@ export class FirebaseImageRepository implements ImageRepository {
         imageTakenDate: Date,
         imageId?: string,
     ): Promise<{ cloudLocation: string; thumbnailUrl?: string }> {
-        const storage = await getStorage();
+        const storage = await this.getStorage();
         const { ref, uploadBytes } = await import("firebase/storage");
 
         const normalizedName = normalizeFilename(file.name, imageTakenDate);
         const filename = imageId ? `${imageId}_${normalizedName}` : normalizedName;
-        const { storagePath, thumbnailsPath } = getPaths();
+        const { storagePath, thumbnailsPath } = getPaths(this.appEnv);
         const cloudLocation = `${storagePath}/${filename}`;
         const fullRef = ref(storage, cloudLocation);
         await uploadBytes(fullRef, file);
