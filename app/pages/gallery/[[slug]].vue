@@ -40,14 +40,6 @@ useSeoMeta({
     ogDescription: description,
     ogImage: imageUrl,
     ogUrl: computed(() => requestUrl.href),
-    twitterCard: "summary_large_image",
-    twitterTitle: computed(() =>
-        image.value
-            ? `${image.value.title} — Jonathan Hankey Astrophotography`
-            : "Gallery — Jonathan Hankey Astrophotography",
-    ),
-    twitterDescription: description,
-    twitterImage: imageUrl,
 });
 
 const onBeforeEnter = (el: Element) => {
