@@ -34,14 +34,13 @@ useSeoMeta({
             : "Gallery — Jonathan Hankey Astrophotography",
     ),
     description,
-    ogTitle: computed(() =>
-        image.value
-            ? `${image.value.title} — Jonathan Hankey Astrophotography`
-            : "Gallery — Jonathan Hankey Astrophotography",
-    ),
+    ogTitle: computed(() => image.value?.title ?? "Gallery"),
     ogDescription: description,
     ogImage: imageUrl,
     ogUrl: computed(() => requestUrl.href),
+    ogType: "website",
+    ogSiteName: "Jonathan Hankey Astrophotography",
+    twitterCard: "summary_large_image",
 });
 
 const onBeforeEnter = (el: Element) => {
