@@ -5,6 +5,7 @@ definePageMeta({ pageTransition: false, key: "gallery" });
 
 const route = useRoute();
 const requestUrl = useRequestURL();
+const config = useRuntimeConfig();
 const slug = computed(() => route.params.slug as string | undefined);
 
 const { images, loading, error, fetchImages } = useImages();
@@ -37,7 +38,9 @@ useSeoMeta({
     ogTitle: computed(() => image.value?.title ?? "Gallery"),
     ogDescription: description,
     ogImage: imageUrl,
-    ogUrl: computed(() => requestUrl.href),
+    ogUrl: computed(() =>
+        config.public.siteUrl ? `${config.public.siteUrl}${route.path}` : requestUrl.href
+    ),
     ogType: "website",
     ogSiteName: "Jonathan Hankey Astrophotography",
     twitterCard: "summary_large_image",

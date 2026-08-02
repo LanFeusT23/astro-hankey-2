@@ -34,6 +34,7 @@ jobs:
             - name: Generate static site (production)
               run: npm run generate
               env:
+                  NUXT_PUBLIC_SITE_URL: ${{ secrets.NUXT_PUBLIC_SITE_URL }}
                   NUXT_IMAGE_REPOSITORY: firebase
                   NUXT_PUBLIC_APP_ENV: production
                   NUXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NUXT_PUBLIC_FIREBASE_API_KEY }}
