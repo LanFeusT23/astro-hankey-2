@@ -1,8 +1,17 @@
 {
+    "functions": {
+        "source": ".output/server"
+    },
     "hosting": {
         "site": "astro-hankey-staging",
         "public": ".output/public",
         "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-        "cleanUrls": true
+        "cleanUrls": true,
+        "rewrites": [
+            {
+                "source": "**",
+                "function": "server"
+            }
+        ]
     }
 }

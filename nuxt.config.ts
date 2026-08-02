@@ -6,6 +6,9 @@ export default defineNuxtConfig({
     modules: ["unplugin-icons/nuxt"],
     devtools: { enabled: true },
     css: ["~/assets/css/main.css"],
+    nitro: {
+        preset: "firebase",
+    },
     vite: {
         optimizeDeps: {
             include: [
@@ -40,7 +43,6 @@ export default defineNuxtConfig({
     },
     runtimeConfig: {
         public: {
-            siteUrl: process.env.NUXT_PUBLIC_SITE_URL || "",
             imageRepository: process.env.NUXT_IMAGE_REPOSITORY || "stub",
             appEnv: process.env.NUXT_PUBLIC_APP_ENV || "production",
             adminUids: process.env.NUXT_PUBLIC_ADMIN_UIDS || "",
