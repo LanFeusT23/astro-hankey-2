@@ -10,15 +10,18 @@ const slug = computed(() => route.params.slug as string | undefined);
 const { images, loading, error, fetchImages } = useImages();
 const { resolveById, navigatePrev, navigateNext, hasPrev, hasNext } =
     useGallerySelection(images);
+const { resolveUrl } = useImageUrl();
 if (images.value.length === 0) {
     await fetchImages();
 }
 
 const image = computed(() => (slug.value ? resolveById(slug.value) : undefined));
-const imageUrl = computed(
-    () =>
-        "https://fastly.picsum.photos/id/237/500/500.jpg?hmac=idOEkrJhLd7nEU5pNrAGCyJ6HHJdR_sit1qDt5J3Wo0",
-);
+const imageUrl = computed(() => {
+    if (!image.value) {
+        return undefined;
+    }
+    return resolveUrl(image.value.thumbnail);
+});
 const description = computed(() =>
     image.value?.subTitle ??
     "Browse the astrophotography gallery featuring nebulae, galaxies, and star clusters.",
