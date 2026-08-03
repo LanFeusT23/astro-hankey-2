@@ -16,7 +16,10 @@
         "rewrites": [
             {
                 "source": "**",
-                "function": "server"
+                "function": {
+                    "functionId": "server",
+                    "region": "us-central1"
+                }
             }
         ]
     }
