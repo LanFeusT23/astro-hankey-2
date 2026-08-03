@@ -40,6 +40,8 @@ jobs:
               with:
                   credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
             - name: Install function dependencies
-              run: npm install --prefix .output/server --legacy-peer-deps
+              run: |
+                  rm -rf .output/server/node_modules/protobufjs
+                  npm install --prefix .output/server
             - name: Deploy to Firebase Hosting staging site
               run: npx firebase-tools deploy --only hosting,functions --config firebase.staging.json --project ${{ secrets.NUXT_PUBLIC_FIREBASE_PROJECT_ID }}
