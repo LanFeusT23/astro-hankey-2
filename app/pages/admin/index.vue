@@ -4,7 +4,7 @@ definePageMeta({ middleware: "auth" });
 useSeoMeta({ title: "Admin — Jonathan Hankey Astrophotography" });
 
 const { user, signOut } = useAuth();
-const { images, fetchImages, createImage } = useImages();
+const { sortedImages, fetchImages, createImage } = useImages();
 
 const fileInput = ref<HTMLInputElement | null>(null);
 const uploading = ref(false);
@@ -219,7 +219,7 @@ onMounted(() => {
                 </div>
 
                 <!-- Image list -->
-                <AdminImageList :images="images" @updated="fetchImages" @deleted="fetchImages" />
+                <AdminImageList :images="sortedImages" @updated="fetchImages" @deleted="fetchImages" />
             </div>
         </main>
     </div>

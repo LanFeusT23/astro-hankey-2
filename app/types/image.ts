@@ -1,11 +1,16 @@
 import { z } from "zod";
 
 export const firebaseTimestampSchema = z
-    .object({
-        nanoseconds: z.number(),
-        seconds: z.number(),
-    })
-    .transform((ts) => new Date(ts.seconds * 1000 + ts.nanoseconds / 1e6));
+    .union([
+        z.date(),
+        z.object({
+            nanoseconds: z.number(),
+            seconds: z.number(),
+        }),
+    ])
+    .transform((ts) =>
+        ts instanceof Date ? ts : new Date(ts.seconds * 1000 + ts.nanoseconds / 1e6),
+    );
 
 export const astroImageSchema = z.object({
     id: z.string(),

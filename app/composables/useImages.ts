@@ -15,6 +15,10 @@ export const useImages = () => {
         });
     };
 
+    const sortedImages = computed(() =>
+        [...images.value].sort((a, b) => b.imageTakenDate.getTime() - a.imageTakenDate.getTime()),
+    );
+
     const fetchImages = async () => {
         loading.value = true;
         error.value = null;
@@ -52,6 +56,7 @@ export const useImages = () => {
 
     return {
         images,
+        sortedImages,
         loading,
         error,
         fetchImages,
