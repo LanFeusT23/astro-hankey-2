@@ -8,6 +8,9 @@ export default defineNuxtConfig({
     css: ["~/assets/css/main.css"],
     nitro: {
         preset: "firebase",
+        firebase: {
+            gen: 2,
+        },
     },
     vite: {
         optimizeDeps: {
