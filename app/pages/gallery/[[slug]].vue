@@ -41,6 +41,7 @@ useSeoMeta({
     ogType: "website",
     ogSiteName: "Jonathan Hankey Astrophotography",
     twitterCard: "summary_large_image",
+    twitterImage: imageUrl,
 });
 
 const onBeforeEnter = (el: Element) => {
