@@ -50,6 +50,12 @@ function addSizeSuffix(filename: string, suffix: string): string {
     return `${filename.slice(0, lastDot)}${suffix}${filename.slice(lastDot)}`;
 }
 
+function removeUndefinedFields<T extends object>(data: T): Partial<T> {
+    return Object.fromEntries(
+        Object.entries(data).filter(([, value]) => value !== undefined),
+    ) as Partial<T>;
+}
+
 export class FirebaseImageRepository implements ImageRepository {
     private app: FirebaseApp | null = null;
     private db: Firestore | null = null;
@@ -128,15 +134,16 @@ export class FirebaseImageRepository implements ImageRepository {
         const db = await this.getDb();
         const paths = getPaths(this.appEnv);
         const { collection, addDoc } = await import("firebase/firestore");
-        const ref = await addDoc(collection(db, paths.collection), image);
-        return { id: ref.id, ...image };
+        const imageData = removeUndefinedFields(image);
+        const ref = await addDoc(collection(db, paths.collection), imageData);
+        return astroImageSchema.parse({ id: ref.id, ...imageData });
     }
 
     async update(id: string, updates: Partial<Omit<AstroImage, "id">>): Promise<AstroImage> {
         const db = await this.getDb();
         const paths = getPaths(this.appEnv);
         const { doc, updateDoc } = await import("firebase/firestore");
-        await updateDoc(doc(db, paths.collection, id), updates);
+        await updateDoc(doc(db, paths.collection, id), removeUndefinedFields(updates));
         const updated = await this.getById(id);
         if (!updated) {
             throw new Error(`Image ${id} not found after update`);
