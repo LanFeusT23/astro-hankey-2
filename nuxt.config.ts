@@ -11,6 +11,9 @@ export default defineNuxtConfig({
         firebase: {
             gen: 2,
         },
+        externals: {
+            inline: ["hookable", "unhead"],
+        },
     },
     vite: {
         optimizeDeps: {
