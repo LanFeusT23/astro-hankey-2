@@ -7,9 +7,9 @@ const route = useRoute();
 const requestUrl = useRequestURL();
 const slug = computed(() => route.params.slug as string | undefined);
 
-const { images, loading, error, fetchImages } = useImages();
+const { images, sortedImages, loading, error, fetchImages } = useImages();
 const { resolveById, navigatePrev, navigateNext, hasPrev, hasNext } =
-    useGallerySelection(images);
+    useGallerySelection(sortedImages);
 const { resolveUrl } = useImageUrl();
 if (images.value.length === 0) {
     await fetchImages();
@@ -119,7 +119,7 @@ const onEnter = (el: Element, done: () => void) => {
                     @enter="onEnter"
                 >
                     <ImageCard
-                        v-for="(img, index) in images"
+                        v-for="(img, index) in sortedImages"
                         :key="img.id"
                         :data-index="index"
                         :image="img"
