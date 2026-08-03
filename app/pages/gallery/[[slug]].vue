@@ -4,13 +4,28 @@ import gsap from "gsap";
 definePageMeta({ pageTransition: false, key: "gallery" });
 
 const route = useRoute();
+const requestUrl = useRequestURL();
 const slug = computed(() => route.params.slug as string | undefined);
 
 const { images, loading, error, fetchImages } = useImages();
 const { resolveById, navigatePrev, navigateNext, hasPrev, hasNext } =
     useGallerySelection(images);
+const { resolveUrl } = useImageUrl();
+if (images.value.length === 0) {
+    await fetchImages();
+}
 
 const image = computed(() => (slug.value ? resolveById(slug.value) : undefined));
+const imageUrl = computed(() => {
+    if (!image.value) {
+        return undefined;
+    }
+    return resolveUrl(image.value.thumbnail);
+});
+const description = computed(() =>
+    image.value?.subTitle ??
+    "Browse the astrophotography gallery featuring nebulae, galaxies, and star clusters.",
+);
 
 useSeoMeta({
     title: computed(() =>
@@ -18,8 +33,14 @@ useSeoMeta({
             ? `${image.value.title} — Jonathan Hankey Astrophotography`
             : "Gallery — Jonathan Hankey Astrophotography",
     ),
-    description:
-        "Browse the astrophotography gallery featuring nebulae, galaxies, and star clusters.",
+    description,
+    ogTitle: computed(() => image.value?.title ?? "Gallery"),
+    ogDescription: description,
+    ogImage: imageUrl,
+    ogUrl: computed(() => requestUrl.href),
+    ogType: "website",
+    ogSiteName: "Jonathan Hankey Astrophotography",
+    twitterCard: "summary_large_image",
 });
 
 const onBeforeEnter = (el: Element) => {
@@ -47,12 +68,6 @@ const onEnter = (el: Element, done: () => void) => {
         onComplete: done,
     });
 };
-
-onMounted(() => {
-    if (images.value.length === 0) {
-        fetchImages();
-    }
-});
 </script>
 
 <template>

@@ -27,12 +27,12 @@ jobs:
 
             - uses: actions/setup-node@v4
               with:
-                  node-version: "20"
+                  node-version: "24"
                   cache: "npm"
             - name: Install dependencies
               run: npm ci
-            - name: Generate static site (production)
-              run: npm run generate
+            - name: Build SSR site (production)
+              run: npm run build
               env:
                   NUXT_IMAGE_REPOSITORY: firebase
                   NUXT_PUBLIC_APP_ENV: production
@@ -46,5 +46,7 @@ jobs:
               uses: google-github-actions/auth@v2
               with:
                   credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+            - name: Install function dependencies
+              run: npm install --prefix .output/server
             - name: Deploy to Firebase Hosting production site
-              run: npx firebase-tools deploy --only hosting --config firebase.json --project ${{ secrets.NUXT_PUBLIC_FIREBASE_PROJECT_ID }}
+              run: npx firebase-tools deploy --only hosting,functions --config firebase.json --project ${{ secrets.NUXT_PUBLIC_FIREBASE_PROJECT_ID }} --force

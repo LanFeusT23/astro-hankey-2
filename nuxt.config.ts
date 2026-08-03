@@ -6,6 +6,15 @@ export default defineNuxtConfig({
     modules: ["unplugin-icons/nuxt"],
     devtools: { enabled: true },
     css: ["~/assets/css/main.css"],
+    nitro: {
+        preset: "firebase",
+        firebase: {
+            gen: 2,
+        },
+        externals: {
+            inline: ["hookable", "unhead"],
+        },
+    },
     vite: {
         optimizeDeps: {
             include: [

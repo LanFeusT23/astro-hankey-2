@@ -1,10 +1,19 @@
 <script setup lang="ts">
 import landingPageMilkywayImage from "~/assets/images/landing-page-milkyway-lin.jpg";
 
+const requestUrl = useRequestURL();
+const homeDescription =
+    "Deep sky astrophotography by Jonathan Hankey. Nebulae, galaxies, and star clusters captured from dark skies.";
+
 useSeoMeta({
     title: "Jonathan Hankey — Astrophotography",
-    description:
-        "Deep sky astrophotography by Jonathan Hankey. Nebulae, galaxies, and star clusters captured from dark skies.",
+    description: homeDescription,
+    ogTitle: "Jonathan Hankey Astrophotography",
+    ogDescription: homeDescription,
+    ogUrl: computed(() => requestUrl.href),
+    ogType: "website",
+    ogSiteName: "Jonathan Hankey Astrophotography",
+    twitterCard: "summary_large_image",
 });
 </script>
 
