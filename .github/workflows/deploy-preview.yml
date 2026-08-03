@@ -54,6 +54,7 @@ jobs:
                   npx firebase-tools deploy --only functions \
                       --config firebase.staging.json \
                       --project "${{ secrets.NUXT_PUBLIC_FIREBASE_PROJECT_ID }}" \
+                      --force \
                       --non-interactive
             - name: Deploy preview channel
               id: deploy
