@@ -15,16 +15,10 @@ type FirebaseRepositoryConfig = {
     };
 };
 
-let _repository: ImageRepository | null = null;
-
 export function getImageRepository(
     repoType?: string,
     firebaseConfig?: FirebaseRepositoryConfig,
 ): ImageRepository {
-    if (_repository) {
-        return _repository;
-    }
-
     const resolvedRepoType =
         repoType ||
         (typeof useRuntimeConfig !== "undefined"
