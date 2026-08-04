@@ -7,7 +7,7 @@ const homeDescription =
 const ogImage = computed(() => new URL(landingPageMilkywayImage, requestUrl.href).href);
 
 useSeoMeta({
-    title: "Jonathan Hankey — Astrophotography",
+    title: "Jonathan Hankey",
     description: homeDescription,
     ogTitle: "Jonathan Hankey Astrophotography",
     ogDescription: homeDescription,

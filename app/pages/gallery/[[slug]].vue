@@ -27,11 +27,7 @@ const description = computed(() =>
     "Browse the astrophotography gallery featuring nebulae, galaxies, and star clusters.",
 );
 
-const pageTitle = computed(() =>
-    image.value
-        ? `${image.value.title} — Jonathan Hankey Astrophotography`
-        : "Gallery — Jonathan Hankey Astrophotography",
-);
+const pageTitle = computed(() => (image.value ? image.value.title : "Gallery"));
 
 useSeoMeta({
     title: pageTitle,

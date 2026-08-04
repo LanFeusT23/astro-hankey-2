@@ -1,7 +1,7 @@
 <script setup lang="ts">
 definePageMeta({ middleware: "auth" });
 
-useSeoMeta({ title: "Admin — Jonathan Hankey Astrophotography" });
+useSeoMeta({ title: "Admin" });
 
 const { user, signOut } = useAuth();
 const { sortedImages, fetchImages, createImage } = useImages();
