@@ -27,12 +27,14 @@ const description = computed(() =>
     "Browse the astrophotography gallery featuring nebulae, galaxies, and star clusters.",
 );
 
+const pageTitle = computed(() =>
+    image.value
+        ? `${image.value.title} — Jonathan Hankey Astrophotography`
+        : "Gallery — Jonathan Hankey Astrophotography",
+);
+
 useSeoMeta({
-    title: computed(() =>
-        image.value
-            ? `${image.value.title} — Jonathan Hankey Astrophotography`
-            : "Gallery — Jonathan Hankey Astrophotography",
-    ),
+    title: pageTitle,
     description,
     ogTitle: computed(() => image.value?.title ?? "Gallery"),
     ogDescription: description,
@@ -41,6 +43,8 @@ useSeoMeta({
     ogType: "website",
     ogSiteName: "Jonathan Hankey Astrophotography",
     twitterCard: "summary_large_image",
+    twitterTitle: pageTitle,
+    twitterDescription: description,
     twitterImage: imageUrl,
 });
 

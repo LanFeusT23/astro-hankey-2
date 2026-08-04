@@ -16,6 +16,8 @@ useSeoMeta({
     ogType: "website",
     ogSiteName: "Jonathan Hankey Astrophotography",
     twitterCard: "summary_large_image",
+    twitterTitle: "Jonathan Hankey Astrophotography",
+    twitterDescription: homeDescription,
     twitterImage: ogImage,
 });
 </script>
