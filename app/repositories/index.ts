@@ -28,27 +28,21 @@ export function getImageRepository(
     switch (resolvedRepoType) {
         case "firebase":
             if (firebaseConfig) {
-                _repository = new FirebaseImageRepository(
+                return new FirebaseImageRepository(
                     firebaseConfig.appEnv,
                     firebaseConfig.firebase,
                 );
             } else if (typeof useRuntimeConfig !== "undefined") {
                 const config = useRuntimeConfig();
-                _repository = new FirebaseImageRepository(config.public.appEnv, config.public.firebase);
-            } else {
-                _repository = new StubImageRepository();
+                return new FirebaseImageRepository(config.public.appEnv, config.public.firebase);
             }
-            break;
+            return new StubImageRepository();
         case "aws":
-            _repository = new AwsImageRepository();
-            break;
+            return new AwsImageRepository();
         case "stub":
         default:
-            _repository = new StubImageRepository();
-            break;
+            return new StubImageRepository();
     }
-
-    return _repository;
 }
 
 export type { ImageRepository };

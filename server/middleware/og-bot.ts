@@ -12,7 +12,7 @@ function escapeHtml(str: string): string {
 }
 
 function buildStorageUrl(storageBucket: string, cloudLocation: string): string {
-    return `https://storage.googleapis.com/${storageBucket}/${encodeURIComponent(cloudLocation)}`;
+    return `https://storage.googleapis.com/${storageBucket}/${cloudLocation}`;
 }
 
 export default defineEventHandler(async (event) => {
@@ -45,11 +45,9 @@ export default defineEventHandler(async (event) => {
     let imageUrl: string | undefined;
 
     try {
-        const { initializeApp, getApps, getApp } = await import("firebase/app");
-        const app =
-            getApps().length === 0
-                ? initializeApp(firebase, "og-bot")
-                : (getApps().find((a) => a.name === "og-bot") ?? getApp());
+        const { initializeApp, getApps } = await import("firebase/app");
+        const existingApp = getApps().find((a) => a.name === "og-bot");
+        const app = existingApp ?? initializeApp(firebase, "og-bot");
 
         const { getFirestore, doc, getDoc } = await import("firebase/firestore");
         const db = getFirestore(app);
