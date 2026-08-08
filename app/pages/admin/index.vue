@@ -46,7 +46,6 @@ const handleUpload = async () => {
                 uploadForm.file,
                 new Date(uploadForm.imageTakenDate),
             );
-            await new Promise((resolve) => setTimeout(resolve, 5000));
             cloudLocation = urls.cloudLocation;
             thumbnailUrl = urls.thumbnailUrl;
         } else {
