@@ -10,32 +10,6 @@ const { resolveUrl } = useImageUrl();
 const editingId = ref<string | null>(null);
 const editForm = reactive({ title: "", subTitle: "", location: "" });
 
-const RETRY_DELAY_MS = 3000;
-const MAX_RETRIES = 10;
-const retryCount = ref<Record<string, number>>({});
-const thumbnailBust = ref<Record<string, number>>({});
-
-const thumbnailSrc = (image: AstroImage) => {
-    const base = resolveUrl(image.thumbnail);
-    if (!base) { return undefined; }
-    const bust = thumbnailBust.value[image.id];
-    return bust ? `${base}?v=${bust}` : base;
-};
-
-const onThumbnailError = (image: AstroImage) => {
-    const count = retryCount.value[image.id] ?? 0;
-    if (count >= MAX_RETRIES) { return; }
-    retryCount.value[image.id] = count + 1;
-    setTimeout(() => {
-        thumbnailBust.value[image.id] = Date.now();
-    }, RETRY_DELAY_MS);
-};
-
-const onThumbnailLoad = (image: AstroImage) => {
-    delete retryCount.value[image.id];
-    delete thumbnailBust.value[image.id];
-};
-
 const formatDate = (date: Date) =>
     date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 
@@ -87,22 +61,11 @@ const handleDelete = async (id: string) => {
                 class="flex gap-4 p-4 bg-space-900/50 border border-space-700/30 rounded-xl group hover:border-space-600/50 transition-colors"
             >
                 <!-- Thumbnail -->
-                <div class="relative w-20 h-14 rounded-lg shrink-0 overflow-hidden bg-space-700/60 flex items-center justify-center">
-                    <img
-                        v-if="(retryCount[image.id] ?? 0) < MAX_RETRIES"
-                        :src="thumbnailSrc(image)"
-                        :alt="image.title"
-                        class="w-full h-full object-cover"
-                        @error="onThumbnailError(image)"
-                        @load="onThumbnailLoad(image)"
-                    />
-                    <div
-                        v-if="retryCount[image.id]"
-                        class="absolute inset-0 flex items-center justify-center bg-space-900/60"
-                    >
-                        <div class="w-5 h-5 border-2 border-space-500 border-t-nebula-400 rounded-full animate-spin"></div>
-                    </div>
-                </div>
+                <img
+                    :src="resolveUrl(image.thumbnail)"
+                    :alt="image.title"
+                    class="w-20 h-14 object-cover rounded-lg shrink-0"
+                />
 
                 <!-- Info / Edit -->
                 <div class="flex-1 min-w-0">
