@@ -1,5 +1,5 @@
 <script setup lang="ts">
-useSeoMeta({ title: "Admin Login — Jonathan Hankey Astrophotography" });
+useSeoMeta({ title: "Admin Login" });
 
 const { signInWithGoogle, signOut, loading, error, isAuthenticated, isAdmin } = useAuth();
 
