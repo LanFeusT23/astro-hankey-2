@@ -35,7 +35,7 @@ useSeoMeta({
     ogTitle: computed(() => image.value?.title ?? "Gallery"),
     ogDescription: description,
     ogImage: imageUrl,
-    ogUrl: window.location.origin,
+    ogUrl: computed(() => requestUrl.href),
     ogType: "website",
     ogSiteName: "Jonathan Hankey Astrophotography",
     twitterCard: "summary_large_image",
