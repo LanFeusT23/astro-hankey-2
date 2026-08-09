@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import landingPageMilkywayImage from "~/assets/images/landing-page-milkyway-lin.jpg";
 
-const requestUrl = useRequestURL();
 const homeDescription =
     "Deep sky astrophotography by Jonathan Hankey. Nebulae, galaxies, and star clusters captured from dark skies.";
-const ogImage = computed(() => new URL(landingPageMilkywayImage, requestUrl.href).href);
+const ogImage = computed(() => {
+    return new URL(landingPageMilkywayImage, import.meta.url).href
+});
 
 useSeoMeta({
     title: "Jonathan Hankey",
@@ -12,7 +13,7 @@ useSeoMeta({
     ogTitle: "Jonathan Hankey Astrophotography",
     ogDescription: homeDescription,
     ogImage,
-    ogUrl: computed(() => requestUrl.href),
+    ogUrl: window.location.origin,
     ogType: "website",
     ogSiteName: "Jonathan Hankey Astrophotography",
     twitterCard: "summary_large_image",
