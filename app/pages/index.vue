@@ -4,7 +4,7 @@ import landingPageMilkywayImage from "~/assets/images/landing-page-milkyway-lin.
 const requestUrl = useRequestURL();
 const homeDescription = "Capturing the universe, one photon at a time.";
 const ogImage = computed(() => {
-    return new URL(landingPageMilkywayImage, import.meta.url).href;
+    return `${requestUrl.origin}${landingPageMilkywayImage}`;
 });
 
 useSeoMeta({

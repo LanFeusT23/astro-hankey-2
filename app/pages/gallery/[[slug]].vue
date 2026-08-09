@@ -19,7 +19,7 @@ if (images.value.length === 0) {
 const image = computed(() => (slug.value ? resolveById(slug.value) : undefined));
 const imageUrl = computed(() => {
     if (!image.value) {
-        return new URL(landingPageMilkywayImage, import.meta.url).href;
+        return `${requestUrl.origin}${landingPageMilkywayImage}`;
     }
 
     return resolveUrl(image.value.thumbnail);
