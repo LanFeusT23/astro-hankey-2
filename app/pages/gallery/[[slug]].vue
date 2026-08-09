@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import gsap from "gsap";
-import landingPageMilkywayImage from "~/assets/images/landing-page-milkyway-lin.jpg";
 
 definePageMeta({ pageTransition: false, key: "gallery" });
 
+const config = useRuntimeConfig();
 const route = useRoute();
 const requestUrl = useRequestURL();
 const slug = computed(() => route.params.slug as string | undefined);
@@ -19,7 +19,8 @@ if (images.value.length === 0) {
 const image = computed(() => (slug.value ? resolveById(slug.value) : undefined));
 const imageUrl = computed(() => {
     if (!image.value) {
-        return new URL(landingPageMilkywayImage, import.meta.url).href;
+        const origin = config.public.siteUrl || requestUrl.origin;
+        return `${origin}/landing-page-milkyway-lin.jpg`;
     }
 
     return resolveUrl(image.value.thumbnail);
