@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import gsap from "gsap";
+import landingPageMilkywayImage from "~/assets/images/landing-page-milkyway-lin.jpg";
 
 definePageMeta({ pageTransition: false, key: "gallery" });
 
@@ -18,13 +19,14 @@ if (images.value.length === 0) {
 const image = computed(() => (slug.value ? resolveById(slug.value) : undefined));
 const imageUrl = computed(() => {
     if (!image.value) {
-        return undefined;
+        return new URL(landingPageMilkywayImage, import.meta.url).href;
     }
+
     return resolveUrl(image.value.thumbnail);
 });
-const description = computed(() =>
-    image.value?.subTitle ??
-    "Browse the astrophotography gallery featuring nebulae, galaxies, and star clusters.",
+
+const description = computed(
+    () => image.value?.subTitle ?? "Capturing the universe, one photon at a time.",
 );
 
 const pageTitle = computed(() => (image.value ? image.value.title : "Gallery"));
