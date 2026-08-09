@@ -91,7 +91,7 @@ onMounted(() => {
         <main class="pt-24 pb-16 px-4">
             <div class="max-w-6xl mx-auto">
                 <!-- Header -->
-                <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center justify-between mb-8 flex-wrap gap-2">
                     <div>
                         <h1 class="text-3xl font-display font-bold text-white">Admin Dashboard</h1>
                         <p class="text-slate-400 mt-1">Manage your astrophotography collection</p>

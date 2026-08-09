@@ -7,10 +7,10 @@ const { isAuthenticated, isAdmin } = useAuth();
 </script>
 
 <template>
-    <nav class="fixed top-0 left-0 right-0 z-50 px-4 py-4">
+    <nav class="app-nav fixed top-0 left-0 right-0 z-50 px-4 py-4">
         <div class="max-w-7xl mx-auto">
             <div
-                class="border border-space-700/40 rounded-full px-6 py-3 backdrop-blur-sm flex items-center justify-between"
+                class="app-nav__island border border-space-700/40 bg-nav-gradient rounded-full px-6 py-3 backdrop-blur-sm flex items-center justify-between"
             >
                 <!-- Logo -->
                 <NuxtLink to="/" class="flex items-center gap-3 group">
@@ -61,3 +61,9 @@ const { isAuthenticated, isAdmin } = useAuth();
         </div>
     </nav>
 </template>
+
+<style scoped>
+.app-nav .app-nav__island {
+    background-image: linear-gradient(90deg, rgb(2 10 35 / 75%) 10%, rgb(3 7 18 / 50%) 30% 70%, rgb(2 10 35 / 75%) 90%);
+}
+</style>

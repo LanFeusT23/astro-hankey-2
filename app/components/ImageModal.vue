@@ -70,7 +70,7 @@ onUnmounted(() => {
             @touchend="onTouchEnd"
         >
             <!-- Backdrop -->
-            <div class="absolute inset-0 bg-space-950/95 backdrop-blur-md"></div>
+            <div class="absolute inset-0 bg-space-950/50 backdrop-blur-md"></div>
 
             <!-- Prev arrow -->
             <button
@@ -94,7 +94,7 @@ onUnmounted(() => {
 
             <!-- Modal -->
             <div
-                class="relative z-10 max-w-7xl w-full bg-space-800/80 border border-space-700/50 rounded-2xl overflow-hidden shadow-2xl h-full max-h-[95%]"
+                class="relative z-10 max-w-7xl w-full bg-space-800 border border-space-700/50 rounded-2xl overflow-hidden shadow-2xl h-full max-h-[95%]"
             >
                 <!-- Close button -->
                 <button
