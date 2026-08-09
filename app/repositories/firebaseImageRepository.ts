@@ -20,7 +20,11 @@ const GALLERY_STORAGE_PATH_PROD = "gallery";
 const GALLERY_COLLECTION_TEST = "testImages";
 const GALLERY_STORAGE_PATH_TEST = "testGallery";
 
-function getPaths(appEnv: string): { collection: string; storagePath: string; thumbnailsPath: string } {
+function getPaths(appEnv: string): {
+    collection: string;
+    storagePath: string;
+    thumbnailsPath: string;
+} {
     const isStaging = appEnv === "staging";
     const storagePath = isStaging ? GALLERY_STORAGE_PATH_TEST : GALLERY_STORAGE_PATH_PROD;
     return {

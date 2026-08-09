@@ -219,7 +219,11 @@ onMounted(() => {
                 </div>
 
                 <!-- Image list -->
-                <AdminImageList :images="sortedImages" @updated="fetchImages" @deleted="fetchImages" />
+                <AdminImageList
+                    :images="sortedImages"
+                    @updated="fetchImages"
+                    @deleted="fetchImages"
+                />
             </div>
         </main>
     </div>

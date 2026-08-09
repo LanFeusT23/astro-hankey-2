@@ -2,10 +2,9 @@
 import landingPageMilkywayImage from "~/assets/images/landing-page-milkyway-lin.jpg";
 
 const requestUrl = useRequestURL();
-const homeDescription =
-    "Deep sky astrophotography by Jonathan Hankey. Nebulae, galaxies, and star clusters captured from dark skies.";
+const homeDescription = "Capturing the universe, one photon at a time.";
 const ogImage = computed(() => {
-    return new URL(landingPageMilkywayImage, import.meta.url).href
+    return new URL(landingPageMilkywayImage, import.meta.url).href;
 });
 
 useSeoMeta({

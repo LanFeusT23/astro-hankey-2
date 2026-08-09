@@ -1,7 +1,5 @@
 <script setup lang="ts">
-const publicLinks = [
-    { to: "/gallery", label: "Gallery" },
-];
+const publicLinks = [{ to: "/gallery", label: "Gallery" }];
 
 const { isAuthenticated, isAdmin } = useAuth();
 </script>
@@ -64,6 +62,11 @@ const { isAuthenticated, isAdmin } = useAuth();
 
 <style scoped>
 .app-nav .app-nav__island {
-    background-image: linear-gradient(90deg, rgb(2 10 35 / 75%) 10%, rgb(3 7 18 / 50%) 30% 70%, rgb(2 10 35 / 75%) 90%);
+    background-image: linear-gradient(
+        90deg,
+        rgb(2 10 35 / 75%) 10%,
+        rgb(3 7 18 / 50%) 30% 70%,
+        rgb(2 10 35 / 75%) 90%
+    );
 }
 </style>
