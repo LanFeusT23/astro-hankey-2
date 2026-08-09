@@ -53,7 +53,7 @@ firebase deploy --only firestore:rules,storage:rules
 
 ## Deployment
 
-GitHub Actions workflows deploy to GitHub Pages on push to `main` (production) or `develop` (staging). See `.github/workflows/`.
+GitHub Actions workflows deploy to GitHub Pages on push to `main` (production) or `develop` (staging), with each new commit triggering a fresh deployment run. See `.github/workflows/`.
 
 ```bash
 npm run generate   # Static site output → .output/public
