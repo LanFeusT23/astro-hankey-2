@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import landingPageMilkywayImage from "~/assets/images/landing-page-milkyway-lin.jpg";
-
+const config = useRuntimeConfig();
 const requestUrl = useRequestURL();
 const homeDescription = "Capturing the universe, one photon at a time.";
 const ogImage = computed(() => {
-    return `${requestUrl.origin}${landingPageMilkywayImage}`;
+    const origin = config.public.siteUrl || requestUrl.origin;
+    return `${origin}/landing-page-milkyway-lin.jpg`;
 });
 
 useSeoMeta({
@@ -29,7 +29,7 @@ useSeoMeta({
         <div
             class="absolute inset-0 bg-cover bg-center bg-no-repeat"
             :style="{
-                backgroundImage: `url(${landingPageMilkywayImage})`,
+                backgroundImage: `url('/landing-page-milkyway-lin.jpg')`,
                 opacity: 0.3,
             }"
         ></div>
