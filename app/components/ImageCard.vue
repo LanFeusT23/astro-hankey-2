@@ -19,7 +19,7 @@ const formatDate = (date: Date) => {
 <template>
     <NuxtLink
         :to="`/gallery/${image.id}`"
-        class="group relative overflow-hidden rounded-2xl bg-space-800 border border-space-700/50 hover:border-nebula-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-nebula-900/30"
+        class="group relative overflow-hidden rounded-2xl bg-space-800 border border-space-700/50 hover:border-nebula-500/50 hover:scale-105 transition-all duration-300 hover:shadow-lg hover:shadow-nebula-900/30"
     >
         <!-- Image -->
         <div class="aspect-3/2 overflow-hidden">
