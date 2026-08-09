@@ -4,7 +4,7 @@ const requestUrl = useRequestURL();
 const homeDescription = "Capturing the universe, one photon at a time.";
 const ogImage = computed(() => {
     const origin = config.public.siteUrl || requestUrl.origin;
-    return `${origin}/landing-page-milkyway-lin.jpg`;
+    return new URL("landing-page-milkyway-lin.jpg", origin).toString();
 });
 
 useSeoMeta({

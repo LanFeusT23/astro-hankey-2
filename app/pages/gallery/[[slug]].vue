@@ -20,7 +20,7 @@ const image = computed(() => (slug.value ? resolveById(slug.value) : undefined))
 const imageUrl = computed(() => {
     if (!image.value) {
         const origin = config.public.siteUrl || requestUrl.origin;
-        return `${origin}/landing-page-milkyway-lin.jpg`;
+        return new URL("landing-page-milkyway-lin.jpg", origin).toString();
     }
 
     return resolveUrl(image.value.thumbnail);
