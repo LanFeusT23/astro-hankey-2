@@ -23,15 +23,13 @@ export function getImageRepository(
         repoType ||
         (typeof useRuntimeConfig !== "undefined"
             ? useRuntimeConfig().public.imageRepository
-            : process.env.NUXT_IMAGE_REPOSITORY) || "stub";
+            : process.env.NUXT_IMAGE_REPOSITORY) ||
+        "stub";
 
     switch (resolvedRepoType) {
         case "firebase":
             if (firebaseConfig) {
-                return new FirebaseImageRepository(
-                    firebaseConfig.appEnv,
-                    firebaseConfig.firebase,
-                );
+                return new FirebaseImageRepository(firebaseConfig.appEnv, firebaseConfig.firebase);
             } else if (typeof useRuntimeConfig !== "undefined") {
                 const config = useRuntimeConfig();
                 return new FirebaseImageRepository(config.public.appEnv, config.public.firebase);
