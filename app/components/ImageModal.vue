@@ -9,10 +9,12 @@ const props = defineProps<{
 const emit = defineEmits<{ close: []; prev: []; next: [] }>();
 
 const { resolveUrl } = useImageUrl();
+const { renderMarkdown } = useMarkdownRenderer();
 
 const mainCloudLocation = computed(() =>
     resolveUrl(props.image.images.find((i) => i.isMain)?.cloudLocation),
 );
+const descriptionHtml = computed(() => renderMarkdown(props.image.subTitle));
 
 const formatDate = (date: Date) => {
     return date.toLocaleDateString("en-US", {
@@ -128,9 +130,11 @@ onUnmounted(() => {
                                 <MdiCalendarMonthOutline class="w-4 h-4" />
                                 {{ formatDate(image.imageTakenDate) }}
                             </div>
-                            <p class="text-slate-400 text-sm leading-relaxed">
-                                {{ image.subTitle }}
-                            </p>
+                            <div
+                                v-if="descriptionHtml"
+                                class="text-slate-400 text-sm leading-relaxed markdown-body"
+                                v-html="descriptionHtml"
+                            ></div>
                         </div>
 
                         <div class="mt-6 pt-6 border-t border-space-700/50">
@@ -150,3 +154,27 @@ onUnmounted(() => {
         </div>
     </Teleport>
 </template>
+
+<style scoped>
+.markdown-body :deep(p) {
+    margin: 0 0 0.75rem;
+}
+
+.markdown-body :deep(h1),
+.markdown-body :deep(h2),
+.markdown-body :deep(h3) {
+    margin: 0.75rem 0;
+    color: #fff;
+    font-weight: 600;
+}
+
+.markdown-body :deep(ul),
+.markdown-body :deep(ol) {
+    margin: 0 0 0.75rem 1.25rem;
+}
+
+.markdown-body :deep(a) {
+    color: #93c5fd;
+    text-decoration: underline;
+}
+</style>
