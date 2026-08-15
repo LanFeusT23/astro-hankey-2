@@ -27,6 +27,7 @@ const { renderMarkdown } = useMarkdownRenderer();
 const fileInput = ref<HTMLInputElement | null>(null);
 const showMarkdownPreview = ref(false);
 const filePreviewUrl = ref<string | null>(null);
+const formError = ref("");
 
 const form = reactive({
     title: "",
@@ -58,6 +59,7 @@ const resetForm = () => {
     form.file = null;
     form.currentImageUrl = resolveUrl(props.image?.thumbnail) ?? "";
     showMarkdownPreview.value = false;
+    formError.value = "";
     if (fileInput.value) {
         fileInput.value.value = "";
     }
@@ -89,9 +91,14 @@ const handleFileChange = (event: Event) => {
 };
 
 const submit = (status: PostStatus) => {
-    if (!form.title || !form.location || !form.imageTakenDate) {
+    if (props.saving) {
         return;
     }
+    if (!form.title || !form.location || !form.imageTakenDate) {
+        formError.value = "Title, date, and location are required.";
+        return;
+    }
+    formError.value = "";
     emit("save", {
         id: props.image?.id,
         title: form.title,
@@ -209,8 +216,10 @@ const submit = (status: PostStatus) => {
                             <div
                                 v-else
                                 class="min-h-44 bg-space-900/80 border border-space-600/60 rounded-lg px-4 py-2.5 text-slate-300 markdown-body"
-                                v-html="renderedDescription || '<p>No markdown content yet.</p>'"
-                            ></div>
+                            >
+                                <div v-if="renderedDescription" v-html="renderedDescription"></div>
+                                <p v-else>No markdown content yet.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -218,6 +227,9 @@ const submit = (status: PostStatus) => {
                 <div
                     class="px-6 py-4 border-t border-space-700/50 flex items-center justify-end gap-3 bg-space-900/40"
                 >
+                    <p v-if="formError" class="mr-auto text-sm text-red-400">
+                        {{ formError }}
+                    </p>
                     <button
                         type="button"
                         class="px-4 py-2 border border-space-600 rounded-lg text-slate-300 hover:text-white hover:border-space-500 transition-colors"
@@ -239,34 +251,10 @@ const submit = (status: PostStatus) => {
                         class="px-4 py-2 bg-nebula-600 hover:bg-nebula-500 rounded-lg text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         @click="submit('published')"
                     >
-                        Save as Post
+                        Publish Post
                     </button>
                 </div>
             </div>
         </div>
     </Teleport>
 </template>
-
-<style scoped>
-.markdown-body :deep(p) {
-    margin: 0 0 0.75rem;
-}
-
-.markdown-body :deep(h1),
-.markdown-body :deep(h2),
-.markdown-body :deep(h3) {
-    margin: 0.75rem 0;
-    color: #fff;
-    font-weight: 600;
-}
-
-.markdown-body :deep(ul),
-.markdown-body :deep(ol) {
-    margin: 0 0 0.75rem 1.25rem;
-}
-
-.markdown-body :deep(a) {
-    color: #93c5fd;
-    text-decoration: underline;
-}
-</style>

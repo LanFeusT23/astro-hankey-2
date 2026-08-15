@@ -154,27 +154,3 @@ onUnmounted(() => {
         </div>
     </Teleport>
 </template>
-
-<style scoped>
-.markdown-body :deep(p) {
-    margin: 0 0 0.75rem;
-}
-
-.markdown-body :deep(h1),
-.markdown-body :deep(h2),
-.markdown-body :deep(h3) {
-    margin: 0.75rem 0;
-    color: #fff;
-    font-weight: 600;
-}
-
-.markdown-body :deep(ul),
-.markdown-body :deep(ol) {
-    margin: 0 0 0.75rem 1.25rem;
-}
-
-.markdown-body :deep(a) {
-    color: #93c5fd;
-    text-decoration: underline;
-}
-</style>
