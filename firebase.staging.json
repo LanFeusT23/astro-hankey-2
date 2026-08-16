@@ -12,7 +12,8 @@
                 "source": "**",
                 "function": {
                     "functionId": "server",
-                    "region": "us-central1"
+                    "region": "us-central1",
+                    "pinTag": true
                 }
             }
         ]
