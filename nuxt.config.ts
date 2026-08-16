@@ -12,7 +12,7 @@ export default defineNuxtConfig({
             gen: 2,
         },
         externals: {
-            inline: ["hookable", "unhead"],
+            inline: ["hookable", "unhead", "entities"],
         },
     },
     vite: {
