@@ -10,7 +10,7 @@ export default defineNuxtConfig({
         preset: "firebase",
         firebase: {
             gen: 2,
-            nodeVersion: "22",
+            nodeVersion: "20",
         },
         externals: {
             inline: ["hookable", "unhead"],
