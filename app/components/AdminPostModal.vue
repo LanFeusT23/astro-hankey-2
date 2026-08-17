@@ -22,10 +22,8 @@ const props = defineProps<{
 const emit = defineEmits<{ close: []; save: [payload: SavePayload] }>();
 
 const { resolveUrl } = useImageUrl();
-const { renderMarkdown } = useMarkdownRenderer();
 
 const fileInput = ref<HTMLInputElement | null>(null);
-const showMarkdownPreview = ref(false);
 const filePreviewUrl = ref<string | null>(null);
 const formError = ref("");
 
@@ -39,7 +37,6 @@ const form = reactive({
 });
 
 const isEditMode = computed(() => Boolean(props.image?.id));
-const renderedDescription = computed(() => renderMarkdown(form.subTitle));
 const imagePreviewSrc = computed(() => filePreviewUrl.value || form.currentImageUrl || "");
 
 const resetPreview = () => {
@@ -58,7 +55,6 @@ const resetForm = () => {
         : new Date().toISOString().slice(0, 10);
     form.file = null;
     form.currentImageUrl = resolveUrl(props.image?.thumbnail) ?? "";
-    showMarkdownPreview.value = false;
     formError.value = "";
     if (fileInput.value) {
         fileInput.value.value = "";
@@ -195,31 +191,14 @@ const submit = (status: PostStatus) => {
                             />
                         </div>
                         <div>
-                            <div class="flex items-center justify-between mb-2">
-                                <label class="block text-sm font-medium text-slate-300"
-                                    >Description</label
-                                >
-                                <button
-                                    type="button"
-                                    class="text-xs px-2 py-1 rounded border border-space-600 text-slate-300 hover:border-nebula-500 hover:text-white transition-colors"
-                                    @click="showMarkdownPreview = !showMarkdownPreview"
-                                >
-                                    {{ showMarkdownPreview ? "Edit Markdown" : "Preview Markdown" }}
-                                </button>
-                            </div>
+                            <label class="block text-sm font-medium text-slate-300 mb-2"
+                                >Description</label
+                            >
                             <textarea
-                                v-if="!showMarkdownPreview"
                                 v-model="form.subTitle"
                                 rows="8"
                                 class="w-full bg-space-900/80 border border-space-600/60 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-nebula-500 transition-colors resize-y"
                             />
-                            <div
-                                v-else
-                                class="min-h-44 bg-space-900/80 border border-space-600/60 rounded-lg px-4 py-2.5 text-slate-300 markdown-body"
-                            >
-                                <div v-if="renderedDescription" v-html="renderedDescription"></div>
-                                <p v-else>No markdown content yet.</p>
-                            </div>
                         </div>
                     </div>
                 </div>

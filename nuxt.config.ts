@@ -13,7 +13,7 @@ export default defineNuxtConfig({
             nodeVersion: "22",
         },
         externals: {
-            inline: ["hookable", "unhead", "entities"],
+            inline: ["hookable", "unhead"],
         },
     },
     vite: {

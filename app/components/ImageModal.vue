@@ -9,12 +9,10 @@ const props = defineProps<{
 const emit = defineEmits<{ close: []; prev: []; next: [] }>();
 
 const { resolveUrl } = useImageUrl();
-const { renderMarkdown } = useMarkdownRenderer();
 
 const mainCloudLocation = computed(() =>
     resolveUrl(props.image.images.find((i) => i.isMain)?.cloudLocation),
 );
-const descriptionHtml = computed(() => renderMarkdown(props.image.subTitle));
 
 const formatDate = (date: Date) => {
     return date.toLocaleDateString("en-US", {
@@ -130,11 +128,10 @@ onUnmounted(() => {
                                 <MdiCalendarMonthOutline class="w-4 h-4" />
                                 {{ formatDate(image.imageTakenDate) }}
                             </div>
-                            <div
-                                v-if="descriptionHtml"
-                                class="text-slate-400 text-sm leading-relaxed markdown-body"
-                                v-html="descriptionHtml"
-                            ></div>
+                            <p
+                                v-if="image.subTitle"
+                                class="text-slate-400 text-sm leading-relaxed whitespace-pre-wrap"
+                            >{{ image.subTitle }}</p>
                         </div>
 
                         <div class="mt-6 pt-6 border-t border-space-700/50">
