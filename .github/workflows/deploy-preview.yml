@@ -50,7 +50,7 @@ jobs:
             - name: Deploy SSR function
               run: |
                   npx firebase-tools deploy --only functions \
-                      --config firebase.staging.json \
+                      --config firebase.preview.json \
                       --project "${{ secrets.NUXT_PUBLIC_FIREBASE_PROJECT_ID }}" \
                       --force \
                       --non-interactive
@@ -61,7 +61,7 @@ jobs:
 
                   CHANNEL_ID="pr-${{ github.event.pull_request.number }}"
                   DEPLOY_OUTPUT="$(npx firebase-tools hosting:channel:deploy "$CHANNEL_ID" \
-                      --config firebase.staging.json \
+                     --config firebase.preview.json \
                       --project "${{ secrets.NUXT_PUBLIC_FIREBASE_PROJECT_ID }}" \
                       --expires "$PREVIEW_CHANNEL_TTL" \
                       --non-interactive \
@@ -170,7 +170,7 @@ jobs:
                   CHANNEL_ID="pr-${{ github.event.pull_request.number }}"
                   set +e
                   DELETE_OUTPUT="$(npx firebase-tools hosting:channel:delete "$CHANNEL_ID" \
-                      --config firebase.staging.json \
+                     --config firebase.preview.json \
                       --project "${{ secrets.NUXT_PUBLIC_FIREBASE_PROJECT_ID }}" \
                       --force \
                       --non-interactive \
@@ -180,7 +180,7 @@ jobs:
 
                   if [[ $DELETE_STATUS -ne 0 ]]; then
                       CHANNEL_EXISTS="$(CHANNEL_ID="$CHANNEL_ID" npx firebase-tools hosting:channel:list \
-                          --config firebase.staging.json \
+                         --config firebase.preview.json \
                           --project "${{ secrets.NUXT_PUBLIC_FIREBASE_PROJECT_ID }}" \
                           --json | node -e '
                           const fs = require("fs")

@@ -2,13 +2,10 @@
 import type { AstroImage } from "~/types/image";
 
 const props = defineProps<{ images: AstroImage[] }>();
-const emit = defineEmits<{ updated: []; deleted: [] }>();
+const emit = defineEmits<{ edit: [image: AstroImage]; deleted: [] }>();
 
-const { updateImage, deleteImage } = useImages();
+const { deleteImage } = useImages();
 const { resolveUrl } = useImageUrl();
-
-const editingId = ref<string | null>(null);
-const editForm = reactive({ title: "", subTitle: "", location: "" });
 
 const RETRY_DELAY_MS = 3000;
 const MAX_RETRIES = 3;
@@ -43,27 +40,6 @@ const onThumbnailLoad = (image: AstroImage) => {
 const formatDate = (date: Date) =>
     date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 
-const startEdit = (image: AstroImage) => {
-    editingId.value = image.id;
-    editForm.title = image.title;
-    editForm.subTitle = image.subTitle ?? "";
-    editForm.location = image.location;
-};
-
-const cancelEdit = () => {
-    editingId.value = null;
-};
-
-const saveEdit = async (id: string) => {
-    await updateImage(id, {
-        title: editForm.title,
-        subTitle: editForm.subTitle || undefined,
-        location: editForm.location,
-    });
-    editingId.value = null;
-    emit("updated");
-};
-
 const handleDelete = async (id: string) => {
     if (!confirm("Delete this image?")) {
         return;
@@ -77,11 +53,11 @@ const handleDelete = async (id: string) => {
     <div class="bg-space-800/40 border border-space-700/40 rounded-2xl p-6 backdrop-blur-sm">
         <h2 class="text-xl font-semibold text-white mb-6 flex items-center gap-2">
             <MdiFormatListBulleted class="w-5 h-5 text-nebula-400" />
-            Current Images ({{ images.length }})
+            Current Posts ({{ images.length }})
         </h2>
 
         <div v-if="images.length === 0" class="text-center py-12 text-slate-500">
-            No images yet. Upload your first image above.
+            No posts yet. Add your first post.
         </div>
 
         <div v-else class="space-y-4">
@@ -114,65 +90,39 @@ const handleDelete = async (id: string) => {
 
                 <!-- Info / Edit -->
                 <div class="flex-1 min-w-0">
-                    <div v-if="editingId !== image.id">
-                        <h3 class="font-medium text-white truncate">{{ image.title }}</h3>
-                        <p class="text-slate-400 text-sm mt-0.5">
+                    <h3 class="font-medium text-white truncate">{{ image.title }}</h3>
+                    <div class="flex items-center gap-2 mt-0.5">
+                        <p class="text-slate-400 text-sm">
                             {{ formatDate(image.imageTakenDate) }}
                         </p>
-                        <p class="text-slate-500 text-xs mt-1 line-clamp-1">{{ image.subTitle }}</p>
+                        <span
+                            class="text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded border"
+                            :class="
+                                image.status === 'published'
+                                    ? 'text-emerald-300 border-emerald-500/40 bg-emerald-900/20'
+                                    : 'text-amber-300 border-amber-500/40 bg-amber-900/20'
+                            "
+                        >
+                            {{ image.status }}
+                        </span>
                     </div>
-                    <div v-else class="space-y-2">
-                        <input
-                            v-model="editForm.title"
-                            type="text"
-                            class="w-full bg-space-800 border border-space-600 rounded px-3 py-1.5 text-white text-sm focus:outline-none focus:border-nebula-500"
-                            placeholder="Title"
-                        />
-                        <input
-                            v-model="editForm.location"
-                            type="text"
-                            class="w-full bg-space-800 border border-space-600 rounded px-3 py-1.5 text-white text-sm focus:outline-none focus:border-nebula-500"
-                            placeholder="Location"
-                        />
-                        <textarea
-                            v-model="editForm.subTitle"
-                            rows="2"
-                            class="w-full bg-space-800 border border-space-600 rounded px-3 py-1.5 text-white text-sm focus:outline-none focus:border-nebula-500 resize-none"
-                            placeholder="subTitle"
-                        />
-                    </div>
+                    <p class="text-slate-500 text-xs mt-1 line-clamp-1">{{ image.subTitle }}</p>
                 </div>
 
                 <!-- Actions -->
                 <div class="flex flex-col gap-2 shrink-0">
-                    <template v-if="editingId !== image.id">
-                        <button
-                            @click="startEdit(image)"
-                            class="px-3 py-1.5 text-xs bg-space-700/60 hover:bg-space-600/60 text-slate-300 rounded-lg transition-colors"
-                        >
-                            Edit
-                        </button>
-                        <button
-                            @click="handleDelete(image.id)"
-                            class="px-3 py-1.5 text-xs bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded-lg transition-colors"
-                        >
-                            Delete
-                        </button>
-                    </template>
-                    <template v-else>
-                        <button
-                            @click="saveEdit(image.id)"
-                            class="px-3 py-1.5 text-xs bg-nebula-600/80 hover:bg-nebula-500/80 text-white rounded-lg transition-colors"
-                        >
-                            Save
-                        </button>
-                        <button
-                            @click="cancelEdit"
-                            class="px-3 py-1.5 text-xs bg-space-700/60 hover:bg-space-600/60 text-slate-300 rounded-lg transition-colors"
-                        >
-                            Cancel
-                        </button>
-                    </template>
+                    <button
+                        @click="emit('edit', image)"
+                        class="px-3 py-1.5 text-xs bg-space-700/60 hover:bg-space-600/60 text-slate-300 rounded-lg transition-colors"
+                    >
+                        Edit
+                    </button>
+                    <button
+                        @click="handleDelete(image.id)"
+                        class="px-3 py-1.5 text-xs bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded-lg transition-colors"
+                    >
+                        Delete
+                    </button>
                 </div>
             </div>
         </div>

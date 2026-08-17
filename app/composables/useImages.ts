@@ -18,6 +18,9 @@ export const useImages = () => {
     const sortedImages = computed(() =>
         [...images.value].sort((a, b) => b.imageTakenDate.getTime() - a.imageTakenDate.getTime()),
     );
+    const publishedSortedImages = computed(() =>
+        sortedImages.value.filter((image) => image.status === "published"),
+    );
 
     const fetchImages = async () => {
         loading.value = true;
@@ -48,6 +51,11 @@ export const useImages = () => {
         return created;
     };
 
+    const uploadImage = async (file: File, imageTakenDate: Date, imageId?: string) => {
+        const repo = await getRepo();
+        return repo.uploadImage(file, imageTakenDate, imageId);
+    };
+
     const deleteImage = async (id: string) => {
         const repo = await getRepo();
         await repo.delete(id);
@@ -57,11 +65,13 @@ export const useImages = () => {
     return {
         images,
         sortedImages,
+        publishedSortedImages,
         loading,
         error,
         fetchImages,
         updateImage,
         createImage,
+        uploadImage,
         deleteImage,
     };
 };

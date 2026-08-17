@@ -1,76 +1,89 @@
 <script setup lang="ts">
+import type { AstroImage } from "~/types/image";
+
 definePageMeta({ middleware: "auth" });
 
 useSeoMeta({ title: "Admin" });
 
 const { user, signOut } = useAuth();
-const { sortedImages, fetchImages, createImage } = useImages();
+const { sortedImages, fetchImages, createImage, updateImage, uploadImage } = useImages();
 
-const fileInput = ref<HTMLInputElement | null>(null);
-const uploading = ref(false);
-
-const uploadForm = reactive({
-    title: "",
-    subTitle: "",
-    location: "",
-    imageTakenDate: "",
-    file: null as File | null,
-});
+const isPostModalOpen = ref(false);
+const selectedImage = ref<AstroImage | null>(null);
+const savingPost = ref(false);
 
 const userInitial = computed(() => {
     const name = user.value?.displayName || user.value?.email || "A";
     return name.charAt(0).toUpperCase();
 });
 
-const handleFileChange = (e: Event) => {
-    const target = e.target as HTMLInputElement;
-    uploadForm.file = target.files?.[0] ?? null;
+const openCreatePostModal = () => {
+    selectedImage.value = null;
+    isPostModalOpen.value = true;
 };
 
-const handleDrop = (e: DragEvent) => {
-    uploadForm.file = e.dataTransfer?.files?.[0] ?? null;
+const openEditPostModal = (image: AstroImage) => {
+    selectedImage.value = image;
+    isPostModalOpen.value = true;
 };
 
-const handleUpload = async () => {
-    if (!uploadForm.title || !uploadForm.location || !uploadForm.imageTakenDate) {
+const closePostModal = () => {
+    isPostModalOpen.value = false;
+    selectedImage.value = null;
+};
+
+const handleSavePost = async (payload: {
+    id?: string;
+    title: string;
+    subTitle: string;
+    location: string;
+    imageTakenDate: string;
+    status: AstroImage["status"];
+    file: File | null;
+}) => {
+    if (!payload.title || !payload.location || !payload.imageTakenDate) {
         return;
     }
-    uploading.value = true;
+    savingPost.value = true;
     try {
-        const { getImageRepository } = await import("~/repositories/index");
-        const repo = getImageRepository();
-        let cloudLocation = `https://picsum.photos/seed/${Date.now()}/1920/1280`;
-        let thumbnailUrl: string;
-        if (uploadForm.file) {
-            const urls = await repo.uploadImage(
-                uploadForm.file,
-                new Date(uploadForm.imageTakenDate),
-            );
-            cloudLocation = urls.cloudLocation;
-            thumbnailUrl = urls.thumbnailUrl;
+        const imageTakenDate = new Date(payload.imageTakenDate);
+        if (payload.id) {
+            const updates: Partial<Omit<AstroImage, "id">> = {
+                title: payload.title,
+                subTitle: payload.subTitle || undefined,
+                location: payload.location,
+                imageTakenDate,
+                status: payload.status,
+            };
+            if (payload.file) {
+                const urls = await uploadImage(payload.file, imageTakenDate, payload.id);
+                updates.thumbnail = urls.thumbnailUrl;
+                updates.images = [{ cloudLocation: urls.cloudLocation, isMain: true }];
+            }
+            await updateImage(payload.id, updates);
         } else {
-            thumbnailUrl = `https://picsum.photos/seed/${Date.now()}/600/400`;
+            let cloudLocation = `https://picsum.photos/seed/${Date.now()}/1920/1280`;
+            let thumbnailUrl = `https://picsum.photos/seed/${Date.now()}/600/400`;
+            if (payload.file) {
+                const urls = await uploadImage(payload.file, imageTakenDate);
+                cloudLocation = urls.cloudLocation;
+                thumbnailUrl = urls.thumbnailUrl;
+            }
+            await createImage({
+                title: payload.title,
+                subTitle: payload.subTitle || undefined,
+                location: payload.location,
+                imageTakenDate,
+                status: payload.status,
+                dateCreated: new Date(),
+                dontContainImage: false,
+                thumbnail: thumbnailUrl,
+                images: [{ cloudLocation, isMain: true }],
+            });
         }
-        await createImage({
-            title: uploadForm.title,
-            subTitle: uploadForm.subTitle || undefined,
-            location: uploadForm.location,
-            imageTakenDate: new Date(uploadForm.imageTakenDate),
-            dateCreated: new Date(),
-            dontContainImage: false,
-            thumbnail: thumbnailUrl,
-            images: [{ cloudLocation, isMain: true }],
-        });
-        uploadForm.title = "";
-        uploadForm.subTitle = "";
-        uploadForm.location = "";
-        uploadForm.imageTakenDate = "";
-        uploadForm.file = null;
-        if (fileInput.value) {
-            fileInput.value.value = "";
-        }
+        closePostModal();
     } finally {
-        uploading.value = false;
+        savingPost.value = false;
     }
 };
 
@@ -97,6 +110,13 @@ onMounted(() => {
                         <p class="text-slate-400 mt-1">Manage your astrophotography collection</p>
                     </div>
                     <div class="flex items-center gap-4">
+                        <button
+                            @click="openCreatePostModal"
+                            class="px-4 py-2.5 bg-nebula-600 hover:bg-nebula-500 text-white rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-2"
+                        >
+                            <MdiPlus class="w-4 h-4" />
+                            Add Post
+                        </button>
                         <div
                             class="flex items-center gap-3 bg-space-800/60 border border-space-700/50 rounded-full px-4 py-2"
                         >
@@ -118,113 +138,17 @@ onMounted(() => {
                     </div>
                 </div>
 
-                <!-- Upload new image form -->
-                <div
-                    class="bg-space-800/40 border border-space-700/40 rounded-2xl p-6 mb-8 backdrop-blur-sm"
-                >
-                    <h2 class="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-                        <MdiPlus class="w-5 h-5 text-nebula-400" />
-                        Upload New Image
-                    </h2>
-                    <form
-                        @submit.prevent="handleUpload"
-                        class="grid grid-cols-1 md:grid-cols-2 gap-4"
-                    >
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-slate-300 mb-2"
-                                >Image File</label
-                            >
-                            <div
-                                class="border-2 border-dashed border-space-600 hover:border-nebula-500 rounded-xl p-8 text-center cursor-pointer transition-colors"
-                                @click="fileInput?.click()"
-                                @dragover.prevent
-                                @drop.prevent="handleDrop"
-                            >
-                                <input
-                                    ref="fileInput"
-                                    type="file"
-                                    accept="image/*"
-                                    class="hidden"
-                                    @change="handleFileChange"
-                                />
-                                <MdiFileImageOutline
-                                    class="w-10 h-10 mx-auto text-slate-500 mb-3"
-                                />
-                                <p class="text-slate-400 text-sm">
-                                    {{
-                                        uploadForm.file
-                                            ? uploadForm.file.name
-                                            : "Click or drag to upload image"
-                                    }}
-                                </p>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-300 mb-2"
-                                >Title</label
-                            >
-                            <input
-                                v-model="uploadForm.title"
-                                type="text"
-                                required
-                                placeholder="e.g. Andromeda Galaxy (M31)"
-                                class="w-full bg-space-900/80 border border-space-600/60 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-nebula-500 transition-colors"
-                            />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-300 mb-2"
-                                >Location</label
-                            >
-                            <input
-                                v-model="uploadForm.location"
-                                type="text"
-                                required
-                                placeholder="e.g. Rural Colorado"
-                                class="w-full bg-space-900/80 border border-space-600/60 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-nebula-500 transition-colors"
-                            />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-300 mb-2"
-                                >Image Taken Date</label
-                            >
-                            <input
-                                v-model="uploadForm.imageTakenDate"
-                                type="date"
-                                required
-                                class="w-full bg-space-900/80 border border-space-600/60 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-nebula-500 transition-colors"
-                            />
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-slate-300 mb-2"
-                                >subTitle <span class="text-slate-500">(optional)</span></label
-                            >
-                            <textarea
-                                v-model="uploadForm.subTitle"
-                                rows="3"
-                                placeholder="Describe this image..."
-                                class="w-full bg-space-900/80 border border-space-600/60 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-nebula-500 transition-colors resize-none"
-                            />
-                        </div>
-                        <div class="md:col-span-2 flex justify-end">
-                            <button
-                                type="submit"
-                                :disabled="uploading"
-                                class="px-6 py-2.5 bg-nebula-600 hover:bg-nebula-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center gap-2"
-                            >
-                                <MdiLoading v-if="uploading" class="w-4 h-4 animate-spin" />
-                                {{ uploading ? "Uploading..." : "Upload Image" }}
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
                 <!-- Image list -->
-                <AdminImageList
-                    :images="sortedImages"
-                    @updated="fetchImages"
-                    @deleted="fetchImages"
-                />
+                <AdminImageList :images="sortedImages" @edit="openEditPostModal" @deleted="fetchImages" />
             </div>
         </main>
+
+        <AdminPostModal
+            :open="isPostModalOpen"
+            :image="selectedImage"
+            :saving="savingPost"
+            @close="closePostModal"
+            @save="handleSavePost"
+        />
     </div>
 </template>

@@ -24,6 +24,7 @@ export const astroImageSchema = z.object({
         }),
     ),
     location: z.string(),
+    status: z.enum(["draft", "published"]).default("published"),
     subTitle: z.string().optional(),
     thumbnail: z.string(),
     title: z.string(),
