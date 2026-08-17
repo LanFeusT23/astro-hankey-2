@@ -4,7 +4,7 @@ import type { AstroImage } from "~/types/image";
 type PostStatus = AstroImage["status"];
 
 type ImageItem =
-    | { key: string; type: "existing"; cloudLocation: string; previewUrl: string }
+    | { key: string; type: "existing"; cloudLocation: string; thumbnailUrl?: string; previewUrl: string }
     | { key: string; type: "new"; file: File; previewUrl: string };
 
 let itemKeyCounter = 0;
@@ -17,7 +17,10 @@ export type AdminPostSavePayload = {
     location: string;
     imageTakenDate: string;
     status: PostStatus;
-    imageItems: Array<{ type: "existing"; cloudLocation: string } | { type: "new"; file: File }>;
+    imageItems: Array<
+        | { type: "existing"; cloudLocation: string; thumbnailUrl?: string }
+        | { type: "new"; file: File }
+    >;
 };
 
 const props = defineProps<{
@@ -64,10 +67,12 @@ const resetForm = () => {
     if (fileInput.value) {
         fileInput.value.value = "";
     }
-    imageItems.value = (props.image?.images ?? []).map((img) => ({
+    imageItems.value = (props.image?.images ?? []).map((img, i) => ({
         key: nextKey(),
         type: "existing" as const,
         cloudLocation: img.cloudLocation,
+        // Carry the post thumbnail only for the first image (it's the thumbnail source)
+        thumbnailUrl: i === 0 ? (props.image?.thumbnail ?? undefined) : undefined,
         previewUrl: resolveUrl(img.cloudLocation) ?? "",
     }));
 };
@@ -151,8 +156,15 @@ const onItemDragover = (e: DragEvent, index: number) => {
     dragOverIndex.value = index;
 };
 
-const onItemDragleave = () => {
-    dragOverIndex.value = null;
+const onItemDragleave = (e: DragEvent, index: number) => {
+    // Only clear if the pointer actually left this row (not just moved to a child element)
+    const row = (e.currentTarget as HTMLElement);
+    if (row.contains(e.relatedTarget as Node | null)) {
+        return;
+    }
+    if (dragOverIndex.value === index) {
+        dragOverIndex.value = null;
+    }
 };
 
 const onItemDrop = (_e: DragEvent, index: number) => {
@@ -264,7 +276,7 @@ const submit = (status: PostStatus) => {
                                 "
                                 @dragstart="onItemDragstart($event, index)"
                                 @dragover="onItemDragover($event, index)"
-                                @dragleave="onItemDragleave"
+                                @dragleave="onItemDragleave($event, index)"
                                 @drop="onItemDrop($event, index)"
                                 @dragend="onItemDragend"
                             >
