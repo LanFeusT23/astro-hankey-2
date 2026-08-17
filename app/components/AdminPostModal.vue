@@ -3,14 +3,24 @@ import type { AstroImage } from "~/types/image";
 
 type PostStatus = AstroImage["status"];
 
-type SavePayload = {
+type ImageItem =
+    | { key: string; type: "existing"; cloudLocation: string; thumbnailUrl?: string; previewUrl: string }
+    | { key: string; type: "new"; file: File; previewUrl: string };
+
+let itemKeyCounter = 0;
+const nextKey = () => String(++itemKeyCounter);
+
+export type AdminPostSavePayload = {
     id?: string;
     title: string;
     subTitle: string;
     location: string;
     imageTakenDate: string;
     status: PostStatus;
-    file: File | null;
+    imageItems: Array<
+        | { type: "existing"; cloudLocation: string; thumbnailUrl?: string }
+        | { type: "new"; file: File }
+    >;
 };
 
 const props = defineProps<{
@@ -19,12 +29,11 @@ const props = defineProps<{
     saving?: boolean;
 }>();
 
-const emit = defineEmits<{ close: []; save: [payload: SavePayload] }>();
+const emit = defineEmits<{ close: []; save: [payload: AdminPostSavePayload] }>();
 
 const { resolveUrl } = useImageUrl();
 
 const fileInput = ref<HTMLInputElement | null>(null);
-const filePreviewUrl = ref<string | null>(null);
 const formError = ref("");
 
 const form = reactive({
@@ -32,39 +41,45 @@ const form = reactive({
     subTitle: "",
     location: "",
     imageTakenDate: "",
-    file: null as File | null,
-    currentImageUrl: "",
 });
 
-const isEditMode = computed(() => Boolean(props.image?.id));
-const imagePreviewSrc = computed(() => filePreviewUrl.value || form.currentImageUrl || "");
+const imageItems = ref<ImageItem[]>([]);
 
-const resetPreview = () => {
-    if (filePreviewUrl.value) {
-        URL.revokeObjectURL(filePreviewUrl.value);
-        filePreviewUrl.value = null;
+const isEditMode = computed(() => Boolean(props.image?.id));
+
+const cleanupNewItems = () => {
+    for (const item of imageItems.value) {
+        if (item.type === "new") {
+            URL.revokeObjectURL(item.previewUrl);
+        }
     }
 };
 
 const resetForm = () => {
+    cleanupNewItems();
     form.title = props.image?.title ?? "";
     form.subTitle = props.image?.subTitle ?? "";
     form.location = props.image?.location ?? "";
     form.imageTakenDate = props.image
         ? props.image.imageTakenDate.toISOString().slice(0, 10)
         : new Date().toISOString().slice(0, 10);
-    form.file = null;
-    form.currentImageUrl = resolveUrl(props.image?.thumbnail) ?? "";
     formError.value = "";
     if (fileInput.value) {
         fileInput.value.value = "";
     }
+    imageItems.value = (props.image?.images ?? []).map((img, i) => ({
+        key: nextKey(),
+        type: "existing" as const,
+        cloudLocation: img.cloudLocation,
+        // Carry the post thumbnail only for the first image (it's the thumbnail source)
+        thumbnailUrl: i === 0 ? (props.image?.thumbnail ?? undefined) : undefined,
+        previewUrl: resolveUrl(img.cloudLocation) ?? "",
+    }));
 };
 
 watch(
     () => [props.image, props.open],
     () => {
-        resetPreview();
         if (props.open) {
             resetForm();
         }
@@ -73,18 +88,116 @@ watch(
 );
 
 onUnmounted(() => {
-    resetPreview();
+    cleanupNewItems();
 });
 
-const handleFileChange = (event: Event) => {
-    const target = event.target as HTMLInputElement;
-    const file = target.files?.[0] ?? null;
-    form.file = file;
-    resetPreview();
-    if (file) {
-        filePreviewUrl.value = URL.createObjectURL(file);
+// ── File input ────────────────────────────────────────────────────────────────
+
+const addFiles = (files: File[]) => {
+    for (const file of files) {
+        imageItems.value.push({
+            key: nextKey(),
+            type: "new",
+            file,
+            previewUrl: URL.createObjectURL(file),
+        });
     }
 };
+
+const handleFilesChange = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    addFiles(Array.from(target.files ?? []));
+    if (fileInput.value) {
+        fileInput.value.value = "";
+    }
+};
+
+// ── Drop zone (file drop) ─────────────────────────────────────────────────────
+
+const dropZoneActive = ref(false);
+
+const onDropZoneDragover = (e: DragEvent) => {
+    e.preventDefault();
+    dropZoneActive.value = true;
+};
+
+const onDropZoneDragleave = () => {
+    dropZoneActive.value = false;
+};
+
+const onDropZoneDrop = (e: DragEvent) => {
+    e.preventDefault();
+    dropZoneActive.value = false;
+    const files = Array.from(e.dataTransfer?.files ?? []).filter((f) =>
+        f.type.startsWith("image/"),
+    );
+    addFiles(files);
+};
+
+// ── List drag-and-drop reorder ────────────────────────────────────────────────
+
+const dragSrcIndex = ref<number | null>(null);
+const dragOverIndex = ref<number | null>(null);
+
+const onItemDragstart = (e: DragEvent, index: number) => {
+    dragSrcIndex.value = index;
+    if (e.dataTransfer) {
+        e.dataTransfer.effectAllowed = "move";
+        // Carry the key so the browser ghost is meaningful
+        e.dataTransfer.setData("text/plain", imageItems.value[index]?.key ?? "");
+    }
+};
+
+const onItemDragover = (e: DragEvent, index: number) => {
+    e.preventDefault();
+    if (e.dataTransfer) {
+        e.dataTransfer.dropEffect = "move";
+    }
+    dragOverIndex.value = index;
+};
+
+const onItemDragleave = (e: DragEvent, index: number) => {
+    // Only clear if the pointer actually left this row (not just moved to a child element)
+    const row = (e.currentTarget as HTMLElement);
+    if (row.contains(e.relatedTarget as Node | null)) {
+        return;
+    }
+    if (dragOverIndex.value === index) {
+        dragOverIndex.value = null;
+    }
+};
+
+const onItemDrop = (_e: DragEvent, index: number) => {
+    const src = dragSrcIndex.value;
+    if (src === null || src === index) {
+        dragSrcIndex.value = null;
+        dragOverIndex.value = null;
+        return;
+    }
+    const arr = [...imageItems.value];
+    const [moved] = arr.splice(src, 1);
+    arr.splice(index, 0, moved);
+    imageItems.value = arr;
+    dragSrcIndex.value = null;
+    dragOverIndex.value = null;
+};
+
+const onItemDragend = () => {
+    dragSrcIndex.value = null;
+    dragOverIndex.value = null;
+};
+
+// ── Remove ────────────────────────────────────────────────────────────────────
+
+const removeItem = (index: number) => {
+    const item = imageItems.value[index];
+    if (item?.type === "new") {
+        URL.revokeObjectURL(item.previewUrl);
+    }
+    imageItems.value.splice(index, 1);
+};
+
+// ── Submit ────────────────────────────────────────────────────────────────────
 
 const submit = (status: PostStatus) => {
     if (props.saving) {
@@ -92,6 +205,10 @@ const submit = (status: PostStatus) => {
     }
     if (!form.title || !form.location || !form.imageTakenDate) {
         formError.value = "Title, date, and location are required.";
+        return;
+    }
+    if (imageItems.value.length === 0) {
+        formError.value = "At least one image is required.";
         return;
     }
     formError.value = "";
@@ -102,7 +219,11 @@ const submit = (status: PostStatus) => {
         location: form.location,
         imageTakenDate: form.imageTakenDate,
         status,
-        file: form.file,
+        imageItems: imageItems.value.map((item) =>
+            item.type === "existing"
+                ? { type: "existing" as const, cloudLocation: item.cloudLocation, thumbnailUrl: item.thumbnailUrl }
+                : { type: "new" as const, file: item.file },
+        ),
     });
 };
 </script>
@@ -132,37 +253,112 @@ const submit = (status: PostStatus) => {
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 max-h-[75vh] overflow-y-auto">
+                    <!-- Images section -->
                     <div class="space-y-4">
-                        <label class="block text-sm font-medium text-slate-300">Image</label>
+                        <div class="flex items-center justify-between">
+                            <label class="block text-sm font-medium text-slate-300">Images</label>
+                            <span class="text-xs text-slate-500">First image is the thumbnail</span>
+                        </div>
+
+                        <!-- Draggable image list -->
+                        <div v-if="imageItems.length > 0" class="space-y-2">
+                            <div
+                                v-for="(item, index) in imageItems"
+                                :key="item.key"
+                                draggable="true"
+                                class="flex items-center gap-3 bg-space-900/60 border rounded-lg p-2 cursor-grab active:cursor-grabbing transition-colors select-none"
+                                :class="
+                                    dragOverIndex === index && dragSrcIndex !== index
+                                        ? 'border-nebula-400/70 bg-space-800/80'
+                                        : dragSrcIndex === index
+                                          ? 'border-space-600/40 opacity-50'
+                                          : 'border-space-700/40'
+                                "
+                                @dragstart="onItemDragstart($event, index)"
+                                @dragover="onItemDragover($event, index)"
+                                @dragleave="onItemDragleave($event, index)"
+                                @drop="onItemDrop($event, index)"
+                                @dragend="onItemDragend"
+                            >
+                                <!-- Drag handle indicator -->
+                                <MdiDragVertical
+                                    class="w-4 h-4 flex-shrink-0 text-slate-600"
+                                    aria-hidden="true"
+                                />
+
+                                <!-- Thumbnail preview -->
+                                <div
+                                    class="w-16 h-16 flex-shrink-0 bg-space-950 rounded overflow-hidden"
+                                >
+                                    <img
+                                        :src="item.previewUrl"
+                                        :alt="`Image ${index + 1}`"
+                                        class="w-full h-full object-cover"
+                                        draggable="false"
+                                    />
+                                </div>
+
+                                <!-- Label -->
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-sm text-slate-300 truncate block">
+                                        {{
+                                            item.type === "new"
+                                                ? item.file.name
+                                                : `Image ${index + 1}`
+                                        }}
+                                    </span>
+                                    <span
+                                        v-if="index === 0"
+                                        class="text-xs text-nebula-400"
+                                    >Thumbnail</span>
+                                </div>
+
+                                <!-- Remove button -->
+                                <button
+                                    type="button"
+                                    class="p-1 text-slate-500 hover:text-red-400 transition-colors flex-shrink-0"
+                                    title="Remove"
+                                    @click="removeItem(index)"
+                                >
+                                    <MdiClose class="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Add images drop zone -->
                         <div
-                            class="border-2 border-dashed border-space-600 hover:border-nebula-500 rounded-xl p-4 text-center transition-colors"
+                            class="border-2 border-dashed rounded-xl transition-colors"
+                            :class="
+                                dropZoneActive
+                                    ? 'border-nebula-400 bg-nebula-900/20'
+                                    : 'border-space-600 hover:border-nebula-500'
+                            "
+                            @dragover="onDropZoneDragover"
+                            @dragleave="onDropZoneDragleave"
+                            @drop="onDropZoneDrop"
                         >
                             <input
                                 ref="fileInput"
                                 type="file"
                                 accept="image/*"
+                                multiple
                                 class="hidden"
-                                @change="handleFileChange"
+                                @change="handleFilesChange"
                             />
                             <button
                                 type="button"
-                                class="w-full min-h-64 bg-space-900/70 rounded-lg overflow-hidden flex items-center justify-center"
+                                class="w-full py-6 flex flex-col items-center justify-center gap-2 text-slate-500 hover:text-slate-300 transition-colors"
                                 @click="fileInput?.click()"
                             >
-                                <img
-                                    v-if="imagePreviewSrc"
-                                    :src="imagePreviewSrc"
-                                    alt="Post preview"
-                                    class="w-full h-full object-cover"
-                                />
-                                <div v-else class="text-slate-500 flex flex-col items-center gap-2">
-                                    <MdiFileImageOutline class="w-10 h-10" />
-                                    <span>Select image</span>
-                                </div>
+                                <MdiImagePlusOutline class="w-7 h-7" />
+                                <span class="text-sm">
+                                    {{ dropZoneActive ? "Drop to add" : "Click or drop images here" }}
+                                </span>
                             </button>
                         </div>
                     </div>
 
+                    <!-- Metadata fields -->
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-slate-300 mb-2">Title</label>
@@ -211,7 +407,7 @@ const submit = (status: PostStatus) => {
                     </p>
                     <button
                         type="button"
-                        class="px-4 py-2 border border-space-600 rounded-lg text-slate-300 hover:text-white hover:border-space-500 transition-colors"
+                        class="px-4 py-2 bg-space-700 hover:bg-space-600 rounded-lg text-slate-400 hover:text-slate-200 transition-colors"
                         @click="$emit('close')"
                     >
                         Cancel

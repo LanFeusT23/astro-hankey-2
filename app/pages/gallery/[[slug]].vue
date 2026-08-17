@@ -5,8 +5,22 @@ definePageMeta({ pageTransition: false, key: "gallery" });
 
 const config = useRuntimeConfig();
 const route = useRoute();
+const router = useRouter();
 const requestUrl = useRequestURL();
 const slug = computed(() => route.params.slug as string | undefined);
+
+const imageIndex = computed(() => {
+    const hash = route.hash;
+    if (!hash) {
+        return 0;
+    }
+    const n = parseInt(hash.slice(1), 10);
+    return Number.isFinite(n) && n > 1 ? n - 1 : 0;
+});
+
+const onSelectImageIndex = (index: number) => {
+    router.replace({ hash: index > 0 ? `#${index + 1}` : "" });
+};
 
 const { images, publishedSortedImages, loading, error, fetchImages } = useImages();
 const { resolveById, navigatePrev, navigateNext, hasPrev, hasNext } =
@@ -136,11 +150,13 @@ const onEnter = (el: Element, done: () => void) => {
         <ImageModal
             v-if="image && slug"
             :image="image"
+            :image-index="imageIndex"
             :has-prev="hasPrev(slug)"
             :has-next="hasNext(slug)"
             @close="$router.push('/gallery')"
             @prev="navigatePrev(slug)"
             @next="navigateNext(slug)"
+            @update:image-index="onSelectImageIndex"
         />
     </div>
 </template>
