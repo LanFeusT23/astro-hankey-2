@@ -15,11 +15,11 @@ const imageIndex = computed(() => {
         return 0;
     }
     const n = parseInt(hash.slice(1), 10);
-    return Number.isFinite(n) && n > 0 ? n : 0;
+    return Number.isFinite(n) && n > 1 ? n - 1 : 0;
 });
 
 const onSelectImageIndex = (index: number) => {
-    router.replace({ hash: index > 0 ? `#${index}` : "" });
+    router.replace({ hash: index > 0 ? `#${index + 1}` : "" });
 };
 
 const { images, publishedSortedImages, loading, error, fetchImages } = useImages();
