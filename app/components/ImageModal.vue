@@ -119,7 +119,7 @@ onUnmounted(() => {
                 <div class="flex flex-col md:flex-row h-full overflow-y-auto md:overflow-hidden">
                     <!-- Image -->
                     <div
-                        class="flex-1 bg-black flex flex-col items-center justify-center min-h-75 md:min-h-[65vh] shrink-0 md:shrink"
+                        class="relative flex-1 bg-black flex flex-col items-center justify-center min-h-75 md:min-h-[65vh] shrink-0 md:shrink"
                     >
                         <img
                             :src="currentCloudLocation"
@@ -130,7 +130,7 @@ onUnmounted(() => {
                         <!-- Thumbnail strip -->
                         <div
                             v-if="hasMultipleImages"
-                            class="w-full px-3 py-2 flex gap-2 overflow-x-auto justify-center bg-black/40"
+                            class="absolute bottom-0 w-full px-3 py-2 flex gap-2 overflow-x-auto justify-center bg-black/20"
                         >
                             <button
                                 v-for="(img, i) in image.images"
