@@ -11,7 +11,9 @@ const slug = computed(() => route.params.slug as string | undefined);
 
 const imageIndex = computed(() => {
     const hash = route.hash;
-    if (!hash) return 0;
+    if (!hash) {
+        return 0;
+    }
     const n = parseInt(hash.slice(1), 10);
     return Number.isFinite(n) && n > 0 ? n : 0;
 });
