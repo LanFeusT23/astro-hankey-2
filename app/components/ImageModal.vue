@@ -10,9 +10,20 @@ const emit = defineEmits<{ close: []; prev: []; next: [] }>();
 
 const { resolveUrl } = useImageUrl();
 
-const mainCloudLocation = computed(() =>
-    resolveUrl(props.image.images.find((i) => i.isMain)?.cloudLocation),
+const selectedIndex = ref(0);
+
+watch(
+    () => props.image,
+    () => {
+        selectedIndex.value = 0;
+    },
 );
+
+const currentCloudLocation = computed(
+    () => resolveUrl(props.image.images[selectedIndex.value]?.cloudLocation) ?? "",
+);
+
+const hasMultipleImages = computed(() => props.image.images.length > 1);
 
 const formatDate = (date: Date) => {
     return date.toLocaleDateString("en-US", {
@@ -107,13 +118,38 @@ onUnmounted(() => {
                 <div class="flex flex-col md:flex-row h-full">
                     <!-- Image -->
                     <div
-                        class="flex-1 bg-black flex items-center justify-center min-h-75 md:min-h-[65vh]"
+                        class="flex-1 bg-black flex flex-col items-center justify-center min-h-75 md:min-h-[65vh]"
                     >
                         <img
-                            :src="mainCloudLocation"
+                            :src="currentCloudLocation"
                             :alt="image.title"
                             class="max-w-full max-h-[85vh] object-contain h-full"
                         />
+
+                        <!-- Thumbnail strip -->
+                        <div
+                            v-if="hasMultipleImages"
+                            class="w-full px-3 py-2 flex gap-2 overflow-x-auto justify-center bg-black/40"
+                        >
+                            <button
+                                v-for="(img, i) in image.images"
+                                :key="i"
+                                type="button"
+                                class="flex-shrink-0 w-14 h-14 rounded overflow-hidden border-2 transition-colors"
+                                :class="
+                                    i === selectedIndex
+                                        ? 'border-nebula-400'
+                                        : 'border-transparent opacity-60 hover:opacity-100'
+                                "
+                                @click.stop="selectedIndex = i"
+                            >
+                                <img
+                                    :src="resolveUrl(img.cloudLocation)"
+                                    :alt="`Image ${i + 1}`"
+                                    class="w-full h-full object-cover"
+                                />
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Info panel -->
@@ -136,7 +172,7 @@ onUnmounted(() => {
 
                         <div class="mt-6 pt-6 border-t border-space-700/50">
                             <a
-                                :href="mainCloudLocation"
+                                :href="currentCloudLocation"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-nebula-600/20 hover:bg-nebula-600/40 border border-nebula-500/30 hover:border-nebula-400/60 text-nebula-300 rounded-lg text-sm transition-all"

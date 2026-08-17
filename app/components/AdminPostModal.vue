@@ -3,14 +3,18 @@ import type { AstroImage } from "~/types/image";
 
 type PostStatus = AstroImage["status"];
 
-type SavePayload = {
+type ImageItem =
+    | { type: "existing"; cloudLocation: string; previewUrl: string }
+    | { type: "new"; file: File; previewUrl: string };
+
+export type AdminPostSavePayload = {
     id?: string;
     title: string;
     subTitle: string;
     location: string;
     imageTakenDate: string;
     status: PostStatus;
-    file: File | null;
+    imageItems: Array<{ type: "existing"; cloudLocation: string } | { type: "new"; file: File }>;
 };
 
 const props = defineProps<{
@@ -19,12 +23,11 @@ const props = defineProps<{
     saving?: boolean;
 }>();
 
-const emit = defineEmits<{ close: []; save: [payload: SavePayload] }>();
+const emit = defineEmits<{ close: []; save: [payload: AdminPostSavePayload] }>();
 
 const { resolveUrl } = useImageUrl();
 
 const fileInput = ref<HTMLInputElement | null>(null);
-const filePreviewUrl = ref<string | null>(null);
 const formError = ref("");
 
 const form = reactive({
@@ -32,39 +35,42 @@ const form = reactive({
     subTitle: "",
     location: "",
     imageTakenDate: "",
-    file: null as File | null,
-    currentImageUrl: "",
 });
 
-const isEditMode = computed(() => Boolean(props.image?.id));
-const imagePreviewSrc = computed(() => filePreviewUrl.value || form.currentImageUrl || "");
+const imageItems = ref<ImageItem[]>([]);
 
-const resetPreview = () => {
-    if (filePreviewUrl.value) {
-        URL.revokeObjectURL(filePreviewUrl.value);
-        filePreviewUrl.value = null;
+const isEditMode = computed(() => Boolean(props.image?.id));
+
+const cleanupNewItems = () => {
+    for (const item of imageItems.value) {
+        if (item.type === "new") {
+            URL.revokeObjectURL(item.previewUrl);
+        }
     }
 };
 
 const resetForm = () => {
+    cleanupNewItems();
     form.title = props.image?.title ?? "";
     form.subTitle = props.image?.subTitle ?? "";
     form.location = props.image?.location ?? "";
     form.imageTakenDate = props.image
         ? props.image.imageTakenDate.toISOString().slice(0, 10)
         : new Date().toISOString().slice(0, 10);
-    form.file = null;
-    form.currentImageUrl = resolveUrl(props.image?.thumbnail) ?? "";
     formError.value = "";
     if (fileInput.value) {
         fileInput.value.value = "";
     }
+    imageItems.value = (props.image?.images ?? []).map((img) => ({
+        type: "existing" as const,
+        cloudLocation: img.cloudLocation,
+        previewUrl: resolveUrl(img.cloudLocation) ?? "",
+    }));
 };
 
 watch(
     () => [props.image, props.open],
     () => {
-        resetPreview();
         if (props.open) {
             resetForm();
         }
@@ -73,17 +79,46 @@ watch(
 );
 
 onUnmounted(() => {
-    resetPreview();
+    cleanupNewItems();
 });
 
-const handleFileChange = (event: Event) => {
+const handleFilesChange = (event: Event) => {
     const target = event.target as HTMLInputElement;
-    const file = target.files?.[0] ?? null;
-    form.file = file;
-    resetPreview();
-    if (file) {
-        filePreviewUrl.value = URL.createObjectURL(file);
+    const files = Array.from(target.files ?? []);
+    for (const file of files) {
+        imageItems.value.push({
+            type: "new",
+            file,
+            previewUrl: URL.createObjectURL(file),
+        });
     }
+    if (fileInput.value) {
+        fileInput.value.value = "";
+    }
+};
+
+const removeItem = (index: number) => {
+    const item = imageItems.value[index];
+    if (item?.type === "new") {
+        URL.revokeObjectURL(item.previewUrl);
+    }
+    imageItems.value.splice(index, 1);
+};
+
+const moveUp = (index: number) => {
+    if (index === 0) {
+        return;
+    }
+    const arr = imageItems.value;
+    [arr[index - 1], arr[index]] = [arr[index], arr[index - 1]];
+};
+
+const moveDown = (index: number) => {
+    if (index >= imageItems.value.length - 1) {
+        return;
+    }
+    const arr = imageItems.value;
+    [arr[index], arr[index + 1]] = [arr[index + 1], arr[index]];
 };
 
 const submit = (status: PostStatus) => {
@@ -94,6 +129,10 @@ const submit = (status: PostStatus) => {
         formError.value = "Title, date, and location are required.";
         return;
     }
+    if (!isEditMode.value && imageItems.value.length === 0) {
+        formError.value = "At least one image is required.";
+        return;
+    }
     formError.value = "";
     emit("save", {
         id: props.image?.id,
@@ -102,7 +141,11 @@ const submit = (status: PostStatus) => {
         location: form.location,
         imageTakenDate: form.imageTakenDate,
         status,
-        file: form.file,
+        imageItems: imageItems.value.map((item) =>
+            item.type === "existing"
+                ? { type: "existing" as const, cloudLocation: item.cloudLocation }
+                : { type: "new" as const, file: item.file },
+        ),
     });
 };
 </script>
@@ -132,37 +175,102 @@ const submit = (status: PostStatus) => {
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 max-h-[75vh] overflow-y-auto">
+                    <!-- Images section -->
                     <div class="space-y-4">
-                        <label class="block text-sm font-medium text-slate-300">Image</label>
+                        <div class="flex items-center justify-between">
+                            <label class="block text-sm font-medium text-slate-300">Images</label>
+                            <span class="text-xs text-slate-500">First image is the thumbnail</span>
+                        </div>
+
+                        <!-- Image list -->
+                        <div v-if="imageItems.length > 0" class="space-y-2">
+                            <div
+                                v-for="(item, index) in imageItems"
+                                :key="index"
+                                class="flex items-center gap-3 bg-space-900/60 border border-space-700/40 rounded-lg p-2"
+                            >
+                                <!-- Thumbnail preview -->
+                                <div
+                                    class="w-16 h-16 flex-shrink-0 bg-space-950 rounded overflow-hidden"
+                                >
+                                    <img
+                                        :src="item.previewUrl"
+                                        :alt="`Image ${index + 1}`"
+                                        class="w-full h-full object-cover"
+                                    />
+                                </div>
+
+                                <!-- Label -->
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-sm text-slate-300 truncate block">
+                                        {{
+                                            item.type === "new"
+                                                ? item.file.name
+                                                : `Image ${index + 1}`
+                                        }}
+                                    </span>
+                                    <span
+                                        v-if="index === 0"
+                                        class="text-xs text-nebula-400"
+                                    >Thumbnail</span>
+                                </div>
+
+                                <!-- Reorder + remove -->
+                                <div class="flex items-center gap-1">
+                                    <button
+                                        type="button"
+                                        :disabled="index === 0"
+                                        class="p-1 text-slate-500 hover:text-white disabled:opacity-30 transition-colors"
+                                        title="Move up"
+                                        @click="moveUp(index)"
+                                    >
+                                        <MdiChevronUp class="w-4 h-4" />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        :disabled="index === imageItems.length - 1"
+                                        class="p-1 text-slate-500 hover:text-white disabled:opacity-30 transition-colors"
+                                        title="Move down"
+                                        @click="moveDown(index)"
+                                    >
+                                        <MdiChevronDown class="w-4 h-4" />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="p-1 text-slate-500 hover:text-red-400 transition-colors"
+                                        title="Remove"
+                                        @click="removeItem(index)"
+                                    >
+                                        <MdiClose class="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add image button -->
                         <div
-                            class="border-2 border-dashed border-space-600 hover:border-nebula-500 rounded-xl p-4 text-center transition-colors"
+                            class="border-2 border-dashed border-space-600 hover:border-nebula-500 rounded-xl transition-colors"
                         >
                             <input
                                 ref="fileInput"
                                 type="file"
                                 accept="image/*"
+                                multiple
                                 class="hidden"
-                                @change="handleFileChange"
+                                @change="handleFilesChange"
                             />
                             <button
                                 type="button"
-                                class="w-full min-h-64 bg-space-900/70 rounded-lg overflow-hidden flex items-center justify-center"
+                                class="w-full py-6 flex flex-col items-center justify-center gap-2 text-slate-500 hover:text-slate-300 transition-colors"
                                 @click="fileInput?.click()"
                             >
-                                <img
-                                    v-if="imagePreviewSrc"
-                                    :src="imagePreviewSrc"
-                                    alt="Post preview"
-                                    class="w-full h-full object-cover"
-                                />
-                                <div v-else class="text-slate-500 flex flex-col items-center gap-2">
-                                    <MdiFileImageOutline class="w-10 h-10" />
-                                    <span>Select image</span>
-                                </div>
+                                <MdiPlus class="w-7 h-7" />
+                                <span class="text-sm">Add images</span>
                             </button>
                         </div>
                     </div>
 
+                    <!-- Metadata fields -->
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-slate-300 mb-2">Title</label>

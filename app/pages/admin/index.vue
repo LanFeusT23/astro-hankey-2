@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { AstroImage } from "~/types/image";
+import type { AdminPostSavePayload } from "~/components/AdminPostModal.vue";
 
 definePageMeta({ middleware: "auth" });
 
@@ -32,21 +33,37 @@ const closePostModal = () => {
     selectedImage.value = null;
 };
 
-const handleSavePost = async (payload: {
-    id?: string;
-    title: string;
-    subTitle: string;
-    location: string;
-    imageTakenDate: string;
-    status: AstroImage["status"];
-    file: File | null;
-}) => {
+const handleSavePost = async (payload: AdminPostSavePayload) => {
     if (!payload.title || !payload.location || !payload.imageTakenDate) {
         return;
     }
     savingPost.value = true;
     try {
         const imageTakenDate = new Date(payload.imageTakenDate);
+
+        // Resolve all image items: upload new files, keep existing cloudLocations
+        const resolvedImages: { cloudLocation: string; thumbnailUrl?: string }[] = [];
+        for (const item of payload.imageItems) {
+            if (item.type === "existing") {
+                resolvedImages.push({ cloudLocation: item.cloudLocation });
+            } else {
+                const urls = await uploadImage(item.file, imageTakenDate, payload.id);
+                resolvedImages.push(urls);
+            }
+        }
+
+        // Thumbnail is from the first image
+        const thumbnailUrl =
+            resolvedImages[0]?.thumbnailUrl ?? resolvedImages[0]?.cloudLocation ?? "";
+
+        const imagesArray = resolvedImages.map((r) => ({
+            cloudLocation: r.cloudLocation,
+            isMain: false,
+        }));
+        if (imagesArray[0]) {
+            imagesArray[0].isMain = true;
+        }
+
         if (payload.id) {
             const updates: Partial<Omit<AstroImage, "id">> = {
                 title: payload.title,
@@ -55,20 +72,12 @@ const handleSavePost = async (payload: {
                 imageTakenDate,
                 status: payload.status,
             };
-            if (payload.file) {
-                const urls = await uploadImage(payload.file, imageTakenDate, payload.id);
-                updates.thumbnail = urls.thumbnailUrl;
-                updates.images = [{ cloudLocation: urls.cloudLocation, isMain: true }];
+            if (resolvedImages.length > 0) {
+                updates.thumbnail = thumbnailUrl;
+                updates.images = imagesArray;
             }
             await updateImage(payload.id, updates);
         } else {
-            let cloudLocation = `https://picsum.photos/seed/${Date.now()}/1920/1280`;
-            let thumbnailUrl = `https://picsum.photos/seed/${Date.now()}/600/400`;
-            if (payload.file) {
-                const urls = await uploadImage(payload.file, imageTakenDate);
-                cloudLocation = urls.cloudLocation;
-                thumbnailUrl = urls.thumbnailUrl;
-            }
             await createImage({
                 title: payload.title,
                 subTitle: payload.subTitle || undefined,
@@ -78,7 +87,7 @@ const handleSavePost = async (payload: {
                 dateCreated: new Date(),
                 dontContainImage: false,
                 thumbnail: thumbnailUrl,
-                images: [{ cloudLocation, isMain: true }],
+                images: imagesArray,
             });
         }
         closePostModal();
