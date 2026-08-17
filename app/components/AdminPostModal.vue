@@ -4,8 +4,11 @@ import type { AstroImage } from "~/types/image";
 type PostStatus = AstroImage["status"];
 
 type ImageItem =
-    | { type: "existing"; cloudLocation: string; previewUrl: string }
-    | { type: "new"; file: File; previewUrl: string };
+    | { key: string; type: "existing"; cloudLocation: string; previewUrl: string }
+    | { key: string; type: "new"; file: File; previewUrl: string };
+
+let itemKeyCounter = 0;
+const nextKey = () => String(++itemKeyCounter);
 
 export type AdminPostSavePayload = {
     id?: string;
@@ -62,6 +65,7 @@ const resetForm = () => {
         fileInput.value.value = "";
     }
     imageItems.value = (props.image?.images ?? []).map((img) => ({
+        key: nextKey(),
         type: "existing" as const,
         cloudLocation: img.cloudLocation,
         previewUrl: resolveUrl(img.cloudLocation) ?? "",
@@ -87,6 +91,7 @@ const handleFilesChange = (event: Event) => {
     const files = Array.from(target.files ?? []);
     for (const file of files) {
         imageItems.value.push({
+            key: nextKey(),
             type: "new",
             file,
             previewUrl: URL.createObjectURL(file),
@@ -129,7 +134,7 @@ const submit = (status: PostStatus) => {
         formError.value = "Title, date, and location are required.";
         return;
     }
-    if (!isEditMode.value && imageItems.value.length === 0) {
+    if (imageItems.value.length === 0) {
         formError.value = "At least one image is required.";
         return;
     }
@@ -186,7 +191,7 @@ const submit = (status: PostStatus) => {
                         <div v-if="imageItems.length > 0" class="space-y-2">
                             <div
                                 v-for="(item, index) in imageItems"
-                                :key="index"
+                                :key="item.key"
                                 class="flex items-center gap-3 bg-space-900/60 border border-space-700/40 rounded-lg p-2"
                             >
                                 <!-- Thumbnail preview -->

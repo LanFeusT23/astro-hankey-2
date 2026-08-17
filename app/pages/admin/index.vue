@@ -71,11 +71,9 @@ const handleSavePost = async (payload: AdminPostSavePayload) => {
                 location: payload.location,
                 imageTakenDate,
                 status: payload.status,
+                thumbnail: thumbnailUrl,
+                images: imagesArray,
             };
-            if (resolvedImages.length > 0) {
-                updates.thumbnail = thumbnailUrl;
-                updates.images = imagesArray;
-            }
             await updateImage(payload.id, updates);
         } else {
             await createImage({
