@@ -116,10 +116,10 @@ onUnmounted(() => {
                     <MdiClose class="w-5 h-5" />
                 </button>
 
-                <div class="flex flex-col md:flex-row h-full">
+                <div class="flex flex-col md:flex-row h-full overflow-y-auto md:overflow-hidden">
                     <!-- Image -->
                     <div
-                        class="flex-1 bg-black flex flex-col items-center justify-center min-h-75 md:min-h-[65vh]"
+                        class="flex-1 bg-black flex flex-col items-center justify-center min-h-75 md:min-h-[65vh] shrink-0 md:shrink"
                     >
                         <img
                             :src="currentCloudLocation"
@@ -155,7 +155,7 @@ onUnmounted(() => {
 
                     <!-- Info panel -->
                     <div
-                        class="md:w-96 p-3 md:p-6 flex flex-col justify-between border-t md:border-t-0 md:border-l border-space-700/50"
+                        class="md:w-96 p-3 md:p-6 flex flex-col justify-between border-t md:border-t-0 md:border-l border-space-700/50 shrink-0 md:overflow-y-auto"
                     >
                         <div>
                             <h2 class="text-xl font-display font-bold text-white mb-3">
