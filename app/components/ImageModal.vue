@@ -5,17 +5,18 @@ const props = defineProps<{
     image: AstroImage;
     hasPrev?: boolean;
     hasNext?: boolean;
+    imageIndex?: number;
 }>();
-const emit = defineEmits<{ close: []; prev: []; next: [] }>();
+const emit = defineEmits<{ close: []; prev: []; next: []; "update:imageIndex": [index: number] }>();
 
 const { resolveUrl } = useImageUrl();
 
-const selectedIndex = ref(0);
+const selectedIndex = ref(props.imageIndex ?? 0);
 
 watch(
     () => props.image,
     () => {
-        selectedIndex.value = 0;
+        selectedIndex.value = props.imageIndex ?? 0;
     },
 );
 
@@ -141,7 +142,7 @@ onUnmounted(() => {
                                         ? 'border-nebula-400'
                                         : 'border-transparent opacity-60 hover:opacity-100'
                                 "
-                                @click.stop="selectedIndex = i"
+                                @click.stop="selectedIndex = i; emit('update:imageIndex', i)"
                             >
                                 <img
                                     :src="resolveUrl(img.cloudLocation)"
