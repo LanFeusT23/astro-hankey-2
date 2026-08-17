@@ -33,13 +33,48 @@ const closePostModal = () => {
     selectedImage.value = null;
 };
 
+/**
+ * Parse a YYYY-MM-DD date string as noon America/Los_Angeles time.
+ * new Date("YYYY-MM-DD") treats the value as UTC midnight, which lands on
+ * the previous calendar day for Pacific time (UTC-7/8). This function
+ * constructs a Date whose LA-local date always matches the input string,
+ * regardless of DST.
+ */
+const parseDateAsLosAngeles = (dateStr: string): Date => {
+    // Create a UTC noon anchor for the given date to probe the LA offset at that instant.
+    const utcNoon = new Date(`${dateStr}T20:00:00Z`); // 20:00 UTC ≈ noon LA (between -8 and -7)
+    const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: "America/Los_Angeles",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+    }).formatToParts(utcNoon);
+    const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "0";
+    // Reconstruct the offset by comparing UTC noon with LA local noon
+    const laHour = Number(get("hour"));
+    // utcNoon is 20:00 UTC; laHour is what LA shows — offset = laHour - 20
+    const offsetHours = laHour - 20;
+    const sign = offsetHours >= 0 ? "+" : "-";
+    const absHours = Math.abs(offsetHours);
+    const offset = `${sign}${String(absHours).padStart(2, "0")}:00`;
+    return new Date(`${dateStr}T12:00:00${offset}`);
+};
+
 const handleSavePost = async (payload: AdminPostSavePayload) => {
     if (!payload.title || !payload.location || !payload.imageTakenDate) {
         return;
     }
     savingPost.value = true;
     try {
-        const imageTakenDate = new Date(payload.imageTakenDate);
+        // Parse the YYYY-MM-DD string as noon America/Los_Angeles to avoid UTC-offset day
+        // shifts. new Date("YYYY-MM-DD") treats the string as UTC midnight, which falls on
+        // the previous calendar day for Pacific time (UTC-7/8). We determine the LA UTC
+        // offset for noon on that date via Intl and construct the ISO string explicitly so
+        // the stored timestamp always corresponds to the calendar date the user entered.
+        const imageTakenDate = parseDateAsLosAngeles(payload.imageTakenDate);
 
         // Resolve all image items: upload new files, keep existing cloudLocations
         const resolvedImages: { cloudLocation: string; thumbnailUrl?: string }[] = [];
