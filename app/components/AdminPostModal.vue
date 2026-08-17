@@ -86,9 +86,9 @@ onUnmounted(() => {
     cleanupNewItems();
 });
 
-const handleFilesChange = (event: Event) => {
-    const target = event.target as HTMLInputElement;
-    const files = Array.from(target.files ?? []);
+// ── File input ────────────────────────────────────────────────────────────────
+
+const addFiles = (files: File[]) => {
     for (const file of files) {
         imageItems.value.push({
             key: nextKey(),
@@ -97,10 +97,85 @@ const handleFilesChange = (event: Event) => {
             previewUrl: URL.createObjectURL(file),
         });
     }
+};
+
+const handleFilesChange = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    addFiles(Array.from(target.files ?? []));
     if (fileInput.value) {
         fileInput.value.value = "";
     }
 };
+
+// ── Drop zone (file drop) ─────────────────────────────────────────────────────
+
+const dropZoneActive = ref(false);
+
+const onDropZoneDragover = (e: DragEvent) => {
+    e.preventDefault();
+    dropZoneActive.value = true;
+};
+
+const onDropZoneDragleave = () => {
+    dropZoneActive.value = false;
+};
+
+const onDropZoneDrop = (e: DragEvent) => {
+    e.preventDefault();
+    dropZoneActive.value = false;
+    const files = Array.from(e.dataTransfer?.files ?? []).filter((f) =>
+        f.type.startsWith("image/"),
+    );
+    addFiles(files);
+};
+
+// ── List drag-and-drop reorder ────────────────────────────────────────────────
+
+const dragSrcIndex = ref<number | null>(null);
+const dragOverIndex = ref<number | null>(null);
+
+const onItemDragstart = (e: DragEvent, index: number) => {
+    dragSrcIndex.value = index;
+    if (e.dataTransfer) {
+        e.dataTransfer.effectAllowed = "move";
+        // Carry the key so the browser ghost is meaningful
+        e.dataTransfer.setData("text/plain", imageItems.value[index]?.key ?? "");
+    }
+};
+
+const onItemDragover = (e: DragEvent, index: number) => {
+    e.preventDefault();
+    if (e.dataTransfer) {
+        e.dataTransfer.dropEffect = "move";
+    }
+    dragOverIndex.value = index;
+};
+
+const onItemDragleave = () => {
+    dragOverIndex.value = null;
+};
+
+const onItemDrop = (_e: DragEvent, index: number) => {
+    const src = dragSrcIndex.value;
+    if (src === null || src === index) {
+        dragSrcIndex.value = null;
+        dragOverIndex.value = null;
+        return;
+    }
+    const arr = [...imageItems.value];
+    const [moved] = arr.splice(src, 1);
+    arr.splice(index, 0, moved);
+    imageItems.value = arr;
+    dragSrcIndex.value = null;
+    dragOverIndex.value = null;
+};
+
+const onItemDragend = () => {
+    dragSrcIndex.value = null;
+    dragOverIndex.value = null;
+};
+
+// ── Remove ────────────────────────────────────────────────────────────────────
 
 const removeItem = (index: number) => {
     const item = imageItems.value[index];
@@ -110,21 +185,7 @@ const removeItem = (index: number) => {
     imageItems.value.splice(index, 1);
 };
 
-const moveUp = (index: number) => {
-    if (index === 0) {
-        return;
-    }
-    const arr = imageItems.value;
-    [arr[index - 1], arr[index]] = [arr[index], arr[index - 1]];
-};
-
-const moveDown = (index: number) => {
-    if (index >= imageItems.value.length - 1) {
-        return;
-    }
-    const arr = imageItems.value;
-    [arr[index], arr[index + 1]] = [arr[index + 1], arr[index]];
-};
+// ── Submit ────────────────────────────────────────────────────────────────────
 
 const submit = (status: PostStatus) => {
     if (props.saving) {
@@ -187,13 +248,32 @@ const submit = (status: PostStatus) => {
                             <span class="text-xs text-slate-500">First image is the thumbnail</span>
                         </div>
 
-                        <!-- Image list -->
+                        <!-- Draggable image list -->
                         <div v-if="imageItems.length > 0" class="space-y-2">
                             <div
                                 v-for="(item, index) in imageItems"
                                 :key="item.key"
-                                class="flex items-center gap-3 bg-space-900/60 border border-space-700/40 rounded-lg p-2"
+                                draggable="true"
+                                class="flex items-center gap-3 bg-space-900/60 border rounded-lg p-2 cursor-grab active:cursor-grabbing transition-colors select-none"
+                                :class="
+                                    dragOverIndex === index && dragSrcIndex !== index
+                                        ? 'border-nebula-400/70 bg-space-800/80'
+                                        : dragSrcIndex === index
+                                          ? 'border-space-600/40 opacity-50'
+                                          : 'border-space-700/40'
+                                "
+                                @dragstart="onItemDragstart($event, index)"
+                                @dragover="onItemDragover($event, index)"
+                                @dragleave="onItemDragleave"
+                                @drop="onItemDrop($event, index)"
+                                @dragend="onItemDragend"
                             >
+                                <!-- Drag handle indicator -->
+                                <MdiDragVertical
+                                    class="w-4 h-4 flex-shrink-0 text-slate-600"
+                                    aria-hidden="true"
+                                />
+
                                 <!-- Thumbnail preview -->
                                 <div
                                     class="w-16 h-16 flex-shrink-0 bg-space-950 rounded overflow-hidden"
@@ -202,6 +282,7 @@ const submit = (status: PostStatus) => {
                                         :src="item.previewUrl"
                                         :alt="`Image ${index + 1}`"
                                         class="w-full h-full object-cover"
+                                        draggable="false"
                                     />
                                 </div>
 
@@ -220,41 +301,29 @@ const submit = (status: PostStatus) => {
                                     >Thumbnail</span>
                                 </div>
 
-                                <!-- Reorder + remove -->
-                                <div class="flex items-center gap-1">
-                                    <button
-                                        type="button"
-                                        :disabled="index === 0"
-                                        class="p-1 text-slate-500 hover:text-white disabled:opacity-30 transition-colors"
-                                        title="Move up"
-                                        @click="moveUp(index)"
-                                    >
-                                        <MdiChevronUp class="w-4 h-4" />
-                                    </button>
-                                    <button
-                                        type="button"
-                                        :disabled="index === imageItems.length - 1"
-                                        class="p-1 text-slate-500 hover:text-white disabled:opacity-30 transition-colors"
-                                        title="Move down"
-                                        @click="moveDown(index)"
-                                    >
-                                        <MdiChevronDown class="w-4 h-4" />
-                                    </button>
-                                    <button
-                                        type="button"
-                                        class="p-1 text-slate-500 hover:text-red-400 transition-colors"
-                                        title="Remove"
-                                        @click="removeItem(index)"
-                                    >
-                                        <MdiClose class="w-4 h-4" />
-                                    </button>
-                                </div>
+                                <!-- Remove button -->
+                                <button
+                                    type="button"
+                                    class="p-1 text-slate-500 hover:text-red-400 transition-colors flex-shrink-0"
+                                    title="Remove"
+                                    @click="removeItem(index)"
+                                >
+                                    <MdiClose class="w-4 h-4" />
+                                </button>
                             </div>
                         </div>
 
-                        <!-- Add image button -->
+                        <!-- Add images drop zone -->
                         <div
-                            class="border-2 border-dashed border-space-600 hover:border-nebula-500 rounded-xl transition-colors"
+                            class="border-2 border-dashed rounded-xl transition-colors"
+                            :class="
+                                dropZoneActive
+                                    ? 'border-nebula-400 bg-nebula-900/20'
+                                    : 'border-space-600 hover:border-nebula-500'
+                            "
+                            @dragover="onDropZoneDragover"
+                            @dragleave="onDropZoneDragleave"
+                            @drop="onDropZoneDrop"
                         >
                             <input
                                 ref="fileInput"
@@ -269,8 +338,10 @@ const submit = (status: PostStatus) => {
                                 class="w-full py-6 flex flex-col items-center justify-center gap-2 text-slate-500 hover:text-slate-300 transition-colors"
                                 @click="fileInput?.click()"
                             >
-                                <MdiPlus class="w-7 h-7" />
-                                <span class="text-sm">Add images</span>
+                                <MdiImagePlusOutline class="w-7 h-7" />
+                                <span class="text-sm">
+                                    {{ dropZoneActive ? "Drop to add" : "Click or drop images here" }}
+                                </span>
                             </button>
                         </div>
                     </div>
@@ -324,7 +395,7 @@ const submit = (status: PostStatus) => {
                     </p>
                     <button
                         type="button"
-                        class="px-4 py-2 border border-space-600 rounded-lg text-slate-300 hover:text-white hover:border-space-500 transition-colors"
+                        class="px-4 py-2 bg-space-700 hover:bg-space-600 rounded-lg text-slate-400 hover:text-slate-200 transition-colors"
                         @click="$emit('close')"
                     >
                         Cancel
