@@ -45,7 +45,7 @@ const handleSavePost = async (payload: AdminPostSavePayload) => {
         const resolvedImages: { cloudLocation: string; thumbnailUrl?: string }[] = [];
         for (const item of payload.imageItems) {
             if (item.type === "existing") {
-                resolvedImages.push({ cloudLocation: item.cloudLocation });
+                resolvedImages.push({ cloudLocation: item.cloudLocation, thumbnailUrl: item.thumbnailUrl });
             } else {
                 const urls = await uploadImage(item.file, imageTakenDate, payload.id);
                 resolvedImages.push(urls);

@@ -221,7 +221,7 @@ const submit = (status: PostStatus) => {
         status,
         imageItems: imageItems.value.map((item) =>
             item.type === "existing"
-                ? { type: "existing" as const, cloudLocation: item.cloudLocation }
+                ? { type: "existing" as const, cloudLocation: item.cloudLocation, thumbnailUrl: item.thumbnailUrl }
                 : { type: "new" as const, file: item.file },
         ),
     });
