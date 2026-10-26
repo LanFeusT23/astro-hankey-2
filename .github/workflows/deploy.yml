@@ -49,5 +49,7 @@ jobs:
                   credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
             - name: Install function dependencies
               run: npm install --prefix .output/server
+            - name: Install image functions dependencies
+              run: npm ci --prefix functions
             - name: Deploy to Firebase Hosting production site
               run: npx firebase-tools deploy --only hosting,functions --config firebase.json --project ${{ secrets.NUXT_PUBLIC_FIREBASE_PROJECT_ID }} --force
