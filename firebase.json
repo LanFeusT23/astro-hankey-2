@@ -5,9 +5,17 @@
     "storage": {
         "rules": "storage.rules"
     },
-    "functions": {
-        "source": ".output/server"
-    },
+    "functions": [
+        {
+            "source": ".output/server",
+            "codebase": "default"
+        },
+        {
+            "source": "functions",
+            "codebase": "images",
+            "runtime": "nodejs22"
+        }
+    ],
     "hosting": {
         "site": "astro-hankey",
         "public": ".output/public",
